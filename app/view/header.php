@@ -21,6 +21,7 @@
             var(--celeste) 30%, var(--celeste) 100%);
             background-attachment: fixed;
             font-family: 'Segoe UI', Arial, sans-serif;
+
         }
 
         .header-evento {
@@ -52,23 +53,23 @@
             color: var(--blanco);
         }
     </style>
+    <?php if (($vistaActual ?? "") === "registro"): ?>
+        <link rel="stylesheet" href="public/css/Registro.css">
+    <?php endif; ?>
 </head>
 <body>
 
 <div class="w3-bar" style="background-color:#2E7D32">
-    <a href="/proyectomessi/" class="w3-bar-item w3-button">🏠 Inicio</a>
+    <a href="./index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
+    <a href="/index.php?controller=registro&amp;method=show"" class="w3-bar-item w3-button">Registrarme</a>
     <?php if (isset($_SESSION['usuario'])): ?>
-        <a href="/proyectomessi/lugares" class="w3-bar-item w3-button">💺 Lugares</a>
-        <a href="/proyectomessi/reserva/show" class="w3-bar-item w3-button">📋 Reservas</a>
+        <a href="/proyectomessi/lugares" class="w3-bar-item w3-button">Empezar a jugar</a>
         <a href="/proyectomessi/login/logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
     <?php endif; ?>
 </div>
 
 <div class="w3-container header-evento w3-padding-32 w3-center">
-    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lionel_Messi_WC2022.jpg?width=220"
-         alt="Lionel Messi con la camiseta de Argentina"
-         class="w3-round w3-margin-bottom"
-         style="max-width:220px; border:4px solid var(--dorado);">
-    <h1>⚽ Partido Despedida de Lionel Messi 🐐</h1>
-    <p class="w3-large" style="color: white;">Gracias, Leo.</p>
+
+    <h1>Preguntados musical</h1>
+    <p class="w3-large" style="color: white;">Gana un Grammy!</p>
 </div>

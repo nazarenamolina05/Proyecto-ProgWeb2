@@ -13,7 +13,8 @@ use app\model\ReservaModel;
 use MustacheRender;
 use MyDatabase;
 use Router;
-
+use app\controller\RegistroController;
+use app\model\RegistroModel;
 require_once("helper/Autoloader.php");
 
 
@@ -100,9 +101,22 @@ class Configuration
             $this->getDatabase()
         );
     }
+    private function getRegistroModel()
+    {
+        return new RegistroModel(
+            $this->getDatabase()
+        );
+    }
 
     public function getRouter()
     {
         return new Router($this, "evento", "show");
+    }
+    public function getRegistroController(): RegistroController
+    {
+        return new RegistroController(
+            $this->getRegistroModel(),
+            $this->gerRender()
+        );
     }
 }

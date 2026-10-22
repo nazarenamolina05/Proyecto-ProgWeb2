@@ -18,8 +18,12 @@ class MustacheRender
 
     public function renderiza($view, $data = [])
     {
+        $vistaActual = $view;
+
         require_once($this->viewPath . "/header.php");
+
         echo $this->mustache->render($view . "View", $data);
+
         require_once($this->viewPath . "/footer.php");
     }
 }
