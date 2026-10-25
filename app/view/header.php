@@ -64,6 +64,7 @@
     <a href="/Proyecto-ProgWeb2/registro/show" class="w3-bar-item w3-button">Registrarme</a>
     <?php if (isset($_SESSION['usuario'])): ?>
         <a href="/Proyecto-ProgWeb2/lugares" class="w3-bar-item w3-button">Empezar a jugar</a>
+        <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
         <a href="/Proyecto-ProgWeb2/login/logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
     <?php endif; ?>
 </div>
