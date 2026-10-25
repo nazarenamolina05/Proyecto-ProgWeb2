@@ -22,6 +22,10 @@
             {{^mapa_url}}
                 <p>Este jugador no cargó su ubicación.</p>
             {{/mapa_url}}
+            <hr>
+            <h3>Código QR del perfil</h3>
+            <img src="{{qr_url}}" alt="Código QR para abrir el perfil de {{usuario}}" width="200" height="200">
+            <p class="w3-small">Escaneá el código para abrir este perfil: <a href="{{url_perfil}}">{{url_perfil}}</a></p>
 
             <hr>
 
