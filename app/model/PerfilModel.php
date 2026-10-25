@@ -26,4 +26,17 @@ class PerfilModel
 
         return $this->database->queryOne($sql_usuario);
     }
+
+    public function getPartidas($id)
+    {
+        $id = (int) $id;
+
+        $sql_partidas = "SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = " . $id . "
+                     ORDER BY fecha DESC";
+
+        return $this->database->queryAll($sql_partidas);
+    }
+
 }

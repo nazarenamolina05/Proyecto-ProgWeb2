@@ -18,6 +18,24 @@
 
             <p><b>Puntaje total:</b> {{puntaje_total}}</p>
             <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
+            <h3>Partidas jugadas</h3>
+
+            <table class="w3-table w3-bordered">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Puntaje</th>
+                </tr>
+                {{#partidas}}
+                    <tr>
+                        <td>{{fecha_formateada}}</td>
+                        <td>{{puntaje}}</td>
+                    </tr>
+                {{/partidas}}
+            </table>
+
+            {{^partidas}}
+                <p>Este jugador todavía no jugó ninguna partida.</p>
+            {{/partidas}}
         {{/error}}
 
     </div>

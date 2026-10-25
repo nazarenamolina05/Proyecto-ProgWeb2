@@ -25,6 +25,12 @@ class PerfilController
         } else {
             $data = $usuario;
             $data["error"] = "";
+
+            $partidas = $this->model->getPartidas($id);
+            foreach ($partidas as $clave => $partida) {
+                $partidas[$clave]["fecha_formateada"] = date('d/m/Y H:i', strtotime($partida['fecha']));
+            }
+            $data["partidas"] = $partidas;
         }
 
         $this->render->renderiza("perfil", $data);
