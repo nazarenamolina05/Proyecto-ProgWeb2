@@ -54,17 +54,17 @@
         }
     </style>
     <?php if (($vistaActual ?? "") === "registro"): ?>
-        <link rel="stylesheet" href="public/css/Registro.css">
+        <link rel="stylesheet" href="/Proyecto-ProgWeb2/public/css/Registro.css">
     <?php endif; ?>
 </head>
 <body>
 
 <div class="w3-bar" style="background-color:#2E7D32">
-    <a href="./index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
-    <a href="/index.php?controller=registro&amp;method=show"" class="w3-bar-item w3-button">Registrarme</a>
+    <a href="/Proyecto-ProgWeb2/evento/show" class="w3-bar-item w3-button">🏠 Inicio</a>
+    <a href="/Proyecto-ProgWeb2/registro/show" class="w3-bar-item w3-button">Registrarme</a>
     <?php if (isset($_SESSION['usuario'])): ?>
-        <a href="/proyectomessi/lugares" class="w3-bar-item w3-button">Empezar a jugar</a>
-        <a href="/proyectomessi/login/logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
+        <a href="/Proyecto-ProgWeb2/lugares" class="w3-bar-item w3-button">Empezar a jugar</a>
+        <a href="/Proyecto-ProgWeb2/login/logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
     <?php endif; ?>
 </div>
 
