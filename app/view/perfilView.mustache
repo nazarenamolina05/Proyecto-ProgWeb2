@@ -13,6 +13,15 @@
             <p><b>Año de nacimiento:</b> {{anio_nacimiento}}</p>
             <p><b>Sexo:</b> {{sexo}}</p>
             <p><b>Ubicación:</b> {{ciudad}}, {{pais}}</p>
+            {{#mapa_url}}
+                <iframe src="{{mapa_url}}"
+                        style="width:100%; height:300px; border:0;"
+                        loading="lazy"
+                        title="Mapa de ubicación del jugador"></iframe>
+            {{/mapa_url}}
+            {{^mapa_url}}
+                <p>Este jugador no cargó su ubicación.</p>
+            {{/mapa_url}}
 
             <hr>
 

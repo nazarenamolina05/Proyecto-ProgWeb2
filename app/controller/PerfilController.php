@@ -31,6 +31,18 @@ class PerfilController
                 $partidas[$clave]["fecha_formateada"] = date('d/m/Y H:i', strtotime($partida['fecha']));
             }
             $data["partidas"] = $partidas;
+
+            $data["mapa_url"] = "";
+            if ($usuario["latitud"] !== null && $usuario["longitud"] !== null) {
+                $lat = (float) $usuario["latitud"];
+                $lon = (float) $usuario["longitud"];
+                $margen = 0.05;
+
+                $data["mapa_url"] = "https://www.openstreetmap.org/export/embed.html?bbox="
+                    . ($lon - $margen) . "," . ($lat - $margen) . ","
+                    . ($lon + $margen) . "," . ($lat + $margen)
+                    . "&layer=mapnik&marker=" . $lat . "," . $lon;
+            }
         }
 
         $this->render->renderiza("perfil", $data);
