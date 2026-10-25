@@ -1,0 +1,24 @@
+<div class="w3-content" style="max-width:900px">
+    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
+
+        {{#error}}
+            <div class="w3-panel w3-pale-red w3-border">
+                <p>{{error}}</p>
+            </div>
+        {{/error}}
+
+        {{^error}}
+            <h2>{{usuario}}</h2>
+            <p><b>Nombre:</b> {{nombre_completo}}</p>
+            <p><b>Año de nacimiento:</b> {{anio_nacimiento}}</p>
+            <p><b>Sexo:</b> {{sexo}}</p>
+            <p><b>Ubicación:</b> {{ciudad}}, {{pais}}</p>
+
+            <hr>
+
+            <p><b>Puntaje total:</b> {{puntaje_total}}</p>
+            <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
+        {{/error}}
+
+    </div>
+</div>

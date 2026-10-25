@@ -15,7 +15,10 @@ use MyDatabase;
 use Router;
 use app\controller\RegistroController;
 use app\model\RegistroModel;
+use app\controller\PerfilController;
+use app\model\PerfilModel;
 require_once("helper/Autoloader.php");
+
 
 
 
@@ -119,4 +122,21 @@ class Configuration
             $this->gerRender()
         );
     }
+
+    private function getPerfilModel()
+    {
+        return new PerfilModel(
+            $this->getDatabase()
+        );
+    }
+
+    public function getPerfilController()
+    {
+        return new PerfilController(
+            $this->getPerfilModel(),
+            $this->gerRender()
+        );
+    }
+
+
 }
