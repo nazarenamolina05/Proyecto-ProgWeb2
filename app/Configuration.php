@@ -33,7 +33,6 @@ class Configuration
             $this->gerRender()
         );
     }
-
     public function getReservaController()
     {
         return new ReservaController(
@@ -53,7 +52,8 @@ class Configuration
     public function getLoginController()
     {
         return new LoginController(
-            $this->getLoginModel()
+            $this->getLoginModel(),
+            $this->gerRender()
         );
     }
 
@@ -72,11 +72,14 @@ class Configuration
         );
     }
 
-    private function getDatabase()
+        private function getDatabase()
     {
         $config = parse_ini_file("config/config.ini");
 
-        return new MyDatabase($config["db_host"],
+        $host = $config["db_host"] . ";port=" . $config["db_port"];
+
+        return new MyDatabase(
+            $host,
             $config["db_user"],
             $config["db_pass"],
             $config["db_name"]
