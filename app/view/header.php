@@ -67,14 +67,15 @@ body {
 <body>
 
 <div class="w3-bar" style="background-color:#2E7D32">
-    <a href="/Proyecto-ProgWeb2/index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
+   <a href="/Proyecto-ProgWeb2/index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
 
-<a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
-    
-<?php if (isset($_SESSION['usuario'])): ?>
-    <a href="/Proyecto-ProgWeb2/index.php?controller=lugares&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
-    <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
-<?php endif; ?>
+    <a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
+
+    <?php if (isset($_SESSION['usuario'])): ?>
+        <a href="/Proyecto-ProgWeb2/index.php?controller=lugares&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
+        <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
+        <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
+    <?php endif; ?>
 
 </div>
 
