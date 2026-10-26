@@ -58,7 +58,7 @@ body {
 
     </style>
     <?php if (($vistaActual ?? "") === "registro"): ?>
-        <link rel="stylesheet" href="public/css/Registro.css">
+        <link rel="stylesheet" href="/Proyecto-ProgWeb2/public/css/Registro.css">
     <?php endif; ?>
     <?php if (($vistaActual ?? "") === "login"): ?>
     <link rel="stylesheet" href="public/css/Login.css">
@@ -67,8 +67,7 @@ body {
 <body>
 
 <div class="w3-bar" style="background-color:#2E7D32">
-   <a href="/Proyecto-ProgWeb2/index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
-
+    <a href="/Proyecto-ProgWeb2/index.php" class="w3-bar-item w3-button">🏠 Inicio</a>
     <a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
 
     <?php if (isset($_SESSION['usuario'])): ?>
@@ -76,7 +75,6 @@ body {
         <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
         <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
     <?php endif; ?>
-
 </div>
 
 <div class="w3-container header-evento w3-padding-32 w3-center">

@@ -15,7 +15,12 @@ use MyDatabase;
 use Router;
 use app\controller\RegistroController;
 use app\model\RegistroModel;
+use app\controller\PerfilController;
+use app\model\PerfilModel;
+use app\service\MapaService;
+use app\service\QrService;
 require_once("helper/Autoloader.php");
+
 
 
 
@@ -86,11 +91,6 @@ class Configuration
         );
     }
 
-    private function gerRender()
-    {
-        return new MustacheRender();
-    }
-
     private function getEventoModel()
     {
         return new EventoModel(
@@ -122,4 +122,39 @@ class Configuration
             $this->gerRender()
         );
     }
+
+    private function getPerfilModel()
+    {
+        return new PerfilModel(
+            $this->getDatabase()
+        );
+    }
+
+    public function getPerfilController()
+    {
+        return new PerfilController(
+            $this->getPerfilModel(),
+            $this->gerRender(),
+            $this->getMapaService(),
+            $this->getQrService()
+        );
+    }
+
+    private function gerRender()
+    {
+        return new MustacheRender();
+    }
+
+
+    private function getMapaService()
+    {
+        return new MapaService();
+    }
+
+    private function getQrService()
+    {
+        return new QrService();
+    }
+
+
 }

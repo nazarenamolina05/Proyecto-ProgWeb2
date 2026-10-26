@@ -1,0 +1,55 @@
+<div class="w3-content" style="max-width:900px">
+    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
+
+        {{#error}}
+            <div class="w3-panel w3-pale-red w3-border">
+                <p>{{error}}</p>
+            </div>
+        {{/error}}
+
+        {{^error}}
+            <h2>{{usuario}}</h2>
+            <p><b>Nombre:</b> {{nombre_completo}}</p>
+            <p><b>Año de nacimiento:</b> {{anio_nacimiento}}</p>
+            <p><b>Sexo:</b> {{sexo}}</p>
+            <p><b>Ubicación:</b> {{ciudad}}, {{pais}}</p>
+            {{#mapa_url}}
+                <iframe src="{{mapa_url}}"
+                        style="width:100%; height:300px; border:0;"
+                        loading="lazy"
+                        title="Mapa de ubicación del jugador"></iframe>
+            {{/mapa_url}}
+            {{^mapa_url}}
+                <p>Este jugador no cargó su ubicación.</p>
+            {{/mapa_url}}
+            <hr>
+            <h3>Código QR del perfil</h3>
+            <img src="{{qr_url}}" alt="Código QR para abrir el perfil de {{usuario}}" width="200" height="200">
+            <p class="w3-small">Escaneá el código para abrir este perfil: <a href="{{url_perfil}}">{{url_perfil}}</a></p>
+
+            <hr>
+
+            <p><b>Puntaje total:</b> {{puntaje_total}}</p>
+            <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
+            <h3>Partidas jugadas</h3>
+
+            <table class="w3-table w3-bordered">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Puntaje</th>
+                </tr>
+                {{#partidas}}
+                    <tr>
+                        <td>{{fecha_formateada}}</td>
+                        <td>{{puntaje}}</td>
+                    </tr>
+                {{/partidas}}
+            </table>
+
+            {{^partidas}}
+                <p>Este jugador todavía no jugó ninguna partida.</p>
+            {{/partidas}}
+        {{/error}}
+
+    </div>
+</div>
