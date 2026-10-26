@@ -14,3 +14,88 @@
 [04:38:32] [INFO] SELECT * FROM evento LIMIT 1
 [04:38:51] [INFO] SELECT * FROM evento LIMIT 1
 [04:38:58] [INFO] SELECT * FROM evento LIMIT 1
+[16:33:20] [INFO] SELECT * FROM evento LIMIT 1
+[16:33:37] [INFO] SELECT * FROM evento LIMIT 1
+[16:33:38] [INFO] SELECT * FROM evento LIMIT 1
+[16:33:44] [INFO] SELECT * FROM evento LIMIT 1
+[16:33:57] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[16:33:57] [INFO] SELECT * FROM evento LIMIT 1
+[16:34:25] [INFO] SELECT * FROM evento LIMIT 1
+[16:34:26] [INFO] SELECT * FROM evento LIMIT 1
+[16:34:27] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:15] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:18] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:22] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[16:38:22] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[16:38:26] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:30] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:41] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[16:38:41] [INFO] SELECT * FROM evento LIMIT 1
+[16:38:46] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[16:38:46] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[16:45:14] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[16:45:14] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[16:45:22] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[16:45:22] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[16:45:25] [INFO] SELECT * FROM evento LIMIT 1
+[16:45:31] [INFO] SELECT * FROM evento LIMIT 1
+[16:45:37] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[16:45:43] [INFO] SELECT * FROM evento LIMIT 1
+[16:45:51] [INFO] SELECT * FROM evento LIMIT 1
+[16:46:01] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[16:46:01] [INFO] SELECT * FROM evento LIMIT 1
+[16:46:07] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[16:46:07] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[16:46:15] [INFO] SELECT * FROM evento LIMIT 1
