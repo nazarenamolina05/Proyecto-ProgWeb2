@@ -35,9 +35,10 @@ body {
         }
 
         .card-contenido {
-            background-color: var(--blanco);
+            background-color: #171717;
+            color: #f5f5f5;
             border-radius: 8px;
-            border-top: 6px solid var(--verde-cancha);
+            border-top: 4px solid #d4af37;
         }
 
         .btn-cancha {
@@ -55,6 +56,10 @@ body {
     color: #f5f5f5;
     border-top: 1px solid #d4af37;
 }
+        .card-contenido .w3-striped tbody tr:nth-child(even),
+        .card-contenido .w3-table-all tr:nth-child(even) {
+            background-color: #222222;
+        }
 
     </style>
     <?php if (($vistaActual ?? "") === "registro"): ?>
