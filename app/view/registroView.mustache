@@ -1,16 +1,19 @@
-<main class="contenedor">
 
-    <h1>Crear cuenta</h1>
+<main class="contenedor grammys-register">
+
+    <p class="grammys-eyebrow">Únete a la comunidad</p>
+    <h1>Crear tu cuenta</h1>
 
     <p class="descripcion">
-        Completá tus datos para registrarte.
+        Regístrate para empezar a jugar y poner a prueba tus conocimientos musicales.
     </p>
 
     {{#error}}
-        <p class="mensaje error">{{error}}</p>
+        <p class="mensaje error" role="alert">{{error}}</p>
     {{/error}}
 
-<form action="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=registrar" method="POST">
+    <form action="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=registrar"
+          method="POST">
 
         <div class="campo">
             <label for="usuario">Nombre de usuario</label>
@@ -61,9 +64,9 @@
 
     </form>
 
- <p class="login">
-    ¿Ya tenés cuenta?
-    <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=show">Iniciar sesión</a>
-</p>
+    <p class="login">
+        ¿Ya tenés cuenta?
+        <a href="/Proyecto-ProgWeb2/#acceso">Iniciar sesión</a>
+    </p>
 
 </main>

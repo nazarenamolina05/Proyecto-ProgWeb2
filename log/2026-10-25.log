@@ -1,0 +1,389 @@
+[00:07:48] [INFO] SELECT * FROM evento LIMIT 1
+[00:40:00] [INFO] SELECT * FROM evento LIMIT 1
+[00:40:05] [INFO] SELECT * FROM evento LIMIT 1
+[02:07:44] [INFO] SELECT * FROM evento LIMIT 1
+[02:07:47] [INFO] SELECT * FROM evento LIMIT 1
+[02:07:57] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[02:07:58] [INFO] SELECT * FROM evento LIMIT 1
+[02:08:07] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[02:08:10] [INFO] SELECT reservas.*, lugares.sector, lugares.precio
+                  FROM reservas
+                  INNER JOIN lugares ON reservas.lugar_id = lugares.id
+                  ORDER BY reservas.fecha_reserva DESC
+[02:08:11] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[02:08:29] [INFO] SELECT * FROM evento LIMIT 1
+[02:17:54] [INFO] SELECT * FROM evento LIMIT 1
+[02:27:10] [INFO] SELECT * FROM evento LIMIT 1
+[03:33:40] [INFO] SELECT * FROM evento LIMIT 1
+[03:34:28] [INFO] SELECT * FROM evento LIMIT 1
+[03:34:32] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[03:34:33] [INFO] SELECT * FROM evento LIMIT 1
+[03:34:53] [INFO] SELECT * FROM evento LIMIT 1
+[03:34:57] [INFO] SELECT * FROM evento LIMIT 1
+[03:35:06] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[03:35:06] [INFO] SELECT * FROM evento LIMIT 1
+[03:38:41] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[03:38:44] [INFO] SELECT * FROM evento LIMIT 1
+[03:38:45] [INFO] SELECT * FROM evento LIMIT 1
+[03:38:47] [INFO] SELECT * FROM evento LIMIT 1
+[03:39:03] [INFO] SELECT * FROM evento LIMIT 1
+[03:39:41] [INFO] SELECT * FROM evento LIMIT 1
+[03:43:21] [INFO] SELECT * FROM evento LIMIT 1
+[03:43:34] [INFO] SELECT * FROM evento LIMIT 1
+[04:26:13] [INFO] SELECT * FROM evento LIMIT 1
+[04:27:02] [INFO] SELECT * FROM evento LIMIT 1
+[04:27:14] [INFO] SELECT * FROM evento LIMIT 1
+[05:01:58] [INFO] SELECT * FROM evento LIMIT 1
+[05:12:30] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[14:33:06] [INFO] SELECT * FROM evento LIMIT 1
+[14:33:16] [INFO] SELECT * FROM evento LIMIT 1
+[14:33:56] [INFO] SELECT * FROM evento LIMIT 1
+[14:34:05] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[14:34:05] [INFO] SELECT * FROM evento LIMIT 1
+[14:34:13] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:34:27] [INFO] SELECT * FROM evento LIMIT 1
+[14:34:45] [INFO] SELECT * FROM evento LIMIT 1
+[14:35:52] [INFO] SELECT * FROM evento LIMIT 1
+[14:36:04] [INFO] SELECT * FROM evento LIMIT 1
+[14:40:29] [INFO] SELECT * FROM evento LIMIT 1
+[14:40:34] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:40:36] [INFO] SELECT * FROM evento LIMIT 1
+[14:41:20] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:43:10] [INFO] SELECT * FROM evento LIMIT 1
+[14:43:13] [INFO] SELECT * FROM evento LIMIT 1
+[14:43:18] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:43:18] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:43:20] [INFO] SELECT * FROM evento LIMIT 1
+[14:43:21] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[14:43:23] [INFO] SELECT * FROM evento LIMIT 1
+[14:43:24] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[15:29:31] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[15:29:31] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[15:31:07] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[15:31:07] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[15:47:58] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[15:47:58] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[15:48:27] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[15:48:27] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[15:49:33] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[15:49:33] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[15:49:55] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[15:49:55] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[15:50:22] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 2
+                        GROUP BY u.id
+[15:50:22] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 2
+                     ORDER BY fecha DESC
+[15:50:56] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 2
+                        GROUP BY u.id
+[15:50:56] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 2
+                     ORDER BY fecha DESC
+[15:51:02] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[15:51:02] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[15:51:07] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 2
+                        GROUP BY u.id
+[15:51:07] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 2
+                     ORDER BY fecha DESC
+[15:51:10] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[15:51:10] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[16:01:38] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[16:01:38] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[16:03:08] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[16:03:08] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[16:05:13] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[16:05:13] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[16:05:16] [INFO] SELECT * FROM evento LIMIT 1
+[16:05:24] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[16:05:24] [INFO] SELECT * FROM evento LIMIT 1
+[16:05:33] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[16:05:38] [INFO] SELECT * FROM evento LIMIT 1
+[16:05:39] [INFO] SELECT * FROM evento LIMIT 1
+[16:41:44] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[16:41:44] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[17:58:25] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[17:58:37] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[17:58:37] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[17:58:48] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[17:58:48] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[19:11:18] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[19:11:28] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[19:11:32] [INFO] SELECT * FROM evento LIMIT 1
+[19:11:35] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[19:11:38] [INFO] SELECT * FROM evento LIMIT 1
+[19:11:40] [INFO] SELECT * FROM evento LIMIT 1
+[19:14:06] [INFO] SELECT * FROM evento LIMIT 1
+[19:14:47] [INFO] SELECT * FROM evento LIMIT 1
+[19:14:54] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[19:14:54] [INFO] SELECT * FROM evento LIMIT 1
+[19:14:58] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[19:15:00] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[19:15:08] [INFO] SELECT * FROM evento LIMIT 1
+[20:02:23] [INFO] SELECT * FROM evento LIMIT 1
+[20:02:33] [INFO] SELECT * FROM evento LIMIT 1
+[20:03:38] [INFO] SELECT * FROM evento LIMIT 1
+[20:05:05] [INFO] SELECT * FROM evento LIMIT 1
+[20:11:41] [INFO] SELECT * FROM evento LIMIT 1
+[20:11:49] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[20:11:49] [INFO] SELECT * FROM evento LIMIT 1
+[20:11:54] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[20:12:10] [INFO] SELECT id
+                FROM usuarios
+                WHERE usuario = 'naza'
+[20:12:16] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[20:12:19] [INFO] SELECT * FROM evento LIMIT 1
+[20:30:57] [INFO] SELECT * FROM evento LIMIT 1
+[20:31:58] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 3
+                        GROUP BY u.id
+[20:31:58] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 3
+                     ORDER BY fecha DESC
+[20:38:40] [INFO] SELECT * FROM evento LIMIT 1
+[20:38:47] [INFO] SELECT id, usuario FROM usuarios WHERE usuario = 'facu' AND password = '81dc9bdb52d04dc20036dbd8313ed055'
+[20:38:48] [INFO] SELECT * FROM evento LIMIT 1
+[20:38:55] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[20:38:57] [INFO] SELECT * 
+        FROM entradas_messi.lugares 
+        WHERE disponible = 1 ORDER BY precio DESC
+[20:39:01] [INFO] SELECT * FROM evento LIMIT 1
+[20:40:58] [INFO] SELECT * FROM evento LIMIT 1
+[20:41:00] [INFO] SELECT * FROM evento LIMIT 1
+[20:41:01] [INFO] SELECT u.id, u.usuario, u.nombre_completo, u.anio_nacimiento, u.sexo,
+                               u.pais, u.ciudad, u.latitud, u.longitud, u.foto,
+                               COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+                               COUNT(p.id) AS partidas_jugadas
+                        FROM usuarios u
+                        LEFT JOIN partidas p ON p.usuario_id = u.id
+                        WHERE u.id = 1
+                        GROUP BY u.id
+[20:41:01] [INFO] SELECT id, puntaje, fecha
+                     FROM partidas
+                     WHERE usuario_id = 1
+                     ORDER BY fecha DESC
+[20:41:10] [INFO] SELECT * FROM evento LIMIT 1
+[20:41:12] [INFO] SELECT * FROM evento LIMIT 1
+[23:55:21] [INFO] SELECT * FROM evento LIMIT 1
+[23:55:27] [INFO] SELECT * FROM evento LIMIT 1
+[23:55:33] [INFO] SELECT * FROM evento LIMIT 1
+[23:55:39] [INFO] SELECT * FROM evento LIMIT 1
+[23:55:43] [INFO] SELECT * FROM evento LIMIT 1
+[23:57:12] [INFO] SELECT * FROM evento LIMIT 1
+[23:58:04] [INFO] SELECT * FROM evento LIMIT 1

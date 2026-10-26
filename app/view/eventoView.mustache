@@ -1,43 +1,79 @@
-<div class="w3-content" style="max-width:900px">
-    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
+<main class="grammys-home">
+    <section class="grammys-hero" aria-labelledby="hero-title">
+        <div class="grammys-hero-copy">
+            <p class="grammys-eyebrow">La música. Sus leyendas. Tu desafío.</p>
+            <h1 id="hero-title">¿Cuánto sabes <span>de música?</span></h1>
+            <p class="grammys-intro">
+                Responde sobre los artistas, canciones y momentos que hicieron historia.
+                Suma puntos y demuestra cuánto sabes de música.
+            </p>
+            <a class="grammys-button grammys-start" href="#categorias">
+                <span aria-hidden="true">♫</span> Empezar trivia
+                <span aria-hidden="true">→</span>
+            </a>
+        </div>
 
-        <h2>{{nombre}}</h2>
-        <p>{{descripcion}}</p>
-        <p><b>📅 Fecha:</b> {{fecha_evento_formateada}} hs</p>
-        <p><b>🏟️ Estadio:</b> {{estadio}}</p>
+        <div class="grammys-award">
+            <img
+                class="grammys-award-image"
+                src="/Proyecto-ProgWeb2/public/images/grammy-award.png"
+                alt="Estatuilla dorada de un premio Grammy"
+            >
+        </div>
+    </section>
 
-        <hr>
+    <section class="grammys-categories" id="categorias" aria-labelledby="categories-title">
+        <div class="grammys-section-heading">
+            <p class="grammys-eyebrow">Elige tu próximo reto</p>
+            <h2 id="categories-title">La música te espera</h2>
+        </div>
 
+        <div class="grammys-card-grid">
+            <article class="grammys-card">
+                <span class="grammys-card-icon" aria-hidden="true">♪</span>
+                <h3>Trivia diaria</h3>
+                <p>Un nuevo desafío musical para poner a prueba tus conocimientos.</p>
+            </article>
+            <article class="grammys-card">
+                <span class="grammys-card-icon" aria-hidden="true">♫</span>
+                <h3>Categorías</h3>
+                <p>Pop, rock, rap, artistas y momentos inolvidables de los Grammy.</p>
+            </article>
+            <article class="grammys-card" id="clasificacion">
+                <span class="grammys-card-icon" aria-hidden="true">★</span>
+                <h3>Premios</h3>
+                <p>Acumula puntos y celebra cada acierto en tu recorrido musical.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="grammys-access" id="acceso" aria-labelledby="access-title">
         {{#logueado}}
-            <p class="w3-large">Hola, <b>{{usuario}}</b> 👋</p>
-            <a href="/Proyecto-ProgWeb2/lugares" class="w3-button btn-cancha w3-round w3-padding-16 w3-large">Ver lugares disponibles</a>
-            <a href="/Proyecto-ProgWeb2/login/logout" class="w3-button w3-red w3-round w3-margin-left">Cerrar sesión</a>
+            <div class="grammys-access-copy">
+                <p class="grammys-eyebrow">Qué bueno verte de nuevo</p>
+                <h2 id="access-title">Hola, {{usuario}}</h2>
+                <p>¿Listo para poner a prueba tu oído musical?</p>
+                <a class="grammys-button" href="#categorias">Explorar la trivia</a>
+                <a class="grammys-text-link" href="/Proyecto-ProgWeb2/login/logout">Cerrar sesión</a>
+            </div>
         {{/logueado}}
         {{^logueado}}
-            <h3>Ingresá para reservar tu entrada</h3>
+            <div class="grammys-access-copy">
+                <p class="grammys-eyebrow">Entra en escena</p>
+                <h2 id="access-title">Inicia sesión para jugar</h2>
+                <p>¿Todavía no tienes cuenta? <a href="/Proyecto-ProgWeb2/registro/show">Regístrate aquí</a>.</p>
+            </div>
 
-            {{#error}}
-                <div class="w3-panel w3-pale-red w3-border">
-                    <p>{{error}}</p>
-                </div>
-            {{/error}}
-
-
-           <form method="post" action="/Proyecto-ProgWeb2/login/login">
-
-                <div class="w3-row-padding">
-                    <div class="w3-half">
-                        <label><b>Usuario</b></label>
-                        <input class="w3-input w3-border" type="text" name="usuario" required>
-                    </div>
-                    <div class="w3-half">
-                        <label><b>Contraseña</b></label>
-                        <input class="w3-input w3-border" type="password" name="password" required>
-                    </div>
-                </div>
-                <button type="submit" class="w3-button btn-cancha w3-round w3-margin-top w3-padding-16">Ingresar</button>
+            <form class="grammys-login" method="post" action="/Proyecto-ProgWeb2/login/login">
+                {{#error}}
+                    <div class="grammys-error" role="alert">{{error}}</div>
+                {{/error}}
+                <label for="grammys-usuario">Usuario</label>
+                <input id="grammys-usuario" type="text" name="usuario" autocomplete="username" required>
+                <label for="grammys-password">Contraseña</label>
+                <input id="grammys-password" type="password" name="password" autocomplete="current-password" required>
+                <button class="grammys-button" type="submit">Iniciar sesión</button>
             </form>
         {{/logueado}}
-
-    </div>
-</div>
+    </section>
+</main>

@@ -35,13 +35,17 @@ class PerfilController
 
     private function armarDatosError()
     {
-        return ["error" => "No encontramos a ese jugador."];
+        return [
+            "error" => "No encontramos a ese jugador.",
+            "vistaActual" => "perfil"
+        ];
     }
 
     private function armarDatosPerfil($usuario)
     {
         $data = $usuario;
         $data["error"] = "";
+        $data["vistaActual"] = "perfil";
         $data["partidas"] = $this->getPartidasFormateadas($usuario["id"]);
         $data["mapa_url"] = $this->mapa->getUrl($usuario["latitud"], $usuario["longitud"]);
         $data["url_perfil"] = $this->armarUrlPerfil($usuario["id"]);
