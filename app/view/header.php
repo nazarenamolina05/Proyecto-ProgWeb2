@@ -17,29 +17,31 @@
             --dorado: #F4C542;
         }
 
-        body {
-            background: linear-gradient(180deg,
-            var(--celeste) 0%, var(--celeste) 15%,
-            var(--blanco) 15%, var(--blanco) 30%,
-            var(--celeste) 30%, var(--celeste) 100%);
-            background-attachment: fixed;
-            font-family: 'Segoe UI', Arial, sans-serif;
+        
+body {
+    background: #101010;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #f5f5f5;
+}
 
-        }
 
-        .header-evento {
-            background-color: var(--celeste-oscuro);
-            border-bottom: 6px solid var(--dorado);
-        }
+      
+.header-evento {
+    background-color: #171717;
+    border-bottom: 4px solid #d4af37;
+}
+
 
         .header-evento h1 {
             color: var(--blanco);
         }
 
         .card-contenido {
-            background-color: var(--blanco);
+            background-color: #171717;
+            color: #f5f5f5;
             border-radius: 8px;
-            border-top: 6px solid var(--verde-cancha);
+            border-top: 4px solid #d4af37;
         }
 
         .btn-cancha {
@@ -51,15 +53,25 @@
             background-color: #1B5E20 !important;
         }
 
-        .footer-evento {
-            background-color: var(--celeste-oscuro);
-            color: var(--blanco);
+  
+.footer-evento {
+    background-color: #171717;
+    color: #f5f5f5;
+    border-top: 1px solid #d4af37;
+}
+        .card-contenido .w3-striped tbody tr:nth-child(even),
+        .card-contenido .w3-table-all tr:nth-child(even) {
+            background-color: #222222;
         }
+
     </style>
     <?php endif; ?>
     <?php if (($vistaActual ?? "") === "registro"): ?>
         <link rel="stylesheet" href="/Proyecto-ProgWeb2/public/css/Registro.css">
     <?php endif; ?>
+    <?php if (($vistaActual ?? "") === "login"): ?>
+    <link rel="stylesheet" href="public/css/Login.css">
+<?php endif; ?>
 </head>
 <body<?= in_array(($vistaActual ?? ""), ["evento", "registro"], true) ? ' class="pagina-grammys"' : "" ?>>
 
@@ -90,9 +102,9 @@
     <a href="/Proyecto-ProgWeb2/evento/show" class="w3-bar-item w3-button">🏠 Inicio</a>
     <a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
     <?php if (isset($_SESSION['usuario'])): ?>
-        <a href="/Proyecto-ProgWeb2/lugares" class="w3-bar-item w3-button">Empezar a jugar</a>
+        <a href="/Proyecto-ProgWeb2/index.php?controller=lugares&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
         <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
-        <a href="/Proyecto-ProgWeb2/login/logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
+        <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
     <?php endif; ?>
 </div>
 

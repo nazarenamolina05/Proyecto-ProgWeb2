@@ -112,3 +112,8 @@
         margin-top: 32px;
     }
 }
+
+.login a:hover {
+    color: #ffe28a;
+    text-decoration: underline;
+}
