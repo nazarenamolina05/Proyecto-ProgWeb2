@@ -1,100 +1,114 @@
-{
+.pagina-grammys .grammys-register {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    width: min(560px, calc(100% - 40px));
+    margin: 56px auto 64px;
+    padding: clamp(24px, 5vw, 44px);
+    border: 1px solid rgba(230, 193, 120, .38);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(34, 26, 19, .96), rgba(14, 11, 9, .97));
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .38), 0 0 45px rgba(207, 157, 72, .08);
 }
 
-
-.contenedor {
-    box-sizing: border-box;
-    background: white;
-    width: calc(100% - 40px);
-    max-width: 420px;
-    margin: 30px auto;
-    padding: 35px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-h1 {
-    text-align: center;
+.grammys-register > .grammys-eyebrow {
     margin-bottom: 10px;
-    color: #222;
-}
-
-.descripcion {
     text-align: center;
-    color: #666;
-    margin-bottom: 25px;
-    font-size: 14px;
 }
 
-.campo {
+.grammys-register h1 {
+    margin: 0 0 12px;
+    color: var(--grammy-pale-gold);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(32px, 6vw, 44px);
+    text-align: center;
+}
+
+.grammys-register .descripcion {
+    max-width: 390px;
+    margin: 0 auto 28px;
+    color: var(--grammy-muted);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.grammys-register .campo {
     margin-bottom: 18px;
 }
 
-label {
+.grammys-register label {
     display: block;
-    margin-bottom: 7px;
-    font-weight: bold;
-    color: #333;
+    margin-bottom: 8px;
+    color: var(--grammy-pale-gold);
     font-size: 14px;
+    font-weight: 600;
 }
 
-input {
+.grammys-register input {
+    box-sizing: border-box;
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 15px;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid rgba(230, 193, 120, .36);
+    border-radius: 7px;
+    background: rgba(9, 8, 7, .8);
+    color: #fffaf0;
+    font: inherit;
 }
 
-input:focus {
-    outline: none;
-    border-color: #5267df;
+.grammys-register input:focus {
+    border-color: var(--grammy-gold);
+    outline: 2px solid rgba(230, 193, 120, .2);
+    outline-offset: 1px;
 }
-button {
+
+.grammys-register button {
     width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 6px;
-    background: #5267df;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
+    min-height: 50px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: 28px;
+    background: linear-gradient(115deg, #f3d994, #c19249);
+    color: #1a130b;
     cursor: pointer;
+    font: inherit;
+    font-weight: 750;
+    transition: filter .2s ease, transform .2s ease;
 }
 
-button:hover {
-    background: #4053c5;
+.grammys-register button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
 }
 
-.mensaje {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 6px;
+.grammys-register .mensaje.error {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid #a64f46;
+    border-radius: 7px;
+    background: rgba(123, 40, 34, .28);
+    color: #ffdbd4;
+    line-height: 1.5;
+}
+
+.grammys-register .login {
+    margin: 22px 0 0;
+    color: var(--grammy-muted);
     font-size: 14px;
-}
-
-.error {
-    background: #ffe5e5;
-    color: #b42318;
-}
-
-.exito {
-    background: #e2f7e8;
-    color: #176b35;
-}
-
-.login {
     text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #666;
 }
 
-.login a {
-    color: #5267df;
+.grammys-register .login a {
+    color: var(--grammy-gold);
+    font-weight: 700;
     text-decoration: none;
-    font-weight: bold;
+}
+
+.grammys-register .login a:hover {
+    color: var(--grammy-pale-gold);
+    text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+    .pagina-grammys .grammys-register {
+        margin-top: 32px;
+    }
 }
