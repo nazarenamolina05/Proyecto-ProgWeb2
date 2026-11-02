@@ -31,17 +31,29 @@ class RegistroModel
         return $this->database->queryOnePrepared($sql, [$email]) !== null;
     }
 
-    public function registrar($usuario, $password, $email)
+    public function registrar($usuario, $password, $email, $nombreCompleto, $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud)
     {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO usuarios
-                (usuario, password, email, verificado)
-                VALUES (?, ?, ?, 0)";
+        (usuario, password, email, verificado,
+         nombre_completo, anio_nacimiento, sexo, pais, ciudad, latitud, longitud)
+        VALUES (?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
 
         return $this->database->executePrepared(
             $sql,
-            [$usuario, $passwordHash, $email]
+            [
+                $usuario,
+                $passwordHash,
+                $email,
+                $nombreCompleto,
+                (int) $anioNacimiento,
+                $sexo,
+                $pais,
+                $ciudad,
+                (float) $latitud,
+                (float) $longitud
+            ]
         );
     }
 
