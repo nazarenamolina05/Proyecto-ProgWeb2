@@ -1,0 +1,35 @@
+
+<main class="contenedor grammys-register">
+    <p class="grammys-eyebrow">PREGUNTADOS MUSICAL</p>
+
+    <h1>Verificá tu cuenta</h1>
+
+    <p class="descripcion">
+        {{mensaje}}
+    </p>
+
+    {{#error}}
+        <p class="mensaje error" role="alert">{{error}}</p>
+    {{/error}}
+
+    <form action="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=verificar"
+          method="POST">
+
+        <input type="hidden" name="email" value="{{email}}">
+
+        <div class="campo">
+            <label for="codigo">Código de seis dígitos</label>
+            <input
+                type="text"
+                id="codigo"
+                name="codigo"
+                inputmode="numeric"
+                pattern="[0-9]{6}"
+                maxlength="6"
+                required
+            >
+        </div>
+
+        <button type="submit">Verificar cuenta</button>
+    </form>
+</main>
