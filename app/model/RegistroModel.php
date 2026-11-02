@@ -35,10 +35,13 @@ class RegistroModel
     {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
+        $latitud  = ($latitud  === '' || $latitud  === null) ? null : (float) $latitud;
+        $longitud = ($longitud === '' || $longitud === null) ? null : (float) $longitud;
+
         $sql = "INSERT INTO usuarios
-        (usuario, password, email, verificado,
-         nombre_completo, anio_nacimiento, sexo, pais, ciudad, latitud, longitud)
-        VALUES (?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
+    (usuario, password, email, verificado,
+     nombre_completo, anio_nacimiento, sexo, pais, ciudad, latitud, longitud)
+    VALUES (?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
 
         return $this->database->executePrepared(
             $sql,
@@ -51,8 +54,8 @@ class RegistroModel
                 $sexo,
                 $pais,
                 $ciudad,
-                (float) $latitud,
-                (float) $longitud
+                $latitud,
+                $longitud
             ]
         );
     }

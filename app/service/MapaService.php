@@ -8,7 +8,9 @@ class MapaService
 
     public function getUrl($latitud, $longitud)
     {
-        if ($latitud === null || $longitud === null) {
+        if ($latitud === null || $longitud === null
+            || $latitud === '' || $longitud === ''
+            || ((float) $latitud === 0.0 && (float) $longitud === 0.0)) {
             return "";
         }
 
