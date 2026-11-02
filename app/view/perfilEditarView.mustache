@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="w3-content" style="max-width:900px">
+    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
+        <h2>Editar mi perfil</h2>
+
+        {{#errores}}
+            <div class="w3-panel w3-pale-red w3-border"><p>{{.}}</p></div>
+        {{/errores}}
+
+        <form method="post" action="index.php?controller=perfil&amp;method=actualizar">
+            <label>Nombre completo</label>
+            <input class="w3-input" name="nombre_completo" value="{{nombre_completo}}" required>
+
+            <label>Año de nacimiento</label>
+            <input class="w3-input" type="number" name="anio_nacimiento"
+                   value="{{anio_nacimiento}}" min="1900" max="{{anio_actual}}" required>
+
+            <label>Sexo</label>
+            <select class="w3-select" name="sexo">
+                <option value="Masculino" {{#sexo_masculino}}selected{{/sexo_masculino}}>Masculino</option>
+                <option value="Femenino" {{#sexo_femenino}}selected{{/sexo_femenino}}>Femenino</option>
+                <option value="Prefiero no decirlo" {{#sexo_nodice}}selected{{/sexo_nodice}}>Prefiero no decirlo</option>
+            </select>
+
+            <label>País</label>
+            <input class="w3-input" name="pais" value="{{pais}}">
+
+            <label>Ciudad</label>
+            <input class="w3-input" name="ciudad" value="{{ciudad}}">
+
+            <input type="hidden" name="latitud" id="latitud" value="{{latitud}}">
+            <input type="hidden" name="longitud" id="longitud" value="{{longitud}}">
+
+            <p>Tocá el mapa para cambiar tu ubicación:</p>
+            <div id="mapa" style="height:300px"></div>
+
+            <br>
+            <button type="submit" class="w3-button w3-blue">Guardar cambios</button>
+            <a href="index.php?controller=perfil&amp;method=show" class="w3-button">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    var latG = "{{latitud}}", lngG = "{{longitud}}";
+    var tiene = latG !== "" && lngG !== "";
+    var centro = tiene ? [parseFloat(latG), parseFloat(lngG)] : [-34.6037, -58.3816];
+    var map = L.map('mapa').setView(centro, tiene ? 11 : 5);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    var marker = tiene ? L.marker(centro).addTo(map) : null;
+    map.on('click', function (e) {
+        if (marker) { marker.setLatLng(e.latlng); } else { marker = L.marker(e.latlng).addTo(map); }
+        document.getElementById('latitud').value = e.latlng.lat;
+        document.getElementById('longitud').value = e.latlng.lng;
+    });
+</script>

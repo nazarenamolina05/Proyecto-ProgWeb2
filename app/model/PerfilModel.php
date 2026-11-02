@@ -39,4 +39,20 @@ class PerfilModel
         return $this->database->queryAll($sql_partidas);
     }
 
+    public function actualizar($id, $nombreCompleto, $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud)
+    {
+        $latitud  = ($latitud  === '' || $latitud  === null) ? null : (float) $latitud;
+        $longitud = ($longitud === '' || $longitud === null) ? null : (float) $longitud;
+
+        $sql = "UPDATE usuarios
+        SET nombre_completo = ?, anio_nacimiento = ?, sexo = ?,
+            pais = ?, ciudad = ?, latitud = ?, longitud = ?
+        WHERE id = ?";
+
+        return $this->database->executePrepared($sql, [
+            $nombreCompleto, (int) $anioNacimiento, $sexo,
+            $pais, $ciudad, $latitud, $longitud, (int) $id
+        ]);
+    }
+
 }

@@ -42,6 +42,46 @@
         required
     >
 </div>
+        <div class="campo">
+            <label for="nombre_completo">Nombre y apellido</label>
+            <input type="text" id="nombre_completo" name="nombre_completo"
+                   value="{{nombre_completo}}" maxlength="100"
+                   autocomplete="name" required>
+        </div>
+
+        <div class="campo">
+            <label for="anio_nacimiento">Año de nacimiento</label>
+            <input type="number" id="anio_nacimiento" name="anio_nacimiento"
+                   value="{{anio_nacimiento}}" min="1900" max="2026" required>
+        </div>
+
+        <div class="campo">
+            <label for="pais">País</label>
+            <input type="text" id="pais" name="pais"
+                   value="{{pais}}" maxlength="50" required>
+        </div>
+
+        <div class="campo">
+            <label for="ciudad">Ciudad</label>
+            <input type="text" id="ciudad" name="ciudad"
+                   value="{{ciudad}}" maxlength="50" required>
+        </div>
+
+        <div class="campo">
+            <label for="sexo">Sexo</label>
+            <select id="sexo" name="sexo" required>
+                <option value="Masculino" {{#sexo_masculino}}selected{{/sexo_masculino}}>Masculino</option>
+                <option value="Femenino" {{#sexo_femenino}}selected{{/sexo_femenino}}>Femenino</option>
+                <option value="Prefiero no cargarlo" {{#sexo_nodice}}selected{{/sexo_nodice}}>Prefiero no cargarlo</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label>Tu ubicación (hacé clic en el mapa)</label>
+            <div id="mapa-seleccion" style="height:300px"></div>
+            <input type="hidden" id="latitud" name="latitud" value="{{latitud}}">
+            <input type="hidden" id="longitud" name="longitud" value="{{longitud}}">
+        </div>
 
         <div class="campo">
             <label for="password">Contraseña</label>
@@ -79,5 +119,33 @@
         ¿Ya tenés cuenta?
         <a href="/Proyecto-ProgWeb2/#acceso">Iniciar sesión</a>
     </p>
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const inLat = document.getElementById('latitud');
+        const inLon = document.getElementById('longitud');
+        const tieneUbicacion = inLat.value !== "" && inLon.value !== "";
+        const centro = tieneUbicacion
+                ? [parseFloat(inLat.value), parseFloat(inLon.value)]
+                : [-34.6037, -58.3816];
+
+        const mapa = L.map('mapa-seleccion').setView(centro, tieneUbicacion ? 12 : 4);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(mapa);
+
+        let marcador = tieneUbicacion ? L.marker(centro).addTo(mapa) : null;
+
+        mapa.on('click', function (e) {
+            if (marcador) { marcador.setLatLng(e.latlng); }
+            else { marcador = L.marker(e.latlng).addTo(mapa); }
+            inLat.value = e.latlng.lat.toFixed(6);
+            inLon.value = e.latlng.lng.toFixed(6);
+        });
+    </script>
+
 
 </main>

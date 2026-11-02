@@ -9,6 +9,9 @@
 
         {{^error}}
             <h2>{{usuario}}</h2>
+            {{#es_propio}}
+                <a href="{{url_editar}}" class="w3-button w3-blue w3-small">Editar mi perfil</a>
+            {{/es_propio}}
             <p><b>Nombre:</b> {{nombre_completo}}</p>
             <p><b>Año de nacimiento:</b> {{anio_nacimiento}}</p>
             <p><b>Sexo:</b> {{sexo}}</p>
@@ -33,22 +36,23 @@
             <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
             <h3>Partidas jugadas</h3>
 
-            <table class="w3-table w3-bordered">
-                <tr>
-                    <th>Fecha</th>
-                    <th>Puntaje</th>
-                </tr>
-                {{#partidas}}
+            {{#tiene_partidas}}
+                <table class="w3-table w3-bordered">
                     <tr>
-                        <td>{{fecha_formateada}}</td>
-                        <td>{{puntaje}}</td>
+                        <th>Fecha</th>
+                        <th>Puntaje</th>
                     </tr>
-                {{/partidas}}
-            </table>
-
-            {{^partidas}}
+                    {{#partidas}}
+                        <tr>
+                            <td>{{fecha_formateada}}</td>
+                            <td>{{puntaje}}</td>
+                        </tr>
+                    {{/partidas}}
+                </table>
+            {{/tiene_partidas}}
+            {{^tiene_partidas}}
                 <p>Este jugador todavía no jugó ninguna partida.</p>
-            {{/partidas}}
+            {{/tiene_partidas}}
         {{/error}}
 
     </div>
