@@ -19,7 +19,9 @@ use app\controller\PerfilController;
 use app\model\PerfilModel;
 use app\service\MapaService;
 use app\service\QrService;
+use app\service\MailService;
 require_once("helper/Autoloader.php");
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 
@@ -116,12 +118,13 @@ class Configuration
         return new Router($this, "evento", "show");
     }
     public function getRegistroController(): RegistroController
-    {
-        return new RegistroController(
-            $this->getRegistroModel(),
-            $this->gerRender()
-        );
-    }
+{
+    return new RegistroController(
+        $this->getRegistroModel(),
+        $this->gerRender(),
+        $this->getMailService()
+    );
+}
 
     private function getPerfilModel()
     {
@@ -155,6 +158,9 @@ class Configuration
     {
         return new QrService();
     }
-
+private function getMailService()
+{
+    return new MailService();
+}
 
 }

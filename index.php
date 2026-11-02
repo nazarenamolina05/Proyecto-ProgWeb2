@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Argentina/Buenos_Aires');
 error_reporting(E_ALL & ~E_DEPRECATED);
 use app\Configuration;
 
