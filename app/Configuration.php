@@ -20,8 +20,10 @@ use app\model\PerfilModel;
 use app\service\MapaService;
 use app\service\QrService;
 use app\service\MailService;
+use app\controller\PartidaController;
+use app\model\PartidaModel;
 require_once("helper/Autoloader.php");
-require_once __DIR__ . '/../vendor/autoload.php';
+//require_once __DIR__ . '/../vendor/autoload.php';
 
 
 
@@ -162,5 +164,18 @@ private function getMailService()
 {
     return new MailService();
 }
+    private function getPartidaModel()
+    {
+        return new PartidaModel(
+            $this->getDatabase()
+        );
+    }
 
+    public function getPartidaController()
+    {
+        return new PartidaController(
+            $this->getPartidaModel(),
+            $this->gerRender()
+        );
+    }
 }
