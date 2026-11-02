@@ -1,0 +1,93 @@
+<main class="partida-contenedor">
+    <section class="partida-tarjeta" aria-labelledby="partida-titulo">
+        <p class="grammys-eyebrow">The Grammys Trivia</p>
+
+        <h1 id="partida-titulo">Tu desafío musical</h1>
+
+        {{#error}}
+            <p class="grammys-error" role="alert">
+                {{error}}
+            </p>
+        {{/error}}
+
+        {{#sin_preguntas}}
+            <p>
+                Todavía no hay preguntas disponibles.
+                Volvé a intentarlo más tarde.
+            </p>
+        {{/sin_preguntas}}
+
+        {{#en_curso}}
+            <p>Elegí una opción y confirmá tu respuesta.</p>
+
+            <form
+                    method="post"
+                    action="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=responder"
+            >
+                <input type="hidden" name="token" value="{{token}}">
+
+                <fieldset class="partida-opciones">
+                    <legend>{{pregunta}}</legend>
+
+                    {{#opciones}}
+                        <label class="partida-opcion">
+                            <input
+                                    type="radio"
+                                    name="respuesta"
+                                    value="{{id}}"
+                                    required
+                            >
+
+                            <span>{{texto}}</span>
+                        </label>
+                    {{/opciones}}
+                </fieldset>
+
+                <button class="grammys-button" type="submit">
+                    Confirmar respuesta
+                </button>
+            </form>
+        {{/en_curso}}
+
+        {{#finalizada}}
+            <h2>
+                {{#correcta}}
+                    ¡Respuesta correcta!
+                {{/correcta}}
+
+                {{^correcta}}
+                    Esta vez no acertaste
+                {{/correcta}}
+            </h2>
+
+            <p>{{pregunta}}</p>
+
+            <p>
+                Elegiste:
+                <strong>{{respuesta_elegida}}</strong>.
+            </p>
+
+            {{^correcta}}
+                <p>
+                    La respuesta correcta es:
+                    <strong>{{respuesta_correcta}}</strong>.
+                </p>
+            {{/correcta}}
+
+            <form
+                    method="post"
+                    action="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=comenzar"
+            >
+                <input type="hidden" name="token" value="{{token}}">
+
+                <button class="grammys-button" type="submit">
+                    Jugar otra vez
+                </button>
+            </form>
+        {{/finalizada}}
+
+        <a class="partida-volver" href="/Proyecto-ProgWeb2/">
+            Volver al inicio
+        </a>
+    </section>
+</main>

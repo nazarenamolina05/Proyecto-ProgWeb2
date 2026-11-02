@@ -1,4 +1,4 @@
-<?php $usaGrammys = in_array(($vistaActual ?? ""), ["evento", "registro", "perfil"], true); ?>
+<?php $usaGrammys = in_array(($vistaActual ?? ""), ["evento", "registro", "perfil", "comenzarPartida"], true); ?>
     <!DOCTYPE html>
     <html lang="es">
     <head>
@@ -8,10 +8,10 @@
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
         <?php if ($usaGrammys): ?>
-            <link rel="stylesheet" href="/Proyecto-ProgWeb2/public/css/Grammys.css">
+            <link rel="stylesheet" href="/public/css/Grammys.css">
         <?php endif; ?>
 
-        <?php if (!in_array(($vistaActual ?? ""), ["evento", "registro"], true)): ?>
+        <?php if (!in_array(($vistaActual ?? ""), ["evento", "registro","comenzarPartida"], true)): ?>
             <style>
                 :root {
                     --celeste: #75AADB;
@@ -67,10 +67,16 @@
         <?php endif; ?>
 
         <?php if (($vistaActual ?? "") === "registro"): ?>
-            <link rel="stylesheet" href="/Proyecto-ProgWeb2/public/css/Registro.css">
+            <link rel="stylesheet" href="/public/css/Registro.css">
         <?php endif; ?>
         <?php if (($vistaActual ?? "") === "login"): ?>
             <link rel="stylesheet" href="public/css/Login.css">
+        <?php endif; ?>
+        <?php if (($vistaActual ?? "") === "comenzarPartida"): ?>
+            <link
+                    rel="stylesheet"
+                    href="/public/css/Partida.css"
+            >
         <?php endif; ?>
     </head>
 <body<?= $usaGrammys ? ' class="pagina-grammys"' : "" ?>>
@@ -90,7 +96,7 @@
                 <a class="grammys-nav-cta" href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout">Salir</a>
             <?php else: ?>
                 <a href="<?= ($vistaActual ?? '') === 'evento' ? '' : '/Proyecto-ProgWeb2/' ?>#acceso">Iniciar sesión</a>
-                <a class="grammys-nav-cta" href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show">Registrarse</a>
+                <a class="grammys-nav-cta" href="/index.php?controller=registro&amp;method=show">Registrarse</a>
             <?php endif; ?>
         </div>
     </nav>
