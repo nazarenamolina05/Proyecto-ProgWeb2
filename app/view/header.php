@@ -83,31 +83,31 @@
 
 <?php if ($usaGrammys): ?>
     <nav class="grammys-nav" aria-label="Navegación principal">
-        <a class="grammys-brand" href="/Proyecto-ProgWeb2/" aria-label="The Grammys Trivia, inicio">
+        <a class="grammys-brand" href="/" aria-label="The Grammys Trivia, inicio">
             <span>THE<br>GRAMMYS</span><b>TRIVIA</b>
         </a>
         <div class="grammys-nav-links">
-            <a href="/Proyecto-ProgWeb2/">Inicio</a>
-            <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/Proyecto-ProgWeb2/' ?>#categorias">Categorías</a>
+            <a href="/">Inicio</a>
+            <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/' ?>#categorias">Categorías</a>
 
             <?php if (isset($_SESSION['usuario'])): ?>
-                <a href="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=show">Empezar a jugar</a>
-                <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>">Perfil</a>
-                <a class="grammys-nav-cta" href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout">Salir</a>
+                <a href="/index.php?controller=partida&amp;method=show">Empezar a jugar</a>
+                <a href="/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>">Perfil</a>
+                <a class="grammys-nav-cta" href="/index.php?controller=login&amp;method=logout">Salir</a>
             <?php else: ?>
-                <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/Proyecto-ProgWeb2/' ?>#acceso">Iniciar sesión</a>
+                <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/' ?>#acceso">Iniciar sesión</a>
                 <a class="grammys-nav-cta" href="/index.php?controller=registro&amp;method=show">Registrarse</a>
             <?php endif; ?>
         </div>
     </nav>
 <?php else: ?>
     <div class="w3-bar" style="background-color:#2E7D32">
-        <a href="/Proyecto-ProgWeb2/" class="w3-bar-item w3-button">🏠 Inicio</a>
-        <a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
+        <a href="/" class="w3-bar-item w3-button">🏠 Inicio</a>
+        <a href="/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
         <?php if (isset($_SESSION['usuario'])): ?>
-            <a href="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
-            <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
-            <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
+            <a href="/index.php?controller=partida&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
+            <a href="/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
+            <a href="/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
         <?php endif; ?>
     </div>
 
