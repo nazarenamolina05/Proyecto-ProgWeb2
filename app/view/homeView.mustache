@@ -7,7 +7,7 @@
                 Responde sobre los artistas, canciones y momentos que hicieron historia.
                 Suma puntos y demuestra cuánto sabes de música.
             </p>
-            <a class="grammys-button grammys-start" href="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=show">
+            <a class="grammys-button grammys-start" href="/index.php?controller=partida&amp;method=show">
                 <span aria-hidden="true">♫</span> Empezar trivia
                 <span aria-hidden="true">→</span>
             </a>
@@ -16,7 +16,7 @@
         <div class="grammys-award">
             <img
                 class="grammys-award-image"
-                src="/Proyecto-ProgWeb2/public/images/grammy-award.png"
+                src="/public/images/grammy-award.png"
                 alt="Estatuilla dorada de un premio Grammy"
             >
         </div>
@@ -54,17 +54,17 @@
                 <h2 id="access-title">Hola, {{usuario}}</h2>
                 <p>¿Listo para poner a prueba tu oído musical?</p>
                 <a class="grammys-button" href="#categorias">Explorar la trivia</a>
-                <a class="grammys-text-link" href="/Proyecto-ProgWeb2/login/logout">Cerrar sesión</a>
+                <a class="grammys-text-link" href="/login/logout">Cerrar sesión</a>
             </div>
         {{/logueado}}
         {{^logueado}}
             <div class="grammys-access-copy">
                 <p class="grammys-eyebrow">Entra en escena</p>
                 <h2 id="access-title">Inicia sesión para jugar</h2>
-                <p>¿Todavía no tienes cuenta? <a href="/Proyecto-ProgWeb2/registro/show">Regístrate aquí</a>.</p>
+                <p>¿Todavía no tienes cuenta? <a href="/registro/show">Regístrate aquí</a>.</p>
             </div>
 
-            <form class="grammys-login" method="post" action="/Proyecto-ProgWeb2/login/login">
+            <form class="grammys-login" method="post" action="/login/login">
                 {{#error}}
                     <div class="grammys-error" role="alert">{{error}}</div>
                 {{/error}}
