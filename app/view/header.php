@@ -1,4 +1,4 @@
-<?php $usaGrammys = in_array(($vistaActual ?? ""), ["evento", "registro", "perfil", "comenzarPartida"], true); ?>
+<?php $usaGrammys = in_array(($vistaActual ?? ""), ["home", "registro", "perfil", "comenzarPartida"], true); ?>
     <!DOCTYPE html>
     <html lang="es">
     <head>
@@ -8,10 +8,10 @@
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
         <?php if ($usaGrammys): ?>
-            <link rel="stylesheet" href="/public/css/Grammys.css">
+            <link rel="stylesheet" href="<?= $base ?>/public/css/Grammys.css">
         <?php endif; ?>
 
-        <?php if (!in_array(($vistaActual ?? ""), ["evento", "registro","comenzarPartida"], true)): ?>
+        <?php if (!in_array(($vistaActual ?? ""), ["home", "registro","comenzarPartida"], true)): ?>
             <style>
                 :root {
                     --celeste: #75AADB;
@@ -67,15 +67,15 @@
         <?php endif; ?>
 
         <?php if (($vistaActual ?? "") === "registro"): ?>
-            <link rel="stylesheet" href="/public/css/Registro.css">
+            <link rel="stylesheet" href="<?= $base ?>/public/css/Registro.css">
         <?php endif; ?>
         <?php if (($vistaActual ?? "") === "login"): ?>
-            <link rel="stylesheet" href="public/css/Login.css">
+            <link rel="stylesheet" href="<?= $base ?>/public/css/Login.css">
         <?php endif; ?>
         <?php if (($vistaActual ?? "") === "comenzarPartida"): ?>
             <link
                     rel="stylesheet"
-                    href="/public/css/Partida.css"
+                    href="<?= $base ?>/public/css/Partida.css"
             >
         <?php endif; ?>
     </head>
@@ -88,24 +88,24 @@
         </a>
         <div class="grammys-nav-links">
             <a href="/Proyecto-ProgWeb2/">Inicio</a>
-            <a href="<?= ($vistaActual ?? '') === 'evento' ? '' : '/Proyecto-ProgWeb2/' ?>#categorias">Categorías</a>
+            <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/Proyecto-ProgWeb2/' ?>#categorias">Categorías</a>
 
             <?php if (isset($_SESSION['usuario'])): ?>
-                <a href="/Proyecto-ProgWeb2/index.php?controller=lugares&amp;method=show">Empezar a jugar</a>
+                <a href="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=show">Empezar a jugar</a>
                 <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>">Perfil</a>
                 <a class="grammys-nav-cta" href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout">Salir</a>
             <?php else: ?>
-                <a href="<?= ($vistaActual ?? '') === 'evento' ? '' : '/Proyecto-ProgWeb2/' ?>#acceso">Iniciar sesión</a>
+                <a href="<?= ($vistaActual ?? '') === 'home' ? '' : '/Proyecto-ProgWeb2/' ?>#acceso">Iniciar sesión</a>
                 <a class="grammys-nav-cta" href="/index.php?controller=registro&amp;method=show">Registrarse</a>
             <?php endif; ?>
         </div>
     </nav>
 <?php else: ?>
     <div class="w3-bar" style="background-color:#2E7D32">
-        <a href="/Proyecto-ProgWeb2/evento/show" class="w3-bar-item w3-button">🏠 Inicio</a>
+        <a href="/Proyecto-ProgWeb2/" class="w3-bar-item w3-button">🏠 Inicio</a>
         <a href="/Proyecto-ProgWeb2/index.php?controller=registro&amp;method=show" class="w3-bar-item w3-button">Registrarme</a>
         <?php if (isset($_SESSION['usuario'])): ?>
-            <a href="/Proyecto-ProgWeb2/index.php?controller=lugares&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
+            <a href="/Proyecto-ProgWeb2/index.php?controller=partida&amp;method=show" class="w3-bar-item w3-button">Empezar a jugar</a>
             <a href="/Proyecto-ProgWeb2/perfil/show?id=<?= (int) $_SESSION['usuario_id'] ?>" class="w3-bar-item w3-button">👤 Perfil</a>
             <a href="/Proyecto-ProgWeb2/index.php?controller=login&amp;method=logout" class="w3-bar-item w3-button w3-right">🚪 Salir</a>
         <?php endif; ?>

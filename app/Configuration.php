@@ -2,58 +2,42 @@
 
 namespace app;
 
-use app\controller\EventoController;
+use app\controller\HomeController;
 use app\controller\LoginController;
-use app\controller\LugaresController;
-use app\controller\ReservaController;
-use app\model\EventoModel;
-use app\model\LoginModel;
-use app\model\LugaresModel;
-use app\model\ReservaModel;
-use MustacheRender;
-use MyDatabase;
-use Router;
 use app\controller\RegistroController;
-use app\model\RegistroModel;
 use app\controller\PerfilController;
+use app\controller\PartidaController;
+use app\model\LoginModel;
+use app\model\RegistroModel;
 use app\model\PerfilModel;
+use app\model\PartidaModel;
 use app\service\MapaService;
 use app\service\QrService;
 use app\service\MailService;
-use app\controller\PartidaController;
-use app\model\PartidaModel;
+use MustacheRender;
+use MyDatabase;
+use Router;
+
 require_once("helper/Autoloader.php");
-//require_once __DIR__ . '/../vendor/autoload.php';
-
-
-
 
 class Configuration
 {
-
     public function __construct()
     {
     }
 
-    public function getLugaresController()
+    // ───────────── Router ─────────────
+
+    public function getRouter()
     {
-        return new LugaresController(
-            $this->getLugaresModel(),
-            $this->gerRender()
-        );
-    }
-    public function getReservaController()
-    {
-        return new ReservaController(
-            $this->getReservaModel(),
-            $this->gerRender()
-        );
+        return new Router($this, "home", "show");
     }
 
-    public function getEventoController()
+    // ───────────── Controllers ─────────────
+
+    public function getHomeController()
     {
-        return new EventoController(
-            $this->getEventoModel(),
+        return new HomeController(
             $this->gerRender()
         );
     }
@@ -66,72 +50,12 @@ class Configuration
         );
     }
 
-    // Los privados
-    private function getReservaModel()
-    {
-        return new ReservaModel(
-            $this->getDatabase()
-        );
-    }
-
-    private function getLugaresModel()
-    {
-        return new LugaresModel(
-            $this->getDatabase()
-        );
-    }
-
-        private function getDatabase()
-    {
-        $config = parse_ini_file("config/config.ini");
-
-        $host = $config["db_host"] . ";port=" . $config["db_port"];
-
-        return new MyDatabase(
-            $host,
-            $config["db_user"],
-            $config["db_pass"],
-            $config["db_name"]
-        );
-    }
-
-    private function getEventoModel()
-    {
-        return new EventoModel(
-            $this->getDatabase()
-        );
-    }
-
-    private function getLoginModel()
-    {
-        return new LoginModel(
-            $this->getDatabase()
-        );
-    }
-    private function getRegistroModel()
-    {
-        return new RegistroModel(
-            $this->getDatabase()
-        );
-    }
-
-    public function getRouter()
-    {
-        return new Router($this, "evento", "show");
-    }
     public function getRegistroController(): RegistroController
-{
-    return new RegistroController(
-        $this->getRegistroModel(),
-        $this->gerRender(),
-        $this->getMailService()
-    );
-}
-
-    private function getPerfilModel()
     {
-        return new PerfilModel(
-            $this->getDatabase()
+        return new RegistroController(
+            $this->getRegistroModel(),
+            $this->gerRender(),
+            $this->getMailService()
         );
     }
 
@@ -145,11 +69,64 @@ class Configuration
         );
     }
 
+    public function getPartidaController()
+    {
+        return new PartidaController(
+            $this->getPartidaModel(),
+            $this->gerRender()
+        );
+    }
+
+    // ───────────── Models ─────────────
+
+    private function getLoginModel()
+    {
+        return new LoginModel(
+            $this->getDatabase()
+        );
+    }
+
+    private function getRegistroModel()
+    {
+        return new RegistroModel(
+            $this->getDatabase()
+        );
+    }
+
+    private function getPerfilModel()
+    {
+        return new PerfilModel(
+            $this->getDatabase()
+        );
+    }
+
+    private function getPartidaModel()
+    {
+        return new PartidaModel(
+            $this->getDatabase()
+        );
+    }
+
+    // ───────────── Infraestructura y servicios ─────────────
+
+    private function getDatabase()
+    {
+        $config = parse_ini_file("config/config.ini");
+
+        $host = $config["db_host"] . ";port=" . $config["db_port"];
+
+        return new MyDatabase(
+            $host,
+            $config["db_user"],
+            $config["db_pass"],
+            $config["db_name"]
+        );
+    }
+
     private function gerRender()
     {
         return new MustacheRender();
     }
-
 
     private function getMapaService()
     {
@@ -160,22 +137,9 @@ class Configuration
     {
         return new QrService();
     }
-private function getMailService()
-{
-    return new MailService();
-}
-    private function getPartidaModel()
-    {
-        return new PartidaModel(
-            $this->getDatabase()
-        );
-    }
 
-    public function getPartidaController()
+    private function getMailService()
     {
-        return new PartidaController(
-            $this->getPartidaModel(),
-            $this->gerRender()
-        );
+        return new MailService();
     }
 }

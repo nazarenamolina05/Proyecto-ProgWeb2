@@ -19,6 +19,8 @@ class MustacheRender
     public function renderiza($view, $data = [])
     {
         $vistaActual = $view;
+        $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+        $data['base'] = $base;
 
         require_once($this->viewPath . "/header.php");
 
