@@ -3,3 +3,5 @@
 /vendor/phpmailer/
 /log/*.log
 /config/mail.local.ini
+.idea/
+.DS_Store
