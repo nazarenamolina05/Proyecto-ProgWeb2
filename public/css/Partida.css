@@ -77,3 +77,12 @@
     outline: 3px solid #f4c542;
     outline-offset: 4px;
 }
+.partida-imagen {
+    display: block;
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    margin: 24px auto;
+    border-radius: 12px;
+    border: 1px solid #b79a53;
+}

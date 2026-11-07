@@ -15,15 +15,73 @@ class PartidaController
         $this->render = $render;
     }
 
+    // Muestra las categorías disponibles.
+    public function categorias()
+    {
+        $categorias = $this->model->obtenerCategorias();
+
+        $this->render->renderiza('comenzarPartida', [
+            'elegir_categoria' => true,
+            'categorias' => $categorias,
+            'hay_categorias' => count($categorias) > 0,
+            'token' => $this->getToken(),
+            'error' => $_SESSION['partida_error'] ?? null
+        ]);
+
+        unset($_SESSION['partida_error']);
+    }
+
+    // Recibe la categoría elegida y busca la primera pregunta.
+    public function elegirCategoria()
+    {
+        if (!$this->validarPost()) {
+            return;
+        }
+
+        $id = filter_var(
+            $_POST['categoria_id'] ?? null,
+            FILTER_VALIDATE_INT
+        );
+
+        $categoria = $id
+            ? $this->model->obtenerCategoria($id)
+            : null;
+
+        if ($categoria === null) {
+            $_SESSION['partida_error'] =
+                'Elegí una categoría válida.';
+
+            Redirect::to(
+                '/index.php?controller=partida&method=categorias'
+            );
+            return;
+        }
+
+        $_SESSION['partida_categoria'] = $categoria;
+
+        unset($_SESSION['partida_error']);
+
+        $this->crearPartida();
+
+        Redirect::to(
+            '/index.php?controller=partida&method=show'
+        );
+    }
+
+    // Muestra la pregunta pendiente o el resultado.
     public function show()
     {
-        // Si todavía no hay una pregunta, buscamos una en MySQL.
-        if (!isset($_SESSION['partida']['pregunta'])) {
-            $this->crearPartida();
+        if (!isset($_SESSION['partida_categoria'])) {
+            Redirect::to(
+                '/index.php?controller=partida&method=categorias'
+            );
+            return;
         }
 
         $data = [
             'token' => $this->getToken(),
+            'categoria_nombre' =>
+                $_SESSION['partida_categoria']['nombre'],
             'error' => $_SESSION['partida_error'] ?? null
         ];
 
@@ -36,6 +94,7 @@ class PartidaController
             $pregunta = $partida['pregunta'];
 
             $data['pregunta'] = $pregunta['texto'];
+            $data['imagen'] = $pregunta['imagen'] ?? null;
 
             if ($partida['respuesta_id'] === null) {
                 $data['en_curso'] = true;
@@ -66,6 +125,7 @@ class PartidaController
         $this->render->renderiza('comenzarPartida', $data);
     }
 
+    // Valida y guarda la respuesta elegida.
     public function responder()
     {
         if (!$this->validarPost()) {
@@ -74,7 +134,7 @@ class PartidaController
 
         $partida = $_SESSION['partida'] ?? null;
 
-        // Solo se puede responder una pregunta pendiente.
+        // No permite responder nuevamente una pregunta contestada.
         if (
             isset($partida['pregunta']) &&
             $partida['respuesta_id'] === null
@@ -101,16 +161,26 @@ class PartidaController
             }
         }
 
-        Redirect::to('/index.php?controller=partida&method=show');
+        Redirect::to(
+            '/index.php?controller=partida&method=show'
+        );
     }
 
+    // Busca otra pregunta de la categoría actual.
     public function comenzar()
     {
         if (!$this->validarPost()) {
             return;
         }
 
-        // Crea otra partida solo si no hay una pregunta pendiente.
+        if (!isset($_SESSION['partida_categoria'])) {
+            Redirect::to(
+                '/index.php?controller=partida&method=categorias'
+            );
+            return;
+        }
+
+        // Conserva la pregunta si todavía está pendiente.
         if (
             !isset($_SESSION['partida']['pregunta']) ||
             $_SESSION['partida']['respuesta_id'] !== null
@@ -118,12 +188,16 @@ class PartidaController
             $this->crearPartida();
         }
 
-        Redirect::to('/index.php?controller=partida&method=show');
+        Redirect::to(
+            '/index.php?controller=partida&method=show'
+        );
     }
 
     private function crearPartida()
     {
-        $pregunta = $this->model->obtenerPreguntaAleatoria();
+        $pregunta = $this->model->obtenerPreguntaAleatoria(
+            (int) $_SESSION['partida_categoria']['id']
+        );
 
         if ($pregunta === null) {
             unset($_SESSION['partida']);
@@ -135,7 +209,8 @@ class PartidaController
             'respuesta_id' => null
         ];
 
-        $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+        $_SESSION['partida_token'] =
+            bin2hex(random_bytes(32));
     }
 
     private function getToken(): string
@@ -167,7 +242,10 @@ class PartidaController
             $_SESSION['partida_error'] =
                 'El formulario venció. Volvé a intentar desde esta pantalla.';
 
-            Redirect::to('/index.php?controller=partida&method=show');
+            Redirect::to(
+                '/index.php?controller=partida&method=show'
+            );
+            return false;
         }
 
         return true;

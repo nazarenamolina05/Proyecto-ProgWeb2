@@ -2,7 +2,22 @@
     <section class="partida-tarjeta" aria-labelledby="partida-titulo">
         <p class="grammys-eyebrow">The Grammys Trivia</p>
 
-        <h1 id="partida-titulo">Tu desafío musical</h1>
+        <h1 id="partida-titulo">
+            {{#elegir_categoria}}
+                Elegí una categoría
+            {{/elegir_categoria}}
+
+            {{^elegir_categoria}}
+                Tu desafío musical
+            {{/elegir_categoria}}
+        </h1>
+
+        {{#categoria_nombre}}
+            <p>
+                Categoría:
+                <strong>{{categoria_nombre}}</strong>
+            </p>
+        {{/categoria_nombre}}
 
         {{#error}}
             <p class="grammys-error" role="alert">
@@ -10,19 +25,66 @@
             </p>
         {{/error}}
 
+        {{#elegir_categoria}}
+            <p>Elegí tu tema y poné a prueba cuánto sabés de música.</p>
+
+            <form
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria"
+            >
+                <input type="hidden" name="token" value="{{token}}">
+
+                <fieldset class="partida-opciones">
+                    <legend>Categorías disponibles</legend>
+
+                    {{#categorias}}
+                        <label class="partida-opcion">
+                            <input
+                                type="radio"
+                                name="categoria_id"
+                                value="{{id}}"
+                                required
+                            >
+
+                            <span>{{nombre}}</span>
+                        </label>
+                    {{/categorias}}
+                </fieldset>
+
+                {{#hay_categorias}}
+                    <button class="grammys-button" type="submit">
+                        Empezar a jugar
+                    </button>
+                {{/hay_categorias}}
+
+                {{^categorias}}
+                    <p>Todavía no hay categorías disponibles.</p>
+                {{/categorias}}
+            </form>
+        {{/elegir_categoria}}
+
         {{#sin_preguntas}}
             <p>
-                Todavía no hay preguntas disponibles.
-                Volvé a intentarlo más tarde.
+                Todavía no hay preguntas disponibles en esta categoría.
+                Elegí otra categoría para jugar.
             </p>
         {{/sin_preguntas}}
+
+        {{#imagen}}
+            <img
+                class="partida-imagen"
+                src="{{imagen}}"
+                alt="Portada del álbum que debés identificar"
+                referrerpolicy="no-referrer"
+            >
+        {{/imagen}}
 
         {{#en_curso}}
             <p>Elegí una opción y confirmá tu respuesta.</p>
 
             <form
-                    method="post"
-                    action="/index.php?controller=partida&amp;method=responder"
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=responder"
             >
                 <input type="hidden" name="token" value="{{token}}">
 
@@ -32,10 +94,10 @@
                     {{#opciones}}
                         <label class="partida-opcion">
                             <input
-                                    type="radio"
-                                    name="respuesta"
-                                    value="{{id}}"
-                                    required
+                                type="radio"
+                                name="respuesta"
+                                value="{{id}}"
+                                required
                             >
 
                             <span>{{texto}}</span>
@@ -75,18 +137,27 @@
             {{/correcta}}
 
             <form
-                    method="post"
-                    action="/index.php?controller=partida&amp;method=comenzar"
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=comenzar"
             >
                 <input type="hidden" name="token" value="{{token}}">
 
                 <button class="grammys-button" type="submit">
-                    Jugar otra vez
+                    Otra pregunta de esta categoría
                 </button>
             </form>
         {{/finalizada}}
 
-        <a class="partida-volver" href="/">
+        {{^elegir_categoria}}
+            <a
+                class="partida-volver"
+                href="{{base}}/index.php?controller=partida&amp;method=categorias"
+            >
+                Cambiar categoría
+            </a>
+        {{/elegir_categoria}}
+
+        <a class="partida-volver" href="{{base}}/">
             Volver al inicio
         </a>
     </section>
