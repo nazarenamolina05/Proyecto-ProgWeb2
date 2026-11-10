@@ -1,43 +1,84 @@
-<div class="w3-content" style="max-width:900px">
-    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
+<main class="perfil">
+    {{#error}}
+        <div class="grammys-error">
+            <p>{{error}}</p>
+        </div>
+    {{/error}}
 
-        {{#error}}
-            <div class="w3-panel w3-pale-red w3-border">
-                <p>{{error}}</p>
+    {{^error}}
+        <section class="perfil-card perfil-cabecera">
+            <div class="perfil-avatar">
+                {{#foto}}
+                    <img src="{{base}}/public/uploads/perfiles/{{foto}}" alt="Foto de perfil de {{usuario}}">
+                {{/foto}}
+                {{^foto}}
+                    <span aria-hidden="true">♪</span>
+                {{/foto}}
             </div>
-        {{/error}}
 
-        {{^error}}
-            <h2>{{usuario}}</h2>
-            {{#es_propio}}
-                <a href="{{url_editar}}" class="w3-button w3-blue w3-small">Editar mi perfil</a>
-            {{/es_propio}}
-            <p><b>Nombre:</b> {{nombre_completo}}</p>
-            <p><b>Año de nacimiento:</b> {{anio_nacimiento}}</p>
-            <p><b>Sexo:</b> {{sexo}}</p>
-            <p><b>Ubicación:</b> {{ciudad}}, {{pais}}</p>
+            <div class="perfil-titulo">
+                <h1>{{nombre_completo}}</h1>
+                <p class="perfil-usuario">@{{usuario}}</p>
+                {{#es_propio}}
+                    <a href="{{url_editar}}" class="grammys-button">Editar mi perfil</a>
+                {{/es_propio}}
+            </div>
+
+            <div class="perfil-stats">
+                <div class="perfil-stat">
+                    <strong>{{puntaje_total}}</strong>
+                    <span>Puntaje total</span>
+                </div>
+                <div class="perfil-stat">
+                    <strong>{{partidas_jugadas}}</strong>
+                    <span>Partidas realizadas</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="perfil-card">
+            <h2>Datos personales</h2>
+            <dl class="perfil-datos">
+                <div>
+                    <dt>Nombre</dt>
+                    <dd>{{nombre_completo}}</dd>
+                </div>
+                <div>
+                    <dt>Año de nacimiento</dt>
+                    <dd>{{anio_nacimiento}}</dd>
+                </div>
+                <div>
+                    <dt>Sexo</dt>
+                    <dd>{{sexo}}</dd>
+                </div>
+                <div>
+                    <dt>Ubicación</dt>
+                    <dd>{{ciudad}}, {{pais}}</dd>
+                </div>
+            </dl>
+
             {{#mapa_url}}
-                <iframe src="{{mapa_url}}"
-                        style="width:100%; height:300px; border:0;"
-                        loading="lazy"
+                <iframe class="perfil-mapa" src="{{mapa_url}}" loading="lazy"
                         title="Mapa de ubicación del jugador"></iframe>
             {{/mapa_url}}
             {{^mapa_url}}
-                <p>Este jugador no cargó su ubicación.</p>
+                <p class="perfil-vacio">Este jugador no cargó su ubicación.</p>
             {{/mapa_url}}
-            <hr>
-            <h3>Código QR del perfil</h3>
-            <img src="{{qr_url}}" alt="Código QR para abrir el perfil de {{usuario}}" width="200" height="200">
-            <p class="w3-small">Escaneá el código para abrir este perfil: <a href="{{url_perfil}}">{{url_perfil}}</a></p>
+        </section>
 
-            <hr>
+        <section class="perfil-card">
+            <h2>Código QR del perfil</h2>
+            <div class="perfil-qr">
+                <img src="{{qr_url}}" alt="Código QR para abrir el perfil de {{usuario}}" width="160" height="160">
+                <p>Escaneá el código para abrir este perfil:<br>
+                    <a href="{{url_perfil}}">{{url_perfil}}</a></p>
+            </div>
+        </section>
 
-            <p><b>Puntaje total:</b> {{puntaje_total}}</p>
-            <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
-            <h3>Partidas jugadas</h3>
-
+        <section class="perfil-card">
+            <h2>Partidas jugadas</h2>
             {{#tiene_partidas}}
-                <table class="w3-table w3-bordered">
+                <table class="perfil-tabla">
                     <tr>
                         <th>Fecha</th>
                         <th>Puntaje</th>
@@ -51,9 +92,8 @@
                 </table>
             {{/tiene_partidas}}
             {{^tiene_partidas}}
-                <p>Este jugador todavía no jugó ninguna partida.</p>
+                <p class="perfil-vacio">Este jugador todavía no jugó ninguna partida.</p>
             {{/tiene_partidas}}
-        {{/error}}
-
-    </div>
-</div>
+        </section>
+    {{/error}}
+</main>

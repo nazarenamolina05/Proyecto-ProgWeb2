@@ -69,6 +69,9 @@
         <?php if (($vistaActual ?? "") === "registro"): ?>
             <link rel="stylesheet" href="<?= $base ?>/public/css/Registro.css">
         <?php endif; ?>
+        <?php if (($vistaActual ?? "") === "perfil"): ?>
+            <link rel="stylesheet" href="<?= $base ?>/public/css/Perfil.css">
+        <?php endif; ?>
         <?php if (($vistaActual ?? "") === "login"): ?>
             <link rel="stylesheet" href="<?= $base ?>/public/css/Login.css">
         <?php endif; ?>
