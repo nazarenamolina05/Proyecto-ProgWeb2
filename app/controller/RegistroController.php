@@ -179,14 +179,30 @@ class RegistroController
             return;
         }
 
+
         try {
-            if ($this->model->verificarCodigo($email, $codigo)) {
-                Redirect::to("/index.php?controller=login&method=show&verified=1");
-                return;
-            }
+           $resultado = $this->model->verificarCodigo($email, $codigo);
+
+if ($resultado["estado"] === "ok") {
+    Redirect::to("/index.php?controller=login&method=show&verified=1");
+    return;
+}
+
+$estados = [
+    "usuario_no_encontrado" => "No se encontró el usuario pendiente.",
+    "sin_codigo" => "El usuario no tiene un código guardado.",
+    "codigo_vencido" => "El código está vencido.",
+    "codigo_no_coincide" => "El código recibido no coincide con el guardado.",
+    "error_actualizacion" => "No se pudo actualizar la cuenta."
+];
+
+$error = $estados[$resultado["estado"]] ?? "Error desconocido.";
+
+$this->mostrarVerificacionError($email, $error);
+return;
         } catch (\Throwable $e) {
-            error_log("Error al verificar cuenta: " . $e->getMessage());
-        }
+    error_log("ERROR VERIFICACION: " . $e->getMessage());
+}
 
         $this->mostrarVerificacionError(
             $email,

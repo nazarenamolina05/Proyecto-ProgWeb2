@@ -19,7 +19,8 @@ use MyDatabase;
 use Router;
 use app\service\FotoService;
 
-require_once("helper/Autoloader.php");
+require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/../helper/Autoloader.php";
 
 class Configuration
 {

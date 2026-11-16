@@ -1,3 +1,4 @@
+
 <main class="grammys-home">
     <section class="grammys-hero" aria-labelledby="hero-title">
         <div class="grammys-hero-copy">
@@ -7,14 +8,14 @@
                 Responde sobre los artistas, canciones y momentos que hicieron historia.
                 Suma puntos y demuestra cuánto sabes de música.
             </p>
-          <a
-    class="grammys-button grammys-start"
-    href="{{base}}/index.php?controller=partida&amp;method=categorias"
->
-    <span aria-hidden="true">♫</span>
-    Empezar trivia
-    <span aria-hidden="true">→</span>
-</a>
+            <a
+                class="grammys-button grammys-start"
+                href="{{base}}/index.php?controller=partida&amp;method=categorias"
+            >
+                <span aria-hidden="true">♫</span>
+                Empezar trivia
+                <span aria-hidden="true">→</span>
+            </a>
         </div>
 
         <div class="grammys-award">
@@ -58,24 +59,30 @@
                 <h2 id="access-title">Hola, {{usuario}}</h2>
                 <p>¿Listo para poner a prueba tu oído musical?</p>
                 <a class="grammys-button" href="#categorias">Explorar la trivia</a>
-                <a class="grammys-text-link" href="/login/logout">Cerrar sesión</a>
+                <a class="grammys-text-link" href="{{base}}/index.php?controller=login&amp;method=logout">Cerrar sesión</a>
             </div>
         {{/logueado}}
+
         {{^logueado}}
             <div class="grammys-access-copy">
                 <p class="grammys-eyebrow">Entra en escena</p>
                 <h2 id="access-title">Inicia sesión para jugar</h2>
-                <p>¿Todavía no tienes cuenta? <a href="/registro/show">Regístrate aquí</a>.</p>
+                <p>¿Todavía no tienes cuenta? 
+                    <a href="{{base}}/index.php?controller=registro&amp;method=show">Regístrate aquí</a>.
+                </p>
             </div>
 
-            <form class="grammys-login" method="post" action="/login/login">
+            <form class="grammys-login" method="post" action="{{base}}/index.php?controller=login&amp;method=login">
                 {{#error}}
                     <div class="grammys-error" role="alert">{{error}}</div>
                 {{/error}}
+
                 <label for="grammys-usuario">Usuario</label>
                 <input id="grammys-usuario" type="text" name="usuario" autocomplete="username" required>
+
                 <label for="grammys-password">Contraseña</label>
                 <input id="grammys-password" type="password" name="password" autocomplete="current-password" required>
+
                 <button class="grammys-button" type="submit">Iniciar sesión</button>
             </form>
         {{/logueado}}

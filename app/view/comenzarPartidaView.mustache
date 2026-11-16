@@ -13,17 +13,33 @@
         </h1>
 
         {{#categoria_nombre}}
-            <p>
-                Categoría:
-                <strong>{{categoria_nombre}}</strong>
-            </p>
-        {{/categoria_nombre}}
+    <p>
+        Categoría:
+        <strong>{{categoria_nombre}}</strong>
+    </p>
+
+    <p>
+        Dificultad:
+        <strong>{{dificultad}}</strong>
+    </p>
+
+    <p>
+        Respuestas correctas:
+        <strong>{{correctas}} / {{total_preguntas}}</strong>
+    </p>
+{{/categoria_nombre}}
 
         {{#error}}
             <p class="grammys-error" role="alert">
                 {{error}}
             </p>
         {{/error}}
+
+        {{#mensaje}}
+    <p role="status">
+        {{mensaje}}
+    </p>
+{{/mensaje}}
 
         {{#elegir_categoria}}
             <p>Elegí tu tema y poné a prueba cuánto sabés de música.</p>
@@ -50,6 +66,24 @@
                         </label>
                     {{/categorias}}
                 </fieldset>
+    <legend>Elegí la dificultad</legend>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="FACIL" required>
+        <span>Fácil</span>
+    </label>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="INTERMEDIO" checked>
+        <span>Intermedio</span>
+    </label>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="DIFICIL">
+        <span>Difícil</span>
+    </label>
+</fieldset>
+
 
                 {{#hay_categorias}}
                     <button class="grammys-button" type="submit">
@@ -109,6 +143,16 @@
                     Confirmar respuesta
                 </button>
             </form>
+            <form
+    method="post"
+    action="{{base}}/index.php?controller=partida&amp;method=terminar"
+>
+    <input type="hidden" name="token" value="{{token}}">
+
+    <button class="grammys-button" type="submit">
+        Terminar partida
+    </button>
+</form>
         {{/en_curso}}
 
         {{#finalizada}}
@@ -135,6 +179,16 @@
                     <strong>{{respuesta_correcta}}</strong>.
                 </p>
             {{/correcta}}
+            <form
+    method="post"
+    action="{{base}}/index.php?controller=partida&amp;method=terminar"
+>
+    <input type="hidden" name="token" value="{{token}}">
+
+    <button class="grammys-button" type="submit">
+        Terminar partida
+    </button>
+</form>
 
             <form
                 method="post"

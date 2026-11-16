@@ -137,6 +137,22 @@ class PerfilController
         $data["vistaActual"] = "perfil";
         $data["partidas"] = $this->getPartidasFormateadas($usuario["id"]);
         $data["tiene_partidas"] = !empty($data["partidas"]);
+$totalRespuestas = (int) $usuario["respuestas_totales"];
+$respuestasCorrectas = (int) $usuario["respuestas_correctas"];
+
+$porcentaje = $totalRespuestas > 0
+    ? ($respuestasCorrectas / $totalRespuestas) * 100
+    : 0;
+
+$data["porcentaje_aciertos"] = round($porcentaje, 2);
+
+if ($totalRespuestas === 0 || $porcentaje < 50) {
+    $data["nivel_usuario"] = "Principiante";
+} elseif ($porcentaje < 80) {
+    $data["nivel_usuario"] = "Intermedio";
+} else {
+    $data["nivel_usuario"] = "Avanzado";
+}
         $data["mapa_url"] = $this->mapa->getUrl($usuario["latitud"], $usuario["longitud"]);
         $data["url_perfil"] = $this->armarUrlPerfil($usuario["id"]);
         $data["url_editar"] = "index.php?controller=perfil&method=editar";
@@ -155,6 +171,13 @@ class PerfilController
 
         foreach ($partidas as $clave => $partida) {
             $partidas[$clave]["fecha_formateada"] = date('d/m/Y H:i', strtotime($partida['fecha']));
+            $partidas[$clave]["porcentaje_aciertos"] =
+    $partida["total_preguntas"] > 0
+        ? round(
+            ($partida["correctas"] / $partida["total_preguntas"]) * 100,
+            2
+        )
+        : 0;
         }
 
         return $partidas;
