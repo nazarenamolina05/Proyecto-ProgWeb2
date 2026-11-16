@@ -76,6 +76,7 @@ class PartidaController
             'correctas' => 0,
             'total_preguntas' => 0
         ];
+        $_SESSION['partida_puntaje'] = 0;
 
         unset($_SESSION['partida_error']);
 
@@ -100,6 +101,8 @@ class PartidaController
             'total_preguntas' => 0
         ];
 
+        $this->registrarVencimiento();
+
         $data = [
             'token' => $this->getToken(),
             'categoria_nombre' =>
@@ -108,6 +111,8 @@ class PartidaController
                 $_SESSION['partida_dificultad'] ?? 'INTERMEDIO',
             'correctas' => $resumen['correctas'],
             'total_preguntas' => $resumen['total_preguntas'],
+            'mostrar_puntaje' => true,
+            'puntaje' => (int) ($_SESSION['partida_puntaje'] ?? 0),
             'error' => $_SESSION['partida_error'] ?? null
         ];
 
@@ -122,8 +127,21 @@ class PartidaController
             $data['pregunta'] = $pregunta['texto'];
             $data['imagen'] = $pregunta['imagen'] ?? null;
 
-            if ($partida['respuesta_id'] === null) {
+            if ($this->estaPendiente($partida)) {
                 $data['en_curso'] = true;
+                $data['segundos_restantes'] = max(
+                    0,
+                    (int) ceil(
+                        (float) $partida['vence_en'] - microtime(true)
+                    )
+                );
+                $data['milisegundos_restantes'] = max(
+                    0,
+                    (int) ceil(
+                        ((float) $partida['vence_en'] - microtime(true)) *
+                        1000
+                    )
+                );
                 $data['opciones'] = [];
 
                 foreach ($pregunta['opciones'] as $id => $texto) {
@@ -135,13 +153,17 @@ class PartidaController
             } else {
                 $data['finalizada'] = true;
 
-                $data['correcta'] = $this->model->esCorrecta(
-                    $pregunta,
-                    $partida['respuesta_id']
-                );
+                if (!empty($partida['agotado'])) {
+                    $data['agotado'] = true;
+                } else {
+                    $data['correcta'] = $this->model->esCorrecta(
+                        $pregunta,
+                        $partida['respuesta_id']
+                    );
 
-                $data['respuesta_elegida'] =
-                    $pregunta['opciones'][$partida['respuesta_id']];
+                    $data['respuesta_elegida'] =
+                        $pregunta['opciones'][$partida['respuesta_id']];
+                }
 
                 $data['respuesta_correcta'] =
                     $pregunta['opciones'][$pregunta['correcta']];
@@ -159,9 +181,15 @@ class PartidaController
 
         $partida = $_SESSION['partida'] ?? null;
 
+        if (is_array($partida) && $this->estaPendiente($partida)) {
+            $this->registrarVencimiento();
+            $partida = $_SESSION['partida'];
+        }
+
         if (
-            isset($partida['pregunta']) &&
-            $partida['respuesta_id'] === null
+            is_array($partida) &&
+            $this->estaPendiente($partida) &&
+            (string) ($_POST['tiempo_agotado'] ?? '') !== '1'
         ) {
             $respuesta = filter_var(
                 $_POST['respuesta'] ?? null,
@@ -178,7 +206,10 @@ class PartidaController
                 $_SESSION['partida_error'] =
                     'Seleccioná una de las tres respuestas.';
             } else {
-                $_SESSION['partida']['respuesta_id'] = $respuesta;
+                $this->registrarVencimiento();
+
+                if ($this->estaPendiente($_SESSION['partida'])) {
+                    $_SESSION['partida']['respuesta_id'] = $respuesta;
 
                 // Actualiza los resultados de la partida.
                 $_SESSION['partida_resumen']['total_preguntas']++;
@@ -191,9 +222,16 @@ class PartidaController
                 ) {
                     $_SESSION['partida_resumen']['correctas']++;
                 }
+                    $_SESSION['partida_puntaje'] =
+                        (int) ($_SESSION['partida_puntaje'] ?? 0) +
+                        ($this->model->esCorrecta(
+                            $partida['pregunta'],
+                            $respuesta
+                        ) ? 1 : -1);
 
-                $_SESSION['partida_token'] =
-                    bin2hex(random_bytes(32));
+                    $_SESSION['partida_token'] =
+                        bin2hex(random_bytes(32));
+                }
             }
         }
 
@@ -215,10 +253,14 @@ class PartidaController
             return;
         }
 
+        if (isset($_SESSION['partida'])) {
+            $this->registrarVencimiento();
+        }
+
         // Conserva la pregunta si todavía está pendiente.
         if (
-            !isset($_SESSION['partida']['pregunta']) ||
-            $_SESSION['partida']['respuesta_id'] !== null
+            !isset($_SESSION['partida']) ||
+            !$this->estaPendiente($_SESSION['partida'])
         ) {
             $this->crearPartida();
         }
@@ -315,11 +357,39 @@ public function terminar()
 
         $_SESSION['partida'] = [
             'pregunta' => $pregunta,
-            'respuesta_id' => null
+            'respuesta_id' => null,
+            'agotado' => false,
+            'vence_en' => microtime(true) + 20
         ];
 
         $_SESSION['partida_token'] =
             bin2hex(random_bytes(32));
+    }
+
+    private function estaPendiente(array $partida): bool
+    {
+        return isset($partida['pregunta']) &&
+            array_key_exists('respuesta_id', $partida) &&
+            $partida['respuesta_id'] === null &&
+            empty($partida['agotado']);
+    }
+
+    private function registrarVencimiento(): void
+    {
+        $partida = $_SESSION['partida'] ?? null;
+
+        if (
+            !is_array($partida) ||
+            !$this->estaPendiente($partida) ||
+            (float) ($partida['vence_en'] ?? 0) > microtime(true)
+        ) {
+            return;
+        }
+
+        $_SESSION['partida']['agotado'] = true;
+        $_SESSION['partida_puntaje'] =
+            (int) ($_SESSION['partida_puntaje'] ?? 0) - 1;
+        $_SESSION['partida_token'] = bin2hex(random_bytes(32));
     }
 
     private function getToken(): string

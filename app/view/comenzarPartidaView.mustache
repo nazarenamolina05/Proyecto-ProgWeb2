@@ -29,6 +29,13 @@
     </p>
 {{/categoria_nombre}}
 
+        {{#mostrar_puntaje}}
+            <p class="partida-puntaje">
+                Puntaje:
+                <strong>{{puntaje}}</strong>
+            </p>
+        {{/mostrar_puntaje}}
+
         {{#error}}
             <p class="grammys-error" role="alert">
                 {{error}}
@@ -114,6 +121,12 @@
         {{/imagen}}
 
         {{#en_curso}}
+            <p class="partida-tiempo" role="timer" aria-label="Tiempo restante">
+                Tiempo restante:
+                <strong id="partida-segundos">{{segundos_restantes}}</strong>
+                segundos
+            </p>
+
             <p>Elegí una opción y confirmá tu respuesta.</p>
 
             <form
@@ -153,25 +166,78 @@
         Terminar partida
     </button>
 </form>
+
+            <form
+                id="partida-formulario-tiempo"
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=responder"
+                hidden
+            >
+                <input type="hidden" name="token" value="{{token}}">
+                <input type="hidden" name="tiempo_agotado" value="1">
+            </form>
+
+            <script>
+                (function () {
+                    var contador = document.getElementById('partida-segundos');
+                    var formulario = document.getElementById('partida-formulario-tiempo');
+                    var intervalo;
+                    var venceEn = window.performance.now() + {{milisegundos_restantes}};
+
+                    function enviarAlAgotarse() {
+                        window.clearInterval(intervalo);
+                        formulario.submit();
+                    }
+
+                    function actualizarContador() {
+                        var milisegundosRestantes =
+                            venceEn - window.performance.now();
+
+                        contador.textContent = Math.max(
+                            0,
+                            Math.ceil(milisegundosRestantes / 1000)
+                        );
+
+                        if (milisegundosRestantes <= 0) {
+                            enviarAlAgotarse();
+                        }
+                    }
+
+                    if ({{milisegundos_restantes}} <= 0) {
+                        enviarAlAgotarse();
+                        return;
+                    }
+
+                    intervalo = window.setInterval(actualizarContador, 100);
+                    actualizarContador();
+                }());
+            </script>
         {{/en_curso}}
 
         {{#finalizada}}
-            <h2>
-                {{#correcta}}
-                    ¡Respuesta correcta!
-                {{/correcta}}
+            {{#agotado}}
+                <h2>¡Se agotó el tiempo!</h2>
+                <p>No respondiste a tiempo y se descontó un punto.</p>
+            {{/agotado}}
 
-                {{^correcta}}
-                    Esta vez no acertaste
-                {{/correcta}}
-            </h2>
+            {{^agotado}}
+                <h2>
+                    {{#correcta}}
+                        ¡Respuesta correcta!
+                    {{/correcta}}
 
-            <p>{{pregunta}}</p>
+                    {{^correcta}}
+                        Esta vez no acertaste
+                    {{/correcta}}
+                </h2>
 
-            <p>
-                Elegiste:
-                <strong>{{respuesta_elegida}}</strong>.
-            </p>
+                <p>{{pregunta}}</p>
+
+                <p>
+                    Elegiste:
+                    <strong>{{respuesta_elegida}}</strong>.
+                </p>
+            {{/agotado}}
 
             {{^correcta}}
                 <p>
