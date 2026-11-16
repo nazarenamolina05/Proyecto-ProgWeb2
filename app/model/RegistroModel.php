@@ -31,7 +31,7 @@ class RegistroModel
         return $this->database->queryOnePrepared($sql, [$email]) !== null;
     }
 
-    public function registrar($usuario, $password, $email, $nombreCompleto, $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud)
+    public function registrar($usuario, $password, $email, $nombreCompleto, $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud, $foto = null)
     {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -39,9 +39,9 @@ class RegistroModel
         $longitud = ($longitud === '' || $longitud === null) ? null : (float) $longitud;
 
         $sql = "INSERT INTO usuarios
-    (usuario, password, email, verificado,
-     nombre_completo, anio_nacimiento, sexo, pais, ciudad, latitud, longitud)
-    VALUES (?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?)";
+(usuario, password, email, verificado,
+ nombre_completo, anio_nacimiento, sexo, pais, ciudad, latitud, longitud, foto)
+VALUES (?, ?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return $this->database->executePrepared(
             $sql,
@@ -55,7 +55,8 @@ class RegistroModel
                 $pais,
                 $ciudad,
                 $latitud,
-                $longitud
+                $longitud,
+                $foto
             ]
         );
     }

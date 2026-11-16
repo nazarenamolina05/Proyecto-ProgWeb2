@@ -17,6 +17,7 @@ use app\service\MailService;
 use MustacheRender;
 use MyDatabase;
 use Router;
+use app\service\FotoService;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../helper/Autoloader.php";
@@ -56,7 +57,8 @@ class Configuration
         return new RegistroController(
             $this->getRegistroModel(),
             $this->gerRender(),
-            $this->getMailService()
+            $this->getMailService(),
+            $this->getFotoService()
         );
     }
 
@@ -66,7 +68,8 @@ class Configuration
             $this->getPerfilModel(),
             $this->gerRender(),
             $this->getMapaService(),
-            $this->getQrService()
+            $this->getQrService(),
+            $this->getFotoService()
         );
     }
 
@@ -137,6 +140,11 @@ class Configuration
     private function getQrService()
     {
         return new QrService();
+    }
+
+    private function getFotoService()
+    {
+        return new FotoService();
     }
 
     private function getMailService()
