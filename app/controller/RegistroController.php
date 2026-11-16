@@ -10,12 +10,14 @@ class RegistroController
     private $model;
     private $render;
     private $mailService;
+    private $fotoService;
 
-    public function __construct($model, $render, $mailService)
+    public function __construct($model, $render, $mailService, $fotoService)
     {
         $this->model = $model;
         $this->render = $render;
         $this->mailService = $mailService;
+        $this->fotoService = $fotoService;
     }
 
     public function show()
@@ -119,9 +121,17 @@ class RegistroController
                 return;
             }
 
+            $resultadoFoto = $this->fotoService->guardar($_FILES['foto'] ?? null);
+
+            if (!$resultadoFoto['ok']) {
+                $this->mostrarError($resultadoFoto['error'], $datos);
+                return;
+            }
+
             $this->model->registrar(
                 $usuario, $password, $email, $nombreCompleto,
-                $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud
+                $anioNacimiento, $sexo, $pais, $ciudad, $latitud, $longitud,
+                $resultadoFoto['archivo']
             );
 
             $codigo = (string) random_int(100000, 999999);

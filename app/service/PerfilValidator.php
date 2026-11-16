@@ -26,6 +26,9 @@ class PerfilValidator
         if ($anio < 1900 || $anio > (int) date('Y')) {
             $e[] = 'Año de nacimiento inválido.';
         }
+        if (!in_array($d['sexo'], ['Masculino', 'Femenino', 'Prefiero no cargarlo'], true)) {
+            $e[] = 'Elegí una opción válida de sexo.';
+        }
         return $e;
     }
 
@@ -41,7 +44,7 @@ class PerfilValidator
     {
         $d['sexo_masculino'] = ($d['sexo'] ?? '') === 'Masculino';
         $d['sexo_femenino']  = ($d['sexo'] ?? '') === 'Femenino';
-        $d['sexo_nodice']    = ($d['sexo'] ?? '') === 'Prefiero no decirlo';
+        $d['sexo_nodice']    = ($d['sexo'] ?? '') === 'Prefiero no cargarlo';
         return $d;
     }
 }

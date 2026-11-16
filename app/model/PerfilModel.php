@@ -55,4 +55,12 @@ class PerfilModel
         ]);
     }
 
+    public function actualizarFoto($id, $foto)
+    {
+        return $this->database->executePrepared(
+            "UPDATE usuarios SET foto = ? WHERE id = ?",
+            [$foto, (int) $id]
+        );
+    }
+
 }
