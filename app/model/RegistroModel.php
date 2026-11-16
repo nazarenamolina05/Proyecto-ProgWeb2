@@ -61,55 +61,71 @@ class RegistroModel
     }
 
     public function guardarCodigo($email, $codigo)
-    {
-        $codigoHash = password_hash($codigo, PASSWORD_DEFAULT);
+{
+    $codigoHash = password_hash($codigo, PASSWORD_DEFAULT);
 
-        $sql = "UPDATE usuarios
-                SET codigo_verificacion = ?,
-                    expiracion_codigo = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
-                WHERE email = ? AND verificado = 0";
+    $sql = "UPDATE usuarios
+            SET codigo_verificacion = ?,
+expiracion_codigo = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+            WHERE email = ? AND verificado = 0";
 
-        return $this->database->executePrepared(
-            $sql,
-            [$codigoHash, $email]
-        );
-    }
-
-    public function verificarCodigo($email, $codigo)
-    {
-        $sql = "SELECT id, codigo_verificacion, expiracion_codigo
-                FROM usuarios
-                WHERE email = ? AND verificado = 0";
-
-        $usuario = $this->database->queryOnePrepared($sql, [$email]);
-
-        if ($usuario === null || empty($usuario["codigo_verificacion"])) {
-            return false;
-        }
-
-        if (
-    empty($usuario["expiracion_codigo"]) ||
-    strtotime($usuario["expiracion_codigo"]) === false ||
-    strtotime($usuario["expiracion_codigo"]) < time()
-) {
-    return false;
+    return $this->database->executePrepared(
+        $sql,
+        [$codigoHash, $email]
+    );
 }
 
-        if (!password_verify($codigo, $usuario["codigo_verificacion"])) {
-            return false;
-        }
+  
+public function verificarCodigo($email, $codigo)
+{
+    $sql = "SELECT id, codigo_verificacion, expiracion_codigo
+            FROM usuarios
+            WHERE email = ? AND verificado = 0";
 
-        $sql = "UPDATE usuarios
-                SET verificado = 1,
-                    codigo_verificacion = NULL,
-                    expiracion_codigo = NULL
-                WHERE id = ?";
+    $usuario = $this->database->queryOnePrepared($sql, [$email]);
+    \Log::info("DIAGNOSTICO VERIFICACION: " . ($usuario === null ? "USUARIO NULL" : "USUARIO ENCONTRADO"));
 
-        return $this->database->executePrepared(
-            $sql,
-            [$usuario["id"]]
-        );
+    if ($usuario === null) {
+        return ["estado" => "usuario_no_encontrado"];
     }
+
+    if (empty($usuario["codigo_verificacion"])) {
+        return ["estado" => "sin_codigo"];
+    }
+
+    $sql = "SELECT expiracion_codigo >= NOW() AS vigente
+            FROM usuarios
+            WHERE id = ?";
+
+    $resultado = $this->database->queryOnePrepared(
+        $sql,
+        [$usuario["id"]]
+    );
+
+    if (!$resultado || (int) $resultado["vigente"] !== 1) {
+        return ["estado" => "codigo_vencido"];
+    }
+
+    if (!password_verify($codigo, $usuario["codigo_verificacion"])) {
+        return ["estado" => "codigo_no_coincide"];
+    }
+
+    $sql = "UPDATE usuarios
+            SET verificado = 1,
+                codigo_verificacion = NULL,
+                expiracion_codigo = NULL
+            WHERE id = ?";
+
+    $actualizado = $this->database->executePrepared(
+        $sql,
+        [$usuario["id"]]
+    );
+
+    return [
+        "estado" => $actualizado ? "ok" : "error_actualizacion"
+    ];
+}
+
 
     public function obtenerEmailPendiente($email)
     {

@@ -1,5 +1,4 @@
-<?php $usaGrammys = in_array(($vistaActual ?? ""), ["home", "registro", "perfil", "comenzarPartida"], true); ?>
-    <!DOCTYPE html>
+<?php $usaGrammys = in_array(($vistaActual ?? ""), ["home", "registro", "perfil", "comenzarPartida", "verificacion"], true); ?>    <!DOCTYPE html>
     <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -65,10 +64,9 @@
                 }
             </style>
         <?php endif; ?>
-
-        <?php if (($vistaActual ?? "") === "registro"): ?>
-            <link rel="stylesheet" href="<?= $base ?>/public/css/Registro.css">
-        <?php endif; ?>
+<?php if (in_array(($vistaActual ?? ""), ["registro", "verificacion"], true)): ?>
+    <link rel="stylesheet" href="<?= $base ?>/public/css/Registro.css">
+<?php endif; ?>
         <?php if (($vistaActual ?? "") === "login"): ?>
             <link rel="stylesheet" href="<?= $base ?>/public/css/Login.css">
         <?php endif; ?>
