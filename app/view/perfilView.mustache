@@ -34,21 +34,32 @@
 
             <p><b>Puntaje total:</b> {{puntaje_total}}</p>
             <p><b>Partidas realizadas:</b> {{partidas_jugadas}}</p>
+            <p><b>Nivel del jugador:</b> {{nivel_usuario}}</p>
+<p><b>Porcentaje de aciertos:</b> {{porcentaje_aciertos}}%</p>
             <h3>Partidas jugadas</h3>
 
             {{#tiene_partidas}}
-                <table class="w3-table w3-bordered">
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Puntaje</th>
-                    </tr>
-                    {{#partidas}}
-                        <tr>
-                            <td>{{fecha_formateada}}</td>
-                            <td>{{puntaje}}</td>
-                        </tr>
-                    {{/partidas}}
-                </table>
+
+<table class="w3-table w3-bordered">
+    <tr>
+        <th>Fecha</th>
+        <th>Categoría</th>
+        <th>Dificultad</th>
+        <th>Resultado</th>
+        <th>Puntaje</th>
+    </tr>
+
+    {{#partidas}}
+        <tr>
+            <td>{{fecha_formateada}}</td>
+            <td>{{categoria}}</td>
+            <td>{{dificultad}}</td>
+            <td>{{correctas}} / {{total_preguntas}}</td>
+            <td>{{puntaje}}</td>
+        </tr>
+    {{/partidas}}
+</table>
+
             {{/tiene_partidas}}
             {{^tiene_partidas}}
                 <p>Este jugador todavía no jugó ninguna partida.</p>
