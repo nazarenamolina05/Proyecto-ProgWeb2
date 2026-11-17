@@ -27,6 +27,7 @@ public function getUsuario($id)
             u.ciudad,
             u.latitud,
             u.longitud,
+            u.foto,
             COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
             COUNT(p.id) AS partidas_jugadas,
             COALESCE(SUM(p.correctas), 0) AS respuestas_correctas,
