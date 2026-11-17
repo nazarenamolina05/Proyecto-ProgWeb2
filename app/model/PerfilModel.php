@@ -90,4 +90,12 @@ public function getPartidas($id)
         ]);
     }
 
+    public function actualizarFoto($id, $foto)
+    {
+        return $this->database->executePrepared(
+            "UPDATE usuarios SET foto = ? WHERE id = ?",
+            [$foto, (int) $id]
+        );
+    }
+
 }

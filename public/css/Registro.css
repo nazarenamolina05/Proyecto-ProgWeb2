@@ -117,3 +117,30 @@
     color: #ffe28a;
     text-decoration: underline;
 }
+.grammys-register select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid rgba(230, 193, 120, .36);
+    border-radius: 7px;
+    background: rgba(9, 8, 7, .8);
+    color: #fffaf0;
+    font: inherit;
+}
+
+.grammys-register select:focus {
+    border-color: var(--grammy-gold);
+    outline: 2px solid rgba(230, 193, 120, .2);
+    outline-offset: 1px;
+}
+
+.grammys-register .foto-actual {
+    display: block;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 18px;
+    border: 3px solid var(--grammy-gold);
+    border-radius: 50%;
+    object-fit: cover;
+}
