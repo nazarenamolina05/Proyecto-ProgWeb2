@@ -154,21 +154,64 @@
             >
         {{/imagen}}
 
+        {{#en_curso}}
+            <div class="partida-temporizador">
+                <div
+                    id="partida-tiempo"
+                    class="partida-tiempo"
+                    role="progressbar"
+                    aria-label="Tiempo restante"
+                    aria-valuemin="0"
+                    aria-valuemax="{{duracion_pregunta}}"
+                    aria-valuenow="{{segundos_restantes}}"
+                    aria-valuetext="{{segundos_restantes}} segundos"
+                >
+                    <div class="partida-tiempo-pista" aria-hidden="true">
+                        <div class="partida-tiempo-barra">
+                            <img
+                                class="partida-tiempo-grammy"
+                                src="{{base}}/public/images/grammy-award.png"
+                                alt=""
+                            >
+                        </div>
+                    </div>
+                </div>
+                <button
+                    id="partida-sonido"
+                    class="grammys-button partida-sonido"
+                    type="button"
+                    aria-label="Sonido de la partida"
+                    aria-pressed="false"
+                >
+                    <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M11 5 6 9H3v6h3l5 4Z" />
+                        <path class="partida-sonido-ondas" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" />
+                        <path class="partida-sonido-tachado" d="m3 3 18 18" />
+                    </svg>
+                </button>
+            </div>
+        {{/en_curso}}
+
+        {{#audio_partida}}
+            <audio
+                id="partida-audio"
+                src="{{base}}/public/audio/{{audio_partida}}"
+                preload="auto"
+                {{#en_curso}}loop{{/en_curso}}
+            ></audio>
+        {{/audio_partida}}
+
         <!-- PREGUNTA EN CURSO -->
 
         {{#en_curso}}
-            <p
-                class="partida-tiempo"
-                role="timer"
-                aria-label="Tiempo restante"
-            >
-                Tiempo restante:
-                <strong id="partida-segundos">
-                    {{segundos_restantes}}
-                </strong>
-                segundos
-            </p>
-
             <p>Elegí una opción y confirmá tu respuesta.</p>
 
             <form
@@ -209,6 +252,7 @@
             <!-- TERMINAR PARTIDA MIENTRAS JUEGA -->
 
             <form
+                class="partida-terminar-en-curso"
                 method="post"
                 action="{{base}}/index.php?controller=partida&amp;method=terminar"
             >
@@ -247,52 +291,57 @@
                 >
             </form>
 
-            <!-- CONTADOR ORIGINAL DE LA PARTIDA -->
-
             <script>
                 (function () {
-                    var contador =
-                        document.getElementById('partida-segundos');
+                    const barra = document.getElementById('partida-tiempo');
+                    const formulario = document.getElementById('partida-formulario-tiempo');
+                    const audio = document.getElementById('partida-audio');
+                    const duracion = {{duracion_pregunta}} * 1000;
+                    const restanteInicial = {{milisegundos_restantes}};
+                    const venceEn = performance.now() + restanteInicial;
+                    let segundosVisibles = {{segundos_restantes}};
+                    let fotograma;
+                    let vencimiento;
 
-                    var formulario =
-                        document.getElementById('partida-formulario-tiempo');
-
-                    var intervalo;
-
-                    var venceEn =
-                        window.performance.now() +
-                        {{milisegundos_restantes}};
-
-                    function enviarAlAgotarse() {
-                        window.clearInterval(intervalo);
-                        formulario.submit();
-                    }
-
-                    function actualizarContador() {
-                        var milisegundosRestantes =
-                            venceEn - window.performance.now();
-
-                        contador.textContent = Math.max(
-                            0,
-                            Math.ceil(milisegundosRestantes / 1000)
-                        );
-
-                        if (milisegundosRestantes <= 0) {
-                            enviarAlAgotarse();
+                    function actualizarBarra(restante) {
+                        const proporcion = Math.min(1, restante / duracion);
+                        barra.style.setProperty('--tiempo-restante', (proporcion * 100) + '%');
+                        const segundos = Math.ceil(restante / 1000);
+                        if (segundos !== segundosVisibles) {
+                            barra.setAttribute('aria-valuenow', segundos);
+                            barra.setAttribute('aria-valuetext', segundos + ' segundos');
+                            segundosVisibles = segundos;
                         }
                     }
 
-                    if ({{milisegundos_restantes}} <= 0) {
-                        enviarAlAgotarse();
-                        return;
+                    function animarBarra() {
+                        const restante = Math.max(0, venceEn - performance.now());
+                        actualizarBarra(restante);
+                        if (restante > 0) {
+                            fotograma = requestAnimationFrame(animarBarra);
+                        }
                     }
 
-                    intervalo = window.setInterval(
-                        actualizarContador,
-                        100
-                    );
+                    function detenerTemporizador() {
+                        cancelAnimationFrame(fotograma);
+                        clearTimeout(vencimiento);
+                        audio.pause();
+                    }
 
-                    actualizarContador();
+                    animarBarra();
+                    vencimiento = setTimeout(() => {
+                        actualizarBarra(0);
+                        detenerTemporizador();
+                        formulario.submit();
+                    }, Math.max(0, venceEn - performance.now()));
+
+                    barra.closest('.partida-tarjeta').addEventListener('submit', detenerTemporizador);
+                    window.addEventListener('pagehide', detenerTemporizador);
+                    window.addEventListener('pageshow', (evento) => {
+                        if (evento.persisted) {
+                            window.location.reload();
+                        }
+                    });
                 }());
             </script>
         {{/en_curso}}
@@ -344,18 +393,42 @@
                 </p>
             {{/correcta}}
 
-            <!-- NUEVO: REPORTAR PREGUNTA -->
+            <div class="partida-acciones">
+                <form
+                    method="post"
+                    action="{{base}}/index.php?controller=partida&amp;method=terminar"
+                >
+                    <input type="hidden" name="token" value="{{token}}">
+                    <button class="grammys-button partida-accion partida-accion-terminar" type="submit">
+                        Terminar partida
+                    </button>
+                </form>
+
+                <form
+                    method="post"
+                    action="{{base}}/index.php?controller=partida&amp;method=comenzar"
+                >
+                    <input type="hidden" name="token" value="{{token}}">
+                    <button class="grammys-button partida-accion partida-accion-seguir" type="submit">
+                        <span>Otra pregunta de esta categoría</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 12h17m-7-7 7 7-7 7" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
 
             <div class="partida-contribuciones">
-
-                <h3>¿Querés colaborar con la trivia?</h3>
-
                 <details>
-                    <summary class="grammys-button">
-                        Reportar pregunta actual
+                    <summary class="partida-contribucion partida-contribucion-reportar" aria-label="Reportar pregunta actual">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 22V3m0 1c5-4 10 4 16 0v10c-6 4-11-4-16 0" />
+                        </svg>
+                        Reportar
                     </summary>
 
                     <form
+                        class="partida-reporte"
                         method="post"
                         action="{{base}}/index.php?controller=contribucion&amp;method=reportar"
                     >
@@ -389,58 +462,55 @@
                     </form>
                 </details>
 
-                <!-- NUEVO: SUGERIR PREGUNTA -->
-
                 <a
-                    class="grammys-button"
+                    class="partida-contribucion"
                     href="{{base}}/index.php?controller=contribucion&amp;method=sugerir"
                 >
-                    Sugerir pregunta
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M9 18h6m-5 3h4m-6-8a7 7 0 1 1 8 0c-1 .8-1 1.5-1 3h-6c0-1.5 0-2.2-1-3Z" />
+                    </svg>
+                    Sugerencia
                 </a>
 
             </div>
 
-            <!-- TERMINAR PARTIDA -->
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=terminar"
-            >
-                <input
-                    type="hidden"
-                    name="token"
-                    value="{{token}}"
-                >
-
-                <button
-                    class="grammys-button"
-                    type="submit"
-                >
-                    Terminar partida
-                </button>
-            </form>
-
-            <!-- CONTINUAR CON OTRA PREGUNTA -->
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=comenzar"
-            >
-                <input
-                    type="hidden"
-                    name="token"
-                    value="{{token}}"
-                >
-
-                <button
-                    class="grammys-button"
-                    type="submit"
-                >
-                    Otra pregunta de esta categoría
-                </button>
-            </form>
-
         {{/finalizada}}
+
+        {{#audio_partida}}
+            <script>
+                (function () {
+                    const audio = document.getElementById('partida-audio');
+                    const boton = document.getElementById('partida-sonido');
+                    const claveSilencio = 'partida-musica-silenciada';
+
+                    function reproducirSonido() {
+                        audio.play().then(() => {
+                            if (!audio.paused) {
+                                boton?.setAttribute('aria-pressed', 'true');
+                            }
+                        }).catch(() => {
+                            boton?.setAttribute('aria-pressed', 'false');
+                        });
+                    }
+
+                    audio.volume = audio.loop ? 0.35 : 0.65;
+                    boton?.addEventListener('click', () => {
+                        if (!audio.paused || boton.getAttribute('aria-pressed') === 'true') {
+                            audio.pause();
+                            boton.setAttribute('aria-pressed', 'false');
+                            sessionStorage.setItem(claveSilencio, '1');
+                        } else {
+                            reproducirSonido();
+                            sessionStorage.removeItem(claveSilencio);
+                        }
+                    });
+
+                    if (!sessionStorage.getItem(claveSilencio)) {
+                        reproducirSonido();
+                    }
+                }());
+            </script>
+        {{/audio_partida}}
 
         <!-- CAMBIAR CATEGORÍA -->
 
