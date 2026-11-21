@@ -1,0 +1,187 @@
+
+<main class="grammys-home">
+
+    <section class="grammys-access">
+
+        <div class="grammys-access-copy">
+
+            <p class="grammys-eyebrow">
+                Participá en nuestra trivia
+            </p>
+
+            <h1>Sugerir una pregunta</h1>
+
+            <p>
+                ¿Tenés una buena pregunta sobre música?
+                Completá el formulario y enviala.
+            </p>
+
+            <p>
+                Tu pregunta quedará pendiente de revisión.
+            </p>
+
+            {{#mensaje}}
+                <div class="grammys-success" role="status">
+                    {{mensaje}}
+                </div>
+            {{/mensaje}}
+
+            {{#error}}
+                <div class="grammys-error" role="alert">
+                    {{error}}
+                </div>
+            {{/error}}
+
+            {{#hay_categorias}}
+                <form
+                    class="grammys-login"
+                    method="POST"
+                    action="{{base}}/index.php?controller=contribucion&amp;method=guardarSugerencia"
+                >
+
+                    <input
+                        type="hidden"
+                        name="token"
+                        value="{{token}}"
+                    >
+
+                    <label for="enunciado">
+                        Escribí tu pregunta
+                    </label>
+
+                    <textarea
+                        id="enunciado"
+                        name="enunciado"
+                        maxlength="255"
+                        rows="3"
+                        required
+                        placeholder="Ej: ¿Quién ganó el Grammy a álbum del año en...?"
+                    ></textarea>
+
+                    <label for="opcion_1">
+                        Opción 1
+                    </label>
+
+                    <input
+                        type="text"
+                        id="opcion_1"
+                        name="opcion_1"
+                        maxlength="150"
+                        required
+                        placeholder="Primera respuesta"
+                    >
+
+                    <label for="opcion_2">
+                        Opción 2
+                    </label>
+
+                    <input
+                        type="text"
+                        id="opcion_2"
+                        name="opcion_2"
+                        maxlength="150"
+                        required
+                        placeholder="Segunda respuesta"
+                    >
+
+                    <label for="opcion_3">
+                        Opción 3
+                    </label>
+
+                    <input
+                        type="text"
+                        id="opcion_3"
+                        name="opcion_3"
+                        maxlength="150"
+                        required
+                        placeholder="Tercera respuesta"
+                    >
+
+                    <label for="correcta">
+                        ¿Cuál es la respuesta correcta?
+                    </label>
+
+                    <select
+                        id="correcta"
+                        name="correcta"
+                        required
+                    >
+                        <option value="">
+                            Seleccioná una respuesta
+                        </option>
+                        <option value="1">Opción 1</option>
+                        <option value="2">Opción 2</option>
+                        <option value="3">Opción 3</option>
+                    </select>
+
+                    <label for="categoria_id">
+                        Categoría
+                    </label>
+
+                    <select
+                        id="categoria_id"
+                        name="categoria_id"
+                        required
+                    >
+                        <option value="">
+                            Seleccioná una categoría
+                        </option>
+
+                        {{#categorias}}
+                            <option value="{{id}}">
+                                {{nombre}}
+                            </option>
+                        {{/categorias}}
+                    </select>
+
+                    <label for="dificultad">
+                        Dificultad
+                    </label>
+
+                    <select
+                        id="dificultad"
+                        name="dificultad"
+                        required
+                    >
+                        <option value="FACIL">Fácil</option>
+                        <option value="INTERMEDIO" selected>
+                            Intermedio
+                        </option>
+                        <option value="DIFICIL">Difícil</option>
+                    </select>
+
+                    <button
+                        type="submit"
+                        class="grammys-button"
+                    >
+                        Enviar sugerencia
+                    </button>
+
+                </form>
+            {{/hay_categorias}}
+
+            {{^hay_categorias}}
+                <p>
+                    Todavía no hay categorías disponibles
+                    para sugerir preguntas.
+                </p>
+            {{/hay_categorias}}
+
+            {{#volver_partida}}
+                <a class="grammys-text-link" href="{{base}}/index.php?controller=partida&amp;method=show">
+                    Volver a la partida
+                </a>
+            {{/volver_partida}}
+
+            <a
+                class="grammys-text-link"
+                href="{{base}}/index.php?controller=home&amp;method=show"
+            >
+                Volver al inicio
+            </a>
+
+        </div>
+
+    </section>
+
+</main>

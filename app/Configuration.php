@@ -7,10 +7,18 @@ use app\controller\LoginController;
 use app\controller\RegistroController;
 use app\controller\PerfilController;
 use app\controller\PartidaController;
+use app\controller\ContribucionController;
+use app\controller\EditorController;
+
 use app\model\LoginModel;
 use app\model\RegistroModel;
 use app\model\PerfilModel;
 use app\model\PartidaModel;
+use app\model\ContribucionModel;
+use app\model\EditorModel;
+use app\model\AdministradorModel;
+use app\model\UsuarioInternoModel;
+
 use app\service\MapaService;
 use app\service\QrService;
 use app\service\MailService;
@@ -24,6 +32,8 @@ require_once __DIR__ . "/../helper/Autoloader.php";
 
 class Configuration
 {
+    private ?MyDatabase $database = null;
+
     public function __construct()
     {
     }
@@ -81,7 +91,34 @@ class Configuration
         );
     }
 
+
+public function getContribucionController()
+{
+    return new ContribucionController(
+        $this->getContribucionModel(),
+        $this->gerRender()
+    );
+}
+
+
+    public function getEditorController(): EditorController
+    {
+        $database = $this->getDatabase();
+        return new EditorController(
+            new EditorModel($database),
+            new PartidaModel($database),
+            $this->getUsuarioInternoModel(),
+            new AdministradorModel($database),
+            $this->gerRender()
+        );
+    }
+
     // ───────────── Models ─────────────
+
+    public function getUsuarioInternoModel(): UsuarioInternoModel
+    {
+        return new UsuarioInternoModel($this->getDatabase());
+    }
 
     private function getLoginModel()
     {
@@ -111,15 +148,30 @@ class Configuration
         );
     }
 
+
+private function getContribucionModel()
+{
+    return new ContribucionModel(
+        $this->getDatabase()
+    );
+}
+
+
+
+
     // ───────────── Infraestructura y servicios ─────────────
 
     private function getDatabase()
     {
+        if ($this->database !== null) {
+            return $this->database;
+        }
+
         $config = parse_ini_file("config/config.ini");
 
         $host = $config["db_host"] . ";port=" . $config["db_port"];
 
-        return new MyDatabase(
+        return $this->database = new MyDatabase(
             $host,
             $config["db_user"],
             $config["db_pass"],

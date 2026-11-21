@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS preguntas (
     opcion_3 VARCHAR(150) NOT NULL,
     correcta ENUM('1', '2', '3') NOT NULL,
     categoria_id INT UNSIGNED NULL,
-    imagen VARCHAR(500) NULL
+    imagen VARCHAR(500) NULL,
+    activa TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_creacion DATETIME(6) NULL DEFAULT CURRENT_TIMESTAMP(6)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Agrega las columnas solamente si todavía no existen.

@@ -1,3 +1,4 @@
+
 <main class="partida-contenedor">
     <section class="partida-tarjeta" aria-labelledby="partida-titulo">
         <p class="grammys-eyebrow">The Grammys Trivia</p>
@@ -13,21 +14,21 @@
         </h1>
 
         {{#categoria_nombre}}
-    <p>
-        Categoría:
-        <strong>{{categoria_nombre}}</strong>
-    </p>
+            <p>
+                Categoría:
+                <strong>{{categoria_nombre}}</strong>
+            </p>
 
-    <p>
-        Dificultad:
-        <strong>{{dificultad}}</strong>
-    </p>
+            <p>
+                Dificultad:
+                <strong>{{dificultad}}</strong>
+            </p>
 
-    <p>
-        Respuestas correctas:
-        <strong>{{correctas}} / {{total_preguntas}}</strong>
-    </p>
-{{/categoria_nombre}}
+            <p>
+                Respuestas correctas:
+                <strong>{{correctas}} / {{total_preguntas}}</strong>
+            </p>
+        {{/categoria_nombre}}
 
         {{#mostrar_puntaje}}
             <p class="partida-puntaje">
@@ -43,19 +44,28 @@
         {{/error}}
 
         {{#mensaje}}
-    <p role="status">
-        {{mensaje}}
-    </p>
-{{/mensaje}}
+            <p role="status">
+                {{mensaje}}
+            </p>
+        {{/mensaje}}
+
+        <!-- ELEGIR CATEGORÍA Y DIFICULTAD -->
 
         {{#elegir_categoria}}
-            <p>Elegí tu tema y poné a prueba cuánto sabés de música.</p>
+            <p>
+                Elegí tu tema y poné a prueba
+                cuánto sabés de música.
+            </p>
 
             <form
                 method="post"
                 action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria"
             >
-                <input type="hidden" name="token" value="{{token}}">
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
 
                 <fieldset class="partida-opciones">
                     <legend>Categorías disponibles</legend>
@@ -68,48 +78,72 @@
                                 value="{{id}}"
                                 required
                             >
-
                             <span>{{nombre}}</span>
                         </label>
                     {{/categorias}}
                 </fieldset>
-    <legend>Elegí la dificultad</legend>
 
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="FACIL" required>
-        <span>Fácil</span>
-    </label>
+                <fieldset class="partida-opciones">
+                    <legend>Elegí la dificultad</legend>
 
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="INTERMEDIO" checked>
-        <span>Intermedio</span>
-    </label>
+                    <label class="partida-opcion">
+                        <input
+                            type="radio"
+                            name="dificultad"
+                            value="FACIL"
+                            required
+                        >
+                        <span>Fácil</span>
+                    </label>
 
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="DIFICIL">
-        <span>Difícil</span>
-    </label>
-</fieldset>
+                    <label class="partida-opcion">
+                        <input
+                            type="radio"
+                            name="dificultad"
+                            value="INTERMEDIO"
+                            checked
+                        >
+                        <span>Intermedio</span>
+                    </label>
 
+                    <label class="partida-opcion">
+                        <input
+                            type="radio"
+                            name="dificultad"
+                            value="DIFICIL"
+                        >
+                        <span>Difícil</span>
+                    </label>
+                </fieldset>
 
                 {{#hay_categorias}}
-                    <button class="grammys-button" type="submit">
+                    <button
+                        class="grammys-button"
+                        type="submit"
+                    >
                         Empezar a jugar
                     </button>
                 {{/hay_categorias}}
 
                 {{^categorias}}
-                    <p>Todavía no hay categorías disponibles.</p>
+                    <p>
+                        Todavía no hay categorías disponibles.
+                    </p>
                 {{/categorias}}
             </form>
         {{/elegir_categoria}}
 
+        <!-- SIN PREGUNTAS -->
+
         {{#sin_preguntas}}
             <p>
-                Todavía no hay preguntas disponibles en esta categoría.
+                Todavía no hay preguntas disponibles
+                en esta categoría.
                 Elegí otra categoría para jugar.
             </p>
         {{/sin_preguntas}}
+
+        <!-- IMAGEN DE LA PREGUNTA -->
 
         {{#imagen}}
             <img
@@ -120,10 +154,18 @@
             >
         {{/imagen}}
 
+        <!-- PREGUNTA EN CURSO -->
+
         {{#en_curso}}
-            <p class="partida-tiempo" role="timer" aria-label="Tiempo restante">
+            <p
+                class="partida-tiempo"
+                role="timer"
+                aria-label="Tiempo restante"
+            >
                 Tiempo restante:
-                <strong id="partida-segundos">{{segundos_restantes}}</strong>
+                <strong id="partida-segundos">
+                    {{segundos_restantes}}
+                </strong>
                 segundos
             </p>
 
@@ -133,7 +175,11 @@
                 method="post"
                 action="{{base}}/index.php?controller=partida&amp;method=responder"
             >
-                <input type="hidden" name="token" value="{{token}}">
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
 
                 <fieldset class="partida-opciones">
                     <legend>{{pregunta}}</legend>
@@ -152,20 +198,35 @@
                     {{/opciones}}
                 </fieldset>
 
-                <button class="grammys-button" type="submit">
+                <button
+                    class="grammys-button"
+                    type="submit"
+                >
                     Confirmar respuesta
                 </button>
             </form>
-            <form
-    method="post"
-    action="{{base}}/index.php?controller=partida&amp;method=terminar"
->
-    <input type="hidden" name="token" value="{{token}}">
 
-    <button class="grammys-button" type="submit">
-        Terminar partida
-    </button>
-</form>
+            <!-- TERMINAR PARTIDA MIENTRAS JUEGA -->
+
+            <form
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=terminar"
+            >
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
+
+                <button
+                    class="grammys-button"
+                    type="submit"
+                >
+                    Terminar partida
+                </button>
+            </form>
+
+            <!-- FORMULARIO AUTOMÁTICO POR TIEMPO AGOTADO -->
 
             <form
                 id="partida-formulario-tiempo"
@@ -173,16 +234,34 @@
                 action="{{base}}/index.php?controller=partida&amp;method=responder"
                 hidden
             >
-                <input type="hidden" name="token" value="{{token}}">
-                <input type="hidden" name="tiempo_agotado" value="1">
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
+
+                <input
+                    type="hidden"
+                    name="tiempo_agotado"
+                    value="1"
+                >
             </form>
+
+            <!-- CONTADOR ORIGINAL DE LA PARTIDA -->
 
             <script>
                 (function () {
-                    var contador = document.getElementById('partida-segundos');
-                    var formulario = document.getElementById('partida-formulario-tiempo');
+                    var contador =
+                        document.getElementById('partida-segundos');
+
+                    var formulario =
+                        document.getElementById('partida-formulario-tiempo');
+
                     var intervalo;
-                    var venceEn = window.performance.now() + {{milisegundos_restantes}};
+
+                    var venceEn =
+                        window.performance.now() +
+                        {{milisegundos_restantes}};
 
                     function enviarAlAgotarse() {
                         window.clearInterval(intervalo);
@@ -208,17 +287,32 @@
                         return;
                     }
 
-                    intervalo = window.setInterval(actualizarContador, 100);
+                    intervalo = window.setInterval(
+                        actualizarContador,
+                        100
+                    );
+
                     actualizarContador();
                 }());
             </script>
         {{/en_curso}}
 
+        <!-- RESULTADO DESPUÉS DE RESPONDER -->
+
         {{#finalizada}}
+
+            <!-- SI SE TERMINÓ EL TIEMPO -->
+
             {{#agotado}}
                 <h2>¡Se agotó el tiempo!</h2>
-                <p>No respondiste a tiempo y se descontó un punto.</p>
+
+                <p>
+                    No respondiste a tiempo
+                    y se descontó un punto.
+                </p>
             {{/agotado}}
+
+            <!-- SI RESPONDIÓ -->
 
             {{^agotado}}
                 <h2>
@@ -230,9 +324,13 @@
                         Esta vez no acertaste
                     {{/correcta}}
                 </h2>
+            {{/agotado}}
 
-                <p>{{pregunta}}</p>
+            <!-- PREGUNTA QUE ACABA DE TERMINAR -->
 
+            <p>{{pregunta}}</p>
+
+            {{^agotado}}
                 <p>
                     Elegiste:
                     <strong>{{respuesta_elegida}}</strong>.
@@ -245,28 +343,106 @@
                     <strong>{{respuesta_correcta}}</strong>.
                 </p>
             {{/correcta}}
-            <form
-    method="post"
-    action="{{base}}/index.php?controller=partida&amp;method=terminar"
->
-    <input type="hidden" name="token" value="{{token}}">
 
-    <button class="grammys-button" type="submit">
-        Terminar partida
-    </button>
-</form>
+            <!-- NUEVO: REPORTAR PREGUNTA -->
+
+            <div class="partida-contribuciones">
+
+                <h3>¿Querés colaborar con la trivia?</h3>
+
+                <details>
+                    <summary class="grammys-button">
+                        Reportar pregunta actual
+                    </summary>
+
+                    <form
+                        method="post"
+                        action="{{base}}/index.php?controller=contribucion&amp;method=reportar"
+                    >
+                        <input
+                            type="hidden"
+                            name="token"
+                            value="{{contribucion_token}}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="pregunta_id"
+                            value="{{pregunta_id}}"
+                        >
+
+                        <label for="motivo-reporte">
+                            Motivo del reporte (opcional)
+                        </label>
+
+                        <textarea
+                            id="motivo-reporte"
+                            name="motivo"
+                            rows="3"
+                            maxlength="500"
+                            placeholder="Podés explicar qué tiene de malo esta pregunta, o dejarlo vacío."
+                        ></textarea>
+
+                        <button class="grammys-button" type="submit">
+                            Enviar reporte
+                        </button>
+                    </form>
+                </details>
+
+                <!-- NUEVO: SUGERIR PREGUNTA -->
+
+                <a
+                    class="grammys-button"
+                    href="{{base}}/index.php?controller=contribucion&amp;method=sugerir"
+                >
+                    Sugerir pregunta
+                </a>
+
+            </div>
+
+            <!-- TERMINAR PARTIDA -->
+
+            <form
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=terminar"
+            >
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
+
+                <button
+                    class="grammys-button"
+                    type="submit"
+                >
+                    Terminar partida
+                </button>
+            </form>
+
+            <!-- CONTINUAR CON OTRA PREGUNTA -->
 
             <form
                 method="post"
                 action="{{base}}/index.php?controller=partida&amp;method=comenzar"
             >
-                <input type="hidden" name="token" value="{{token}}">
+                <input
+                    type="hidden"
+                    name="token"
+                    value="{{token}}"
+                >
 
-                <button class="grammys-button" type="submit">
+                <button
+                    class="grammys-button"
+                    type="submit"
+                >
                     Otra pregunta de esta categoría
                 </button>
             </form>
+
         {{/finalizada}}
+
+        <!-- CAMBIAR CATEGORÍA -->
 
         {{^elegir_categoria}}
             <a
@@ -277,8 +453,14 @@
             </a>
         {{/elegir_categoria}}
 
-        <a class="partida-volver" href="{{base}}/">
+        <!-- VOLVER AL INICIO -->
+
+        <a
+            class="partida-volver"
+            href="{{base}}/"
+        >
             Volver al inicio
         </a>
+
     </section>
 </main>

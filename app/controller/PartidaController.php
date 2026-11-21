@@ -113,10 +113,11 @@ class PartidaController
             'total_preguntas' => $resumen['total_preguntas'],
             'mostrar_puntaje' => true,
             'puntaje' => (int) ($_SESSION['partida_puntaje'] ?? 0),
-            'error' => $_SESSION['partida_error'] ?? null
+            'error' => $_SESSION['partida_error'] ?? null,
+            'mensaje' => $_SESSION['partida_mensaje'] ?? null
         ];
 
-        unset($_SESSION['partida_error']);
+        unset($_SESSION['partida_error'], $_SESSION['partida_mensaje']);
 
         if (!isset($_SESSION['partida'])) {
             $data['sin_preguntas'] = true;
@@ -152,6 +153,8 @@ class PartidaController
                 }
             } else {
                 $data['finalizada'] = true;
+                $data['pregunta_id'] = (int) $pregunta['id'];
+                $data['contribucion_token'] = $_SESSION['contribucion_token'] ??= bin2hex(random_bytes(32));
 
                 if (!empty($partida['agotado'])) {
                     $data['agotado'] = true;
