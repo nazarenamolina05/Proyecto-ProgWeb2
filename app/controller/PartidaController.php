@@ -211,23 +211,23 @@ class PartidaController
                 if ($this->estaPendiente($_SESSION['partida'])) {
                     $_SESSION['partida']['respuesta_id'] = $respuesta;
 
-                // Actualiza los resultados de la partida.
-                $_SESSION['partida_resumen']['total_preguntas']++;
+                    // Actualiza los resultados de la partida.
+                    $_SESSION['partida_resumen']['total_preguntas']++;
 
-                if (
-                    $this->model->esCorrecta(
+                    $esCorrecta = $this->model->esCorrecta(
                         $partida['pregunta'],
                         $respuesta
-                    )
-                ) {
-                    $_SESSION['partida_resumen']['correctas']++;
-                }
-                    $_SESSION['partida_puntaje'] =
+                    );
+
+                    if ($esCorrecta) {
+                        $_SESSION['partida_resumen']['correctas']++;
+                    }
+
+                    $_SESSION['partida_puntaje'] = max(
+                        0,
                         (int) ($_SESSION['partida_puntaje'] ?? 0) +
-                        ($this->model->esCorrecta(
-                            $partida['pregunta'],
-                            $respuesta
-                        ) ? 1 : -1);
+                        ($esCorrecta ? 1 : -1)
+                    );
 
                     $_SESSION['partida_token'] =
                         bin2hex(random_bytes(32));
@@ -270,78 +270,80 @@ class PartidaController
         );
     }
 
-public function terminar()
-{
-    if (!$this->validarPost()) {
-        return;
-    }
+    public function terminar()
+    {
+        if (!$this->validarPost()) {
+            return;
+        }
 
-    if (!isset($_SESSION['usuario_id'])) {
-        Redirect::to(
-            '/index.php?controller=login&method=show'
-        );
-        return;
-    }
-
-    if (
-        !isset($_SESSION['partida_categoria']) ||
-        !isset($_SESSION['partida_resumen']) ||
-        !isset($_SESSION['partida_dificultad'])
-    ) {
-        $_SESSION['partida_error'] =
-            'No hay una partida activa para guardar.';
-
-        Redirect::to(
-            '/index.php?controller=partida&method=categorias'
-        );
-        return;
-    }
-
-    $resumen = $_SESSION['partida_resumen'];
-
-    $correctas = (int) $resumen['correctas'];
-    $totalPreguntas = (int) $resumen['total_preguntas'];
-
-    if ($totalPreguntas === 0) {
-        $_SESSION['partida_mensaje'] =
-            'La partida terminó sin respuestas y no se guardó ningún resultado.';
-    } else {
-        $guardada = $this->model->guardarPartida(
-            (int) $_SESSION['usuario_id'],
-            $correctas,
-            $correctas,
-            $totalPreguntas,
-            $_SESSION['partida_dificultad'],
-            (int) $_SESSION['partida_categoria']['id']
-        );
-
-        if (!$guardada) {
-            $_SESSION['partida_error'] =
-                'No se pudo guardar la partida. Volvé a intentarlo.';
-
+        if (!isset($_SESSION['usuario_id'])) {
             Redirect::to(
-                '/index.php?controller=partida&method=show'
+                '/index.php?controller=login&method=show'
             );
             return;
         }
 
-        $_SESSION['partida_mensaje'] =
-            '¡Partida guardada correctamente! Tu resultado ya está registrado.';
+        if (
+            !isset($_SESSION['partida_categoria']) ||
+            !isset($_SESSION['partida_resumen']) ||
+            !isset($_SESSION['partida_dificultad'])
+        ) {
+            $_SESSION['partida_error'] =
+                'No hay una partida activa para guardar.';
+
+            Redirect::to(
+                '/index.php?controller=partida&method=categorias'
+            );
+            return;
+        }
+
+        $resumen = $_SESSION['partida_resumen'];
+
+        $correctas = (int) $resumen['correctas'];
+        $totalPreguntas = (int) $resumen['total_preguntas'];
+        $puntaje = max(0, (int) ($_SESSION['partida_puntaje'] ?? 0));
+
+        if ($totalPreguntas === 0) {
+            $_SESSION['partida_mensaje'] =
+                'La partida terminó sin respuestas y no se guardó ningún resultado.';
+        } else {
+            $guardada = $this->model->guardarPartida(
+                (int) $_SESSION['usuario_id'],
+                $puntaje,
+                $correctas,
+                $totalPreguntas,
+                $_SESSION['partida_dificultad'],
+                (int) $_SESSION['partida_categoria']['id']
+            );
+
+            if (!$guardada) {
+                $_SESSION['partida_error'] =
+                    'No se pudo guardar la partida. Volvé a intentarlo.';
+
+                Redirect::to(
+                    '/index.php?controller=partida&method=show'
+                );
+                return;
+            }
+
+            $_SESSION['partida_mensaje'] =
+                '¡Partida guardada correctamente! Tu resultado ya está registrado.';
+        }
+
+        unset(
+            $_SESSION['partida'],
+            $_SESSION['partida_categoria'],
+            $_SESSION['partida_dificultad'],
+            $_SESSION['partida_resumen'],
+            $_SESSION['partida_puntaje']
+        );
+
+        $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+
+        Redirect::to(
+            '/index.php?controller=partida&method=categorias'
+        );
     }
-
-    unset(
-        $_SESSION['partida'],
-        $_SESSION['partida_categoria'],
-        $_SESSION['partida_dificultad'],
-        $_SESSION['partida_resumen']
-    );
-
-    $_SESSION['partida_token'] = bin2hex(random_bytes(32));
-
-    Redirect::to(
-        '/index.php?controller=partida&method=categorias'
-    );
-}
 
     private function crearPartida()
     {
@@ -387,8 +389,12 @@ public function terminar()
         }
 
         $_SESSION['partida']['agotado'] = true;
-        $_SESSION['partida_puntaje'] =
-            (int) ($_SESSION['partida_puntaje'] ?? 0) - 1;
+
+        $_SESSION['partida_puntaje'] = max(
+            0,
+            (int) ($_SESSION['partida_puntaje'] ?? 0) - 1
+        );
+
         $_SESSION['partida_token'] = bin2hex(random_bytes(32));
     }
 
