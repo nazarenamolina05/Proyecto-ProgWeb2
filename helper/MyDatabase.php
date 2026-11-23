@@ -71,4 +71,20 @@ class MyDatabase
     {
         return $this->conexion->lastInsertId();
     }
+
+    public function enTransaccion(callable $operacion)
+    {
+        $this->conexion->beginTransaction();
+
+        try {
+            $resultado = $operacion();
+            $this->conexion->commit();
+            return $resultado;
+        } catch (Throwable $error) {
+            if ($this->conexion->inTransaction()) {
+                $this->conexion->rollBack();
+            }
+            throw $error;
+        }
+    }
 }

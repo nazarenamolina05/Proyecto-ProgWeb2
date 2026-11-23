@@ -1,0 +1,172 @@
+<main class="editor-panel">
+    {{#inicio}}
+        <div class="editor-bienvenida">
+            {{#nombre_editor}}
+                <p>{{titulo}}</p>
+                <h1>Hola, {{nombre_editor}}</h1>
+            {{/nombre_editor}}
+            {{^nombre_editor}}<h1>{{titulo}}</h1>{{/nombre_editor}}
+        </div>
+        <div class="editor-inicio">
+            <nav class="editor-tarjetas" aria-label="Secciones del panel">
+                <a class="editor-tarjeta" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=preguntas">
+                    <div>
+                        <strong>Preguntas</strong>
+                        <span class="editor-tarjeta-detalle">Creá, editá o retirá preguntas.</span>
+                    </div>
+                    <span aria-hidden="true">→</span>
+                </a>
+                {{#editor}}
+                    <a class="editor-tarjeta" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=sugerencias">
+                        <div>
+                            <strong>Sugerencias</strong>
+                            <span class="editor-tarjeta-detalle">Decidí qué aportes publicar.</span>
+                        </div>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                    <a class="editor-tarjeta editor-tarjeta-centrada" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=reportes">
+                        <div>
+                            <strong>Reportes</strong>
+                            <span class="editor-tarjeta-detalle">Revisá las preguntas reportadas.</span>
+                        </div>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                {{/editor}}
+                {{#administrador}}
+                    <a class="editor-tarjeta" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=cuentas">
+                        <div>
+                            <strong>Administrar editores</strong>
+                            <span class="editor-tarjeta-detalle">Creá, desactivá o reactivá cuentas.</span>
+                        </div>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                    <a class="editor-tarjeta editor-tarjeta-centrada" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=estadisticas">
+                        <div>
+                            <strong>Ver estadísticas</strong>
+                            <span class="editor-tarjeta-detalle">Filtrá los datos e imprimí las tablas.</span>
+                        </div>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                {{/administrador}}
+            </nav>
+            <img
+                class="grammys-award-image editor-premio"
+                src="{{base}}/public/images/grammy-award.png"
+                alt="Estatuilla dorada de un premio Grammy"
+            >
+        </div>
+    {{/inicio}}
+    {{^inicio}}
+        <a href="{{base}}/index.php?controller=editor&amp;method=show">Volver al panel</a>
+    {{/inicio}}
+
+    {{#mensaje}}<p class="editor-aviso" role="status">{{mensaje}}</p>{{/mensaje}}
+    {{#error}}<p class="editor-aviso grammys-error" role="alert">{{error}}</p>{{/error}}
+
+    {{#ver_preguntas}}
+    <section id="preguntas" class="editor-seccion" aria-labelledby="titulo-preguntas">
+        <div class="editor-acciones editor-encabezado">
+            <h1 id="titulo-preguntas">Preguntas</h1>
+            <a class="grammys-button" href="{{base}}/index.php?controller=editor&amp;method=formulario">Nueva pregunta</a>
+        </div>
+        {{#preguntas}}
+            <article class="editor-fila">
+                <div>
+                    <h2>{{enunciado}}</h2>
+                    <p>{{categoria}} · {{dificultad}} · {{#activa}}Activa{{/activa}}{{^activa}}De baja{{/activa}}</p>
+                </div>
+                <form class="editor-acciones" method="post" action="{{base}}/index.php?controller=editor&amp;method=estadoPregunta">
+                    <a href="{{base}}/index.php?controller=editor&amp;method=formulario&amp;id={{id}}">Editar</a>
+                    <input type="hidden" name="token" value="{{token}}">
+                    <input type="hidden" name="id" value="{{id}}">
+                    {{#activa}}<button type="submit" name="accion" value="baja" class="editor-secundario">Dar de baja</button>{{/activa}}
+                    {{^activa}}<button type="submit" name="accion" value="activar" class="editor-secundario">Reactivar</button>{{/activa}}
+                </form>
+            </article>
+        {{/preguntas}}
+        {{^preguntas}}<p>Todavía no hay preguntas.</p>{{/preguntas}}
+    </section>
+    {{/ver_preguntas}}
+
+    {{#ver_reportes}}
+    <section id="reportes" class="editor-seccion" aria-labelledby="titulo-reportes">
+        <h1 id="titulo-reportes">Reportes pendientes</h1>
+        {{#reportes}}
+            <article class="editor-fila">
+                <div>
+                    <h2>{{enunciado}}</h2>
+                    <p>Reportada por {{usuario}} · {{#activa}}Activa{{/activa}}{{^activa}}De baja{{/activa}}</p>
+                    {{#motivo}}<p class="editor-motivo">{{motivo}}</p>{{/motivo}}
+                    {{^motivo}}<p>Sin motivo indicado.</p>{{/motivo}}
+                </div>
+                <form class="editor-acciones" method="post" action="{{base}}/index.php?controller=editor&amp;method=resolverReporte">
+                    <a href="{{base}}/index.php?controller=editor&amp;method=formulario&amp;id={{pregunta_id}}&amp;origen=reportes">Ver pregunta</a>
+                    <input type="hidden" name="token" value="{{token}}">
+                    <input type="hidden" name="id" value="{{id}}">
+                    <button type="submit" name="decision" value="conservar" class="editor-secundario">Conservar estado</button>
+                    {{#activa}}<button type="submit" name="decision" value="baja" class="editor-secundario">Dar de baja</button>{{/activa}}
+                </form>
+            </article>
+        {{/reportes}}
+        {{^reportes}}<p>No hay reportes pendientes.</p>{{/reportes}}
+    </section>
+    {{/ver_reportes}}
+
+    {{#ver_sugerencias}}
+    <section id="sugerencias" class="editor-seccion" aria-labelledby="titulo-sugerencias">
+        <h1 id="titulo-sugerencias">Sugerencias pendientes</h1>
+        {{#sugerencias}}
+            <article class="editor-fila">
+                <div>
+                    <h2>{{enunciado}}</h2>
+                    <p>Sugerida por {{usuario}} · {{categoria}} · {{dificultad}}</p>
+                    <ol>
+                        <li>{{opcion_1}}</li>
+                        <li>{{opcion_2}}</li>
+                        <li>{{opcion_3}}</li>
+                    </ol>
+                    <p>Respuesta correcta: opción {{correcta}}</p>
+                </div>
+                <form class="editor-acciones" method="post" action="{{base}}/index.php?controller=editor&amp;method=resolverSugerencia">
+                    <input type="hidden" name="token" value="{{token}}">
+                    <input type="hidden" name="id" value="{{id}}">
+                    <button type="submit" name="decision" value="aprobar" class="grammys-button">Aprobar y publicar</button>
+                    <button type="submit" name="decision" value="rechazar" class="editor-secundario">Rechazar</button>
+                </form>
+            </article>
+        {{/sugerencias}}
+        {{^sugerencias}}<p>No hay sugerencias pendientes.</p>{{/sugerencias}}
+    </section>
+    {{/ver_sugerencias}}
+
+    {{#ver_cuentas}}
+        <section id="cuentas" class="editor-seccion" aria-labelledby="titulo-cuentas">
+            <h1 id="titulo-cuentas">Administrar editores</h1>
+            <h2>Crear editor</h2>
+            <form class="editor-formulario" method="post" action="{{base}}/index.php?controller=editor&amp;method=crearCuenta" autocomplete="off">
+                <input type="hidden" name="token" value="{{token}}">
+                <label for="interno-usuario">Usuario</label>
+                <input id="interno-usuario" name="usuario" pattern="[A-Za-z0-9_]{3,50}" maxlength="50" required>
+                <label for="interno-password">Contraseña inicial (mínimo 3 caracteres)</label>
+                <input id="interno-password" name="password" type="password" minlength="3" maxlength="72" autocomplete="new-password" required>
+                <button type="submit" class="grammys-button">Crear editor</button>
+            </form>
+            <h2>Editores registrados</h2>
+            {{#editores}}
+                <article class="editor-fila">
+                    <div>
+                        <h3>{{usuario}}</h3>
+                        <p>{{#habilitado}}Activo{{/habilitado}}{{^habilitado}}De baja{{/habilitado}}</p>
+                    </div>
+                    <form method="post" action="{{base}}/index.php?controller=editor&amp;method=estadoEditor">
+                        <input type="hidden" name="token" value="{{token}}">
+                        <input type="hidden" name="id" value="{{id}}">
+                        {{#habilitado}}<button class="editor-secundario" type="submit" name="accion" value="baja" aria-label="Dar de baja a {{usuario}}">Dar de baja</button>{{/habilitado}}
+                        {{^habilitado}}<button class="editor-secundario" type="submit" name="accion" value="activar" aria-label="Reactivar a {{usuario}}">Reactivar</button>{{/habilitado}}
+                    </form>
+                </article>
+            {{/editores}}
+            {{^editores}}<p>Todavía no hay editores registrados.</p>{{/editores}}
+        </section>
+    {{/ver_cuentas}}
+</main>

@@ -6,6 +6,8 @@ use Redirect;
 
 class PartidaController
 {
+    private const DURACION_PREGUNTA_SEGUNDOS = 20;
+
     private $model;
     private $render;
 
@@ -113,10 +115,11 @@ class PartidaController
             'total_preguntas' => $resumen['total_preguntas'],
             'mostrar_puntaje' => true,
             'puntaje' => (int) ($_SESSION['partida_puntaje'] ?? 0),
-            'error' => $_SESSION['partida_error'] ?? null
+            'error' => $_SESSION['partida_error'] ?? null,
+            'mensaje' => $_SESSION['partida_mensaje'] ?? null
         ];
 
-        unset($_SESSION['partida_error']);
+        unset($_SESSION['partida_error'], $_SESSION['partida_mensaje']);
 
         if (!isset($_SESSION['partida'])) {
             $data['sin_preguntas'] = true;
@@ -129,18 +132,17 @@ class PartidaController
 
             if ($this->estaPendiente($partida)) {
                 $data['en_curso'] = true;
-                $data['segundos_restantes'] = max(
-                    0,
-                    (int) ceil(
-                        (float) $partida['vence_en'] - microtime(true)
-                    )
-                );
+                $data['audio_partida'] = 'temporizador.mp3';
                 $data['milisegundos_restantes'] = max(
                     0,
                     (int) ceil(
                         ((float) $partida['vence_en'] - microtime(true)) *
                         1000
                     )
+                );
+                $data['duracion_pregunta'] = self::DURACION_PREGUNTA_SEGUNDOS;
+                $data['segundos_restantes'] = (int) ceil(
+                    $data['milisegundos_restantes'] / 1000
                 );
                 $data['opciones'] = [];
 
@@ -152,6 +154,8 @@ class PartidaController
                 }
             } else {
                 $data['finalizada'] = true;
+                $data['pregunta_id'] = (int) $pregunta['id'];
+                $data['contribucion_token'] = $_SESSION['contribucion_token'] ??= bin2hex(random_bytes(32));
 
                 if (!empty($partida['agotado'])) {
                     $data['agotado'] = true;
@@ -160,6 +164,9 @@ class PartidaController
                         $pregunta,
                         $partida['respuesta_id']
                     );
+                    $data['audio_partida'] = $data['correcta']
+                        ? 'respuesta-correcta.mp3'
+                        : 'respuesta-incorrecta.mp3';
 
                     $data['respuesta_elegida'] =
                         $pregunta['opciones'][$partida['respuesta_id']];
@@ -361,7 +368,7 @@ class PartidaController
             'pregunta' => $pregunta,
             'respuesta_id' => null,
             'agotado' => false,
-            'vence_en' => microtime(true) + 20
+            'vence_en' => microtime(true) + self::DURACION_PREGUNTA_SEGUNDOS
         ];
 
         $_SESSION['partida_token'] =

@@ -43,6 +43,7 @@ class PartidaModel
             FROM preguntas
             WHERE categoria_id = ?
               AND dificultad = ?
+              AND activa = 1
             ORDER BY RAND()
             LIMIT 1
         ";
