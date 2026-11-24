@@ -85,4 +85,79 @@
     margin: 24px auto;
     border-radius: 12px;
     border: 1px solid #b79a53;
+<<<<<<< Updated upstream
 }
+=======
+}
+.popup-derrota {
+    box-sizing: border-box;
+    width: min(400px, 90vw);
+    padding: 32px;
+    border: 1px solid #b79a53;
+    border-radius: 20px;
+    background: #171717;
+    color: #f5f5f5;
+    text-align: center;
+    box-shadow: 0 18px 60px rgb(0 0 0 / 45%);
+}
+
+.popup-derrota::backdrop {
+    background: rgb(0 0 0 / 75%);
+}
+
+.popup-derrota h2 {
+    margin: 0 0 12px;
+    color: #ebcc81;
+    font-size: 2rem;
+}
+
+.popup-derrota-puntaje {
+    margin: 20px 0;
+    font-size: 1.15rem;
+}
+
+.popup-derrota-puntaje strong {
+    display: block;
+    color: #ebcc81;
+    font-size: 2.5rem;
+}
+
+.popup-derrota form {
+    margin-top: 20px;
+}
+
+#escuchar-derrota {
+    border: 0;
+    background: transparent;
+    color: #ebcc81;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.derrota-fondo {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow-y: auto;
+    background: rgb(0 0 0 / 75%);
+}
+
+.popup-derrota audio {
+    display: block;
+    width: 100%;
+    margin: 18px auto;
+}
+
+.popup-derrota .grammys-button {
+    display: inline-block;
+    text-decoration: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .derrota-fondo .popup-derrota {
+        animation: aparecer-derrota 250ms ease-out;
+    }
+}
+>>>>>>> Stashed changes
