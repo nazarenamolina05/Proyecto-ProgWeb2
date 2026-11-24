@@ -5,3 +5,5 @@
 /config/mail.local.ini
 .idea/
 .DS_Store
+public/uploads/perfiles/*
+!public/uploads/perfiles/.gitkeep

@@ -13,14 +13,16 @@ class PerfilController
     private $mapa;
     private $qr;
     private $validator;
+    private $fotoService;
 
-    public function __construct($model, $render, $mapa, $qr)
+    public function __construct($model, $render, $mapa, $qr, $fotoService)
     {
         $this->model = $model;
         $this->render = $render;
         $this->mapa = $mapa;
         $this->qr = $qr;
         $this->validator = new PerfilValidator();
+        $this->fotoService = $fotoService;
     }
 
     public function show()
@@ -59,6 +61,7 @@ class PerfilController
         $data['anio_actual'] = date('Y');
         $data['vistaActual'] = 'perfil';
 
+        $data['foto_url'] = $this->armarFotoUrl($usuario['foto'] ?? null);
         $this->render->renderiza('perfilEditar', $data);
     }
 
@@ -73,11 +76,20 @@ class PerfilController
         $datos = $this->validator->leer($_POST);
         $errores = $this->validator->validar($datos);
 
+        $resultadoFoto = $this->fotoService->guardar($_FILES['foto'] ?? null);
+        if (!$resultadoFoto['ok']) {
+            $errores[] = $resultadoFoto['error'];
+        }
+
         if ($errores) {
+            $this->fotoService->borrar($resultadoFoto['archivo'] ?? null);
+
+            $actual = $this->model->getUsuario($id);
             $data = $this->validator->paraVista($datos);
             $data['errores'] = $errores;
             $data['anio_actual'] = date('Y');
             $data['vistaActual'] = 'perfil';
+            $data['foto_url'] = $this->armarFotoUrl($actual['foto'] ?? null);
             $this->render->renderiza('perfilEditar', $data);
             return;
         }
@@ -94,6 +106,12 @@ class PerfilController
             $d['latitud'],
             $d['longitud']
         );
+
+        if ($resultadoFoto['archivo'] !== null) {
+            $anterior = $this->model->getUsuario($id)['foto'] ?? null;
+            $this->model->actualizarFoto($id, $resultadoFoto['archivo']);
+            $this->fotoService->borrar($anterior);
+        }
 
         header('Location: index.php?controller=perfil&method=show');
         exit;
@@ -119,12 +137,30 @@ class PerfilController
         $data["vistaActual"] = "perfil";
         $data["partidas"] = $this->getPartidasFormateadas($usuario["id"]);
         $data["tiene_partidas"] = !empty($data["partidas"]);
+$totalRespuestas = (int) $usuario["respuestas_totales"];
+$respuestasCorrectas = (int) $usuario["respuestas_correctas"];
+
+$porcentaje = $totalRespuestas > 0
+    ? ($respuestasCorrectas / $totalRespuestas) * 100
+    : 0;
+
+$data["porcentaje_aciertos"] = round($porcentaje, 2);
+
+if ($totalRespuestas === 0 || $porcentaje < 50) {
+    $data["nivel_usuario"] = "Principiante";
+} elseif ($porcentaje < 80) {
+    $data["nivel_usuario"] = "Intermedio";
+} else {
+    $data["nivel_usuario"] = "Avanzado";
+}
         $data["mapa_url"] = $this->mapa->getUrl($usuario["latitud"], $usuario["longitud"]);
         $data["url_perfil"] = $this->armarUrlPerfil($usuario["id"]);
         $data["url_editar"] = "index.php?controller=perfil&method=editar";
         $data["qr_url"] = $this->qr->getUrl($data["url_perfil"]);
         $data["es_propio"] = isset($_SESSION['usuario_id'])
             && (int) $_SESSION['usuario_id'] === (int) $usuario["id"];
+        $data["foto_url"] = $this->armarFotoUrl($usuario["foto"] ?? null);
+        $data["inicial"] = mb_strtoupper(mb_substr($usuario["usuario"], 0, 1));
 
         return $data;
     }
@@ -135,6 +171,13 @@ class PerfilController
 
         foreach ($partidas as $clave => $partida) {
             $partidas[$clave]["fecha_formateada"] = date('d/m/Y H:i', strtotime($partida['fecha']));
+            $partidas[$clave]["porcentaje_aciertos"] =
+    $partida["total_preguntas"] > 0
+        ? round(
+            ($partida["correctas"] / $partida["total_preguntas"]) * 100,
+            2
+        )
+        : 0;
         }
 
         return $partidas;
@@ -149,6 +192,16 @@ class PerfilController
             . "/index.php?controller=perfil&method=show&id=" . (int) $id;
     }
 
+    private function armarFotoUrl($foto)
+    {
+        if (empty($foto)) {
+            return null;
+        }
+
+        $carpeta = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+        return $carpeta . '/public/uploads/perfiles/' . rawurlencode(basename($foto));
+    }
 
 
 

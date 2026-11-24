@@ -48,6 +48,15 @@ class MyDatabase
 
         return $fila === false ? null : $fila;
     }
+    public function queryAllPrepared(string $sql, array $params = [])
+{
+    Log::info($sql);
+
+    $consulta = $this->conexion->prepare($sql);
+    $consulta->execute($params);
+
+    return $consulta->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function executePrepared(string $sql, array $params = [])
     {

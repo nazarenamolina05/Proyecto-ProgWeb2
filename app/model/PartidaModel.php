@@ -26,8 +26,10 @@ class PartidaModel
         );
     }
 
-    public function obtenerPreguntaAleatoria(int $categoriaId): ?array
-    {
+    public function obtenerPreguntaAleatoria(
+        int $categoriaId,
+        string $dificultad = 'INTERMEDIO'
+    ): ?array {
         $sql = "
             SELECT
                 id,
@@ -36,16 +38,18 @@ class PartidaModel
                 opcion_2,
                 opcion_3,
                 correcta,
-                imagen
+                imagen,
+                dificultad
             FROM preguntas
             WHERE categoria_id = ?
+              AND dificultad = ?
             ORDER BY RAND()
             LIMIT 1
         ";
 
         $fila = $this->database->queryOnePrepared(
             $sql,
-            [$categoriaId]
+            [$categoriaId, $dificultad]
         );
 
         if ($fila === null) {
@@ -56,6 +60,7 @@ class PartidaModel
             'id' => (int) $fila['id'],
             'texto' => $fila['enunciado'],
             'imagen' => $fila['imagen'] ?? null,
+            'dificultad' => $fila['dificultad'],
             'opciones' => [
                 1 => $fila['opcion_1'],
                 2 => $fila['opcion_2'],
@@ -78,4 +83,34 @@ class PartidaModel
     ): bool {
         return $pregunta['correcta'] === $opcionId;
     }
+
+public function guardarPartida(
+    int $usuarioId,
+    int $puntaje,
+    int $correctas,
+    int $totalPreguntas,
+    string $dificultad,
+    int $categoriaId
+): bool {
+    $sql = "
+        INSERT INTO partidas (
+            usuario_id,
+            puntaje,
+            correctas,
+            total_preguntas,
+            dificultad,
+            categoria_id
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    ";
+
+    return $this->database->executePrepared($sql, [
+        $usuarioId,
+        $puntaje,
+        $correctas,
+        $totalPreguntas,
+        $dificultad,
+        $categoriaId
+    ]);
+}
+
 }

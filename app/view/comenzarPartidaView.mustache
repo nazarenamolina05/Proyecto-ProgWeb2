@@ -13,17 +13,40 @@
         </h1>
 
         {{#categoria_nombre}}
-            <p>
-                Categoría:
-                <strong>{{categoria_nombre}}</strong>
+    <p>
+        Categoría:
+        <strong>{{categoria_nombre}}</strong>
+    </p>
+
+    <p>
+        Dificultad:
+        <strong>{{dificultad}}</strong>
+    </p>
+
+    <p>
+        Respuestas correctas:
+        <strong>{{correctas}} / {{total_preguntas}}</strong>
+    </p>
+{{/categoria_nombre}}
+
+        {{#mostrar_puntaje}}
+            <p class="partida-puntaje">
+                Puntaje:
+                <strong>{{puntaje}}</strong>
             </p>
-        {{/categoria_nombre}}
+        {{/mostrar_puntaje}}
 
         {{#error}}
             <p class="grammys-error" role="alert">
                 {{error}}
             </p>
         {{/error}}
+
+        {{#mensaje}}
+    <p role="status">
+        {{mensaje}}
+    </p>
+{{/mensaje}}
 
         {{#elegir_categoria}}
             <p>Elegí tu tema y poné a prueba cuánto sabés de música.</p>
@@ -50,6 +73,24 @@
                         </label>
                     {{/categorias}}
                 </fieldset>
+    <legend>Elegí la dificultad</legend>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="FACIL" required>
+        <span>Fácil</span>
+    </label>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="INTERMEDIO" checked>
+        <span>Intermedio</span>
+    </label>
+
+    <label class="partida-opcion">
+        <input type="radio" name="dificultad" value="DIFICIL">
+        <span>Difícil</span>
+    </label>
+</fieldset>
+
 
                 {{#hay_categorias}}
                     <button class="grammys-button" type="submit">
@@ -116,6 +157,12 @@
         {{/imagen}}
 
         {{#en_curso}}
+            <p class="partida-tiempo" role="timer" aria-label="Tiempo restante">
+                Tiempo restante:
+                <strong id="partida-segundos">{{segundos_restantes}}</strong>
+                segundos
+            </p>
+
             <p>Elegí una opción y confirmá tu respuesta.</p>
 
             <form
@@ -145,25 +192,88 @@
                     Confirmar respuesta
                 </button>
             </form>
+            <form
+    method="post"
+    action="{{base}}/index.php?controller=partida&amp;method=terminar"
+>
+    <input type="hidden" name="token" value="{{token}}">
+
+    <button class="grammys-button" type="submit">
+        Terminar partida
+    </button>
+</form>
+
+            <form
+                id="partida-formulario-tiempo"
+                method="post"
+                action="{{base}}/index.php?controller=partida&amp;method=responder"
+                hidden
+            >
+                <input type="hidden" name="token" value="{{token}}">
+                <input type="hidden" name="tiempo_agotado" value="1">
+            </form>
+
+            <script>
+                (function () {
+                    var contador = document.getElementById('partida-segundos');
+                    var formulario = document.getElementById('partida-formulario-tiempo');
+                    var intervalo;
+                    var venceEn = window.performance.now() + {{milisegundos_restantes}};
+
+                    function enviarAlAgotarse() {
+                        window.clearInterval(intervalo);
+                        formulario.submit();
+                    }
+
+                    function actualizarContador() {
+                        var milisegundosRestantes =
+                            venceEn - window.performance.now();
+
+                        contador.textContent = Math.max(
+                            0,
+                            Math.ceil(milisegundosRestantes / 1000)
+                        );
+
+                        if (milisegundosRestantes <= 0) {
+                            enviarAlAgotarse();
+                        }
+                    }
+
+                    if ({{milisegundos_restantes}} <= 0) {
+                        enviarAlAgotarse();
+                        return;
+                    }
+
+                    intervalo = window.setInterval(actualizarContador, 100);
+                    actualizarContador();
+                }());
+            </script>
         {{/en_curso}}
 
         {{#finalizada}}
-            <h2>
-                {{#correcta}}
-                    ¡Respuesta correcta!
-                {{/correcta}}
+            {{#agotado}}
+                <h2>¡Se agotó el tiempo!</h2>
+                <p>No respondiste a tiempo y se descontó un punto.</p>
+            {{/agotado}}
 
-                {{^correcta}}
-                    Esta vez no acertaste
-                {{/correcta}}
-            </h2>
+            {{^agotado}}
+                <h2>
+                    {{#correcta}}
+                        ¡Respuesta correcta!
+                    {{/correcta}}
 
-            <p>{{pregunta}}</p>
+                    {{^correcta}}
+                        Esta vez no acertaste
+                    {{/correcta}}
+                </h2>
 
-            <p>
-                Elegiste:
-                <strong>{{respuesta_elegida}}</strong>.
-            </p>
+                <p>{{pregunta}}</p>
+
+                <p>
+                    Elegiste:
+                    <strong>{{respuesta_elegida}}</strong>.
+                </p>
+            {{/agotado}}
 
             {{^correcta}}
                 <p>
@@ -171,6 +281,16 @@
                     <strong>{{respuesta_correcta}}</strong>.
                 </p>
             {{/correcta}}
+            <form
+    method="post"
+    action="{{base}}/index.php?controller=partida&amp;method=terminar"
+>
+    <input type="hidden" name="token" value="{{token}}">
+
+    <button class="grammys-button" type="submit">
+        Terminar partida
+    </button>
+</form>
 
             <form
                 method="post"

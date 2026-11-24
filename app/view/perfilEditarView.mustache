@@ -1,58 +1,99 @@
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<main class="contenedor grammys-register">
 
-<div class="w3-content" style="max-width:900px">
-    <div class="w3-panel card-contenido w3-padding-24 w3-margin-top w3-card">
-        <h2>Editar mi perfil</h2>
+    <p class="grammys-eyebrow">Tu cuenta</p>
+    <h1>Editar mi perfil</h1>
 
-        {{#errores}}
-            <div class="w3-panel w3-pale-red w3-border"><p>{{.}}</p></div>
-        {{/errores}}
+    <p class="descripcion">
+        Actualizá tus datos, tu ubicación o tu foto de perfil.
+    </p>
 
-        <form method="post" action="index.php?controller=perfil&amp;method=actualizar">
-            <label>Nombre completo</label>
-            <input class="w3-input" name="nombre_completo" value="{{nombre_completo}}" required>
+    {{#errores}}
+        <p class="mensaje error" role="alert">{{.}}</p>
+    {{/errores}}
 
-            <label>Año de nacimiento</label>
-            <input class="w3-input" type="number" name="anio_nacimiento"
+    <form method="post" action="index.php?controller=perfil&amp;method=actualizar"
+          enctype="multipart/form-data">
+
+        {{#foto}}
+            <img class="foto-actual" src="{{base}}/public/uploads/perfiles/{{foto}}" alt="Tu foto actual"
+                 style="display:block; width:110px; height:110px; margin:0 auto 18px;
+                border:3px solid #e6c178; border-radius:50%; object-fit:cover;">
+        {{/foto}}
+
+        <div class="campo">
+            <label for="foto">Cambiar foto de perfil (JPG, PNG o WEBP, máx. 2 MB)</label>
+            <input type="file" id="foto" name="foto" accept="image/jpeg,image/png,image/webp">
+        </div>
+
+        <div class="campo">
+            <label for="nombre_completo">Nombre y apellido</label>
+            <input type="text" id="nombre_completo" name="nombre_completo"
+                   value="{{nombre_completo}}" maxlength="100" required>
+        </div>
+
+        <div class="campo">
+            <label for="anio_nacimiento">Año de nacimiento</label>
+            <input type="number" id="anio_nacimiento" name="anio_nacimiento"
                    value="{{anio_nacimiento}}" min="1900" max="{{anio_actual}}" required>
+        </div>
 
-            <label>Sexo</label>
-            <select class="w3-select" name="sexo">
+        <div class="campo">
+            <label for="sexo">Sexo</label>
+            <select id="sexo" name="sexo" required>
                 <option value="Masculino" {{#sexo_masculino}}selected{{/sexo_masculino}}>Masculino</option>
                 <option value="Femenino" {{#sexo_femenino}}selected{{/sexo_femenino}}>Femenino</option>
-                <option value="Prefiero no decirlo" {{#sexo_nodice}}selected{{/sexo_nodice}}>Prefiero no decirlo</option>
+                <option value="Prefiero no cargarlo" {{#sexo_nodice}}selected{{/sexo_nodice}}>Prefiero no cargarlo</option>
             </select>
+        </div>
 
-            <label>País</label>
-            <input class="w3-input" name="pais" value="{{pais}}">
+        <div class="campo">
+            <label for="pais">País</label>
+            <input type="text" id="pais" name="pais" value="{{pais}}" maxlength="50" required>
+        </div>
 
-            <label>Ciudad</label>
-            <input class="w3-input" name="ciudad" value="{{ciudad}}">
+        <div class="campo">
+            <label for="ciudad">Ciudad</label>
+            <input type="text" id="ciudad" name="ciudad" value="{{ciudad}}" maxlength="50" required>
+        </div>
 
+        <div class="campo">
+            <label>Tu ubicación (hacé clic en el mapa para cambiarla)</label>
+            <div id="mapa" style="height:300px"></div>
             <input type="hidden" name="latitud" id="latitud" value="{{latitud}}">
             <input type="hidden" name="longitud" id="longitud" value="{{longitud}}">
+        </div>
 
-            <p>Tocá el mapa para cambiar tu ubicación:</p>
-            <div id="mapa" style="height:300px"></div>
+        <button type="submit">Guardar cambios</button>
+    </form>
 
-            <br>
-            <button type="submit" class="w3-button w3-blue">Guardar cambios</button>
-            <a href="index.php?controller=perfil&amp;method=show" class="w3-button">Cancelar</a>
-        </form>
-    </div>
-</div>
+    <p class="login">
+        <a href="index.php?controller=perfil&amp;method=show">Cancelar</a>
+    </p>
 
-<script>
-    var latG = "{{latitud}}", lngG = "{{longitud}}";
-    var tiene = latG !== "" && lngG !== "";
-    var centro = tiene ? [parseFloat(latG), parseFloat(lngG)] : [-34.6037, -58.3816];
-    var map = L.map('mapa').setView(centro, tiene ? 11 : 5);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    var marker = tiene ? L.marker(centro).addTo(map) : null;
-    map.on('click', function (e) {
-        if (marker) { marker.setLatLng(e.latlng); } else { marker = L.marker(e.latlng).addTo(map); }
-        document.getElementById('latitud').value = e.latlng.lat;
-        document.getElementById('longitud').value = e.latlng.lng;
-    });
-</script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const inLat = document.getElementById('latitud');
+        const inLon = document.getElementById('longitud');
+        const tieneUbicacion = inLat.value !== "" && inLon.value !== "";
+        const centro = tieneUbicacion
+                ? [parseFloat(inLat.value), parseFloat(inLon.value)]
+                : [-34.6037, -58.3816];
+
+        const mapa = L.map('mapa').setView(centro, tieneUbicacion ? 11 : 5);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(mapa);
+
+        let marcador = tieneUbicacion ? L.marker(centro).addTo(mapa) : null;
+
+        mapa.on('click', function (e) {
+            if (marcador) { marcador.setLatLng(e.latlng); }
+            else { marcador = L.marker(e.latlng).addTo(mapa); }
+            inLat.value = e.latlng.lat.toFixed(6);
+            inLon.value = e.latlng.lng.toFixed(6);
+        });
+    </script>
+
+</main>

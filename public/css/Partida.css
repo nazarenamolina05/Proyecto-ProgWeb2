@@ -20,6 +20,21 @@
     line-height: 1.6;
 }
 
+.partida-puntaje,
+.partida-tiempo {
+    display: inline-block;
+    padding: 10px 16px;
+    margin: 12px 8px 12px 0;
+    border: 1px solid #b79a53;
+    border-radius: 10px;
+    background: #292519;
+}
+
+.partida-tiempo strong {
+    color: #f4c542;
+    font-size: 1.25em;
+}
+
 .partida-opciones {
     min-width: 0;
     border: 0;
@@ -85,9 +100,6 @@
     margin: 24px auto;
     border-radius: 12px;
     border: 1px solid #b79a53;
-<<<<<<< Updated upstream
-}
-=======
 }
 .popup-derrota {
     box-sizing: border-box;
@@ -160,4 +172,3 @@
         animation: aparecer-derrota 250ms ease-out;
     }
 }
->>>>>>> Stashed changes

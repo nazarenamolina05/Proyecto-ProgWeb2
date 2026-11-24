@@ -15,8 +15,7 @@
     <p class="mensaje">{{mensaje}}</p>
 {{/mensaje}}
 
-        <form action="index.php?controller=login&amp;method=login" method="POST">
-            <div class="login-campo">
+<form action="{{base}}/index.php?controller=login&amp;method=login" method="POST">            <div class="login-campo">
                 <label for="usuario">Nombre de usuario</label>
                 <input
                     type="text"
@@ -43,9 +42,9 @@
 
         <p class="login-registro">
             ¿Todavía no tenés cuenta?
-            <a href="index.php?controller=registro&amp;method=show">
-                Registrate acá
-            </a>
+            <a href="{{base}}/index.php?controller=registro&amp;method=show">
+    Registrate acá
+</a>
         </p>
     </section>
 </main>
