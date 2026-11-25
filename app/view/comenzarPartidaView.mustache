@@ -142,6 +142,42 @@
                 Elegí otra categoría para jugar.
             </p>
         {{/sin_preguntas}}
+        {{#derrota}}
+            <div class="derrota-fondo">
+                <section
+                        class="popup-derrota"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="titulo-derrota"
+                >
+                    <h2 id="titulo-derrota">Perdiste la partida</h2>
+
+                    <p>Volviste a abrir el desafío y se descontó 1 punto.</p>
+
+                    <p class="popup-derrota-puntaje">
+                        Puntaje final
+                        <strong>{{puntaje_final}}</strong>
+                    </p>
+
+                    {{#guardada}}
+                        <p>Tu resultado quedó guardado en tu perfil.</p>
+                    {{/guardada}}
+
+                    {{^guardada}}
+                        <p>Jugaste como invitado. Este resultado no se guardó.</p>
+                    {{/guardada}}
+
+                    <audio autoplay src="{{base}}/public/audio/respuesta-incorrecta.mp3"></audio>
+
+                    <a
+                            class="grammys-button"
+                            href="{{base}}/index.php?controller=partida&amp;method=categorias"
+                    >
+                        Volver a jugar
+                    </a>
+                </section>
+            </div>
+        {{/derrota}}
 
         <!-- IMAGEN DE LA PREGUNTA -->
 
