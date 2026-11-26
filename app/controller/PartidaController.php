@@ -23,6 +23,7 @@ class PartidaController
 
         $this->render->renderiza('comenzarPartida', [
             'elegir_categoria' => true,
+            'derrota' => $_SESSION['partida_derrota'] ?? null,
             'categorias' => $categorias,
             'hay_categorias' => count($categorias) > 0,
             'token' => $this->getToken(),
@@ -32,6 +33,7 @@ class PartidaController
 
         unset($_SESSION['partida_error']);
         unset($_SESSION['partida_mensaje']);
+        unset($_SESSION['partida_derrota']);
     }
 
     public function elegirCategoria()
@@ -84,9 +86,7 @@ class PartidaController
 
         $this->crearPartida();
 
-        Redirect::to(
-            '/index.php?controller=partida&method=show'
-        );
+        $this->irAPartida();
     }
 
     public function show()
@@ -95,6 +95,13 @@ class PartidaController
             Redirect::to(
                 '/index.php?controller=partida&method=categorias'
             );
+            return;
+        }
+        $vistaAutorizada = $_SESSION['partida_vista_autorizada'] ?? false;
+        unset($_SESSION['partida_vista_autorizada']);
+
+        if (isset($_SESSION['partida']) && !$vistaAutorizada) {
+            $this->finalizarPartida(true);
             return;
         }
 
@@ -218,23 +225,23 @@ class PartidaController
                 if ($this->estaPendiente($_SESSION['partida'])) {
                     $_SESSION['partida']['respuesta_id'] = $respuesta;
 
-                // Actualiza los resultados de la partida.
-                $_SESSION['partida_resumen']['total_preguntas']++;
+                    // Actualiza los resultados de la partida.
+                    $_SESSION['partida_resumen']['total_preguntas']++;
 
-                if (
-                    $this->model->esCorrecta(
+                    $esCorrecta = $this->model->esCorrecta(
                         $partida['pregunta'],
                         $respuesta
-                    )
-                ) {
-                    $_SESSION['partida_resumen']['correctas']++;
-                }
-                    $_SESSION['partida_puntaje'] =
+                    );
+
+                    if ($esCorrecta) {
+                        $_SESSION['partida_resumen']['correctas']++;
+                    }
+
+                    $_SESSION['partida_puntaje'] = max(
+                        0,
                         (int) ($_SESSION['partida_puntaje'] ?? 0) +
-                        ($this->model->esCorrecta(
-                            $partida['pregunta'],
-                            $respuesta
-                        ) ? 1 : -1);
+                        ($esCorrecta ? 1 : -1)
+                    );
 
                     $_SESSION['partida_token'] =
                         bin2hex(random_bytes(32));
@@ -242,9 +249,7 @@ class PartidaController
             }
         }
 
-        Redirect::to(
-            '/index.php?controller=partida&method=show'
-        );
+        $this->irAPartida();
     }
 
     public function comenzar()
@@ -272,83 +277,97 @@ class PartidaController
             $this->crearPartida();
         }
 
-        Redirect::to(
-            '/index.php?controller=partida&method=show'
-        );
+        $this->irAPartida();
     }
 
-public function terminar()
-{
-    if (!$this->validarPost()) {
-        return;
-    }
-
-    if (!isset($_SESSION['usuario_id'])) {
-        Redirect::to(
-            '/index.php?controller=login&method=show'
-        );
-        return;
-    }
-
-    if (
-        !isset($_SESSION['partida_categoria']) ||
-        !isset($_SESSION['partida_resumen']) ||
-        !isset($_SESSION['partida_dificultad'])
-    ) {
-        $_SESSION['partida_error'] =
-            'No hay una partida activa para guardar.';
-
-        Redirect::to(
-            '/index.php?controller=partida&method=categorias'
-        );
-        return;
-    }
-
-    $resumen = $_SESSION['partida_resumen'];
-
-    $correctas = (int) $resumen['correctas'];
-    $totalPreguntas = (int) $resumen['total_preguntas'];
-
-    if ($totalPreguntas === 0) {
-        $_SESSION['partida_mensaje'] =
-            'La partida terminó sin respuestas y no se guardó ningún resultado.';
-    } else {
-        $guardada = $this->model->guardarPartida(
-            (int) $_SESSION['usuario_id'],
-            $correctas,
-            $correctas,
-            $totalPreguntas,
-            $_SESSION['partida_dificultad'],
-            (int) $_SESSION['partida_categoria']['id']
-        );
-
-        if (!$guardada) {
-            $_SESSION['partida_error'] =
-                'No se pudo guardar la partida. Volvé a intentarlo.';
-
-            Redirect::to(
-                '/index.php?controller=partida&method=show'
-            );
+    public function terminar()
+    {
+        if (!$this->validarPost()) {
             return;
         }
 
-        $_SESSION['partida_mensaje'] =
-            '¡Partida guardada correctamente! Tu resultado ya está registrado.';
+        if (!isset($_SESSION['usuario_id'])) {
+            Redirect::to('/index.php?controller=login&method=show');
+            return;
+        }
+
+        $this->finalizarPartida(false);
     }
 
-    unset(
-        $_SESSION['partida'],
-        $_SESSION['partida_categoria'],
-        $_SESSION['partida_dificultad'],
-        $_SESSION['partida_resumen']
-    );
+    private function finalizarPartida(bool $porRecarga): void
+    {
+        $rutaCategorias = '/index.php?controller=partida&method=categorias';
+        $usuarioId = $_SESSION['usuario_id'] ?? null;
 
-    $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+        if (!isset($_SESSION['partida_categoria'], $_SESSION['partida_resumen'], $_SESSION['partida_dificultad'])) {
+            $_SESSION['partida_error'] = 'No hay una partida activa para guardar.';
+            Redirect::to($rutaCategorias);
+            return;
+        }
 
-    Redirect::to(
-        '/index.php?controller=partida&method=categorias'
-    );
-}
+        $resumen = $_SESSION['partida_resumen'];
+        $correctas = (int) $resumen['correctas'];
+        $totalPreguntas = (int) $resumen['total_preguntas'];
+        $puntaje = max(
+            0,
+            (int) ($_SESSION['partida_puntaje'] ?? 0) - ($porRecarga ? 1 : 0)
+        );
+
+        // Una derrota por recarga cuenta incluso antes de la primera respuesta.
+        $guardarResultado = $usuarioId !== null
+            && ($porRecarga || $totalPreguntas > 0);
+
+        if ($guardarResultado) {
+            $guardada = $this->model->guardarPartida(
+                (int) $usuarioId,
+                $puntaje,
+                $correctas,
+                $totalPreguntas,
+                $_SESSION['partida_dificultad'],
+                (int) $_SESSION['partida_categoria']['id']
+            );
+
+            if (!$guardada) {
+                $_SESSION['partida_error'] =
+                    'No se pudo guardar la partida. Volvé a intentarlo.';
+
+                $this->irAPartida();
+                return;
+            }
+        }
+
+        if ($porRecarga) {
+            $_SESSION['partida_derrota'] = [
+                'puntaje_final' => $puntaje,
+                'guardada' => $guardarResultado
+            ];
+        } elseif ($guardarResultado) {
+            $_SESSION['partida_mensaje'] =
+                '¡Partida guardada correctamente!';
+        } else {
+            $_SESSION['partida_mensaje'] =
+                'La partida terminó sin respuestas y no se guardó ningún resultado.';
+        }
+
+        unset(
+            $_SESSION['partida'],
+            $_SESSION['partida_categoria'],
+            $_SESSION['partida_dificultad'],
+            $_SESSION['partida_resumen'],
+            $_SESSION['partida_puntaje']
+        );
+
+        $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+
+        Redirect::to($rutaCategorias);
+    }
+
+    private function irAPartida(): void
+    {
+        $_SESSION['partida_vista_autorizada'] = true;
+
+        Redirect::to('/index.php?controller=partida&method=show');
+    }
 
     private function crearPartida()
     {
@@ -394,8 +413,12 @@ public function terminar()
         }
 
         $_SESSION['partida']['agotado'] = true;
-        $_SESSION['partida_puntaje'] =
-            (int) ($_SESSION['partida_puntaje'] ?? 0) - 1;
+
+        $_SESSION['partida_puntaje'] = max(
+            0,
+            (int) ($_SESSION['partida_puntaje'] ?? 0) - 1
+        );
+
         $_SESSION['partida_token'] = bin2hex(random_bytes(32));
     }
 
@@ -428,9 +451,7 @@ public function terminar()
             $_SESSION['partida_error'] =
                 'El formulario venció. Volvé a intentar desde esta pantalla.';
 
-            Redirect::to(
-                '/index.php?controller=partida&method=show'
-            );
+            $this->irAPartida();
             return false;
         }
 
