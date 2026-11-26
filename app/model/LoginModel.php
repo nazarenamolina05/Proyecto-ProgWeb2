@@ -13,9 +13,13 @@ class LoginModel
 
     public function autenticar($usuario, $password)
     {
-        $sql = "SELECT id, usuario, password, email, verificado
+        if (!is_string($usuario) || !is_string($password)) {
+            return null;
+        }
+
+        $sql = "SELECT id, usuario, password, email, verificado, rol
                 FROM usuarios
-                WHERE usuario = ?";
+                WHERE usuario = ? AND habilitado = 1";
 
         $datosUsuario = $this->database->queryOnePrepared(
             $sql,
@@ -62,7 +66,8 @@ class LoginModel
 
         return [
             "id" => $datosUsuario["id"],
-            "usuario" => $datosUsuario["usuario"]
+            "usuario" => $datosUsuario["usuario"],
+            "rol" => $datosUsuario["rol"]
         ];
     }
 }

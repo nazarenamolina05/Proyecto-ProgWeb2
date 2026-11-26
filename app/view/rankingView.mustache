@@ -1,0 +1,41 @@
+<main class="lobby">
+    <section class="lobby-card">
+        <p class="grammys-eyebrow">Clasificación</p>
+        <h1>Ranking global</h1>
+        <p class="lobby-aviso">Se muestra el mejor puntaje de partida de cada jugador. Tocá un nombre para ver su perfil.</p>
+
+        {{#hay_ranking}}
+            <div class="lobby-tabla-contenedor">
+                <table class="lobby-tabla lobby-tabla-ranking">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Mejor puntaje</th>
+                        <th>Partidas</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#ranking}}
+                        <tr class="{{#es_propio}}lobby-propio{{/es_propio}}">
+                            <td>{{posicion}}</td>
+                            <td><a href="{{base}}/{{url_perfil}}">{{usuario}}</a></td>
+                            <td><strong>{{mejor_puntaje}}</strong></td>
+                            <td>{{partidas_jugadas}}</td>
+                        </tr>
+                    {{/ranking}}
+                    </tbody>
+                </table>
+            </div>
+        {{/hay_ranking}}
+        {{^hay_ranking}}
+            <p class="lobby-vacio">Todavía no hay jugadores en el ranking.</p>
+        {{/hay_ranking}}
+
+        {{#logueado}}
+            <p class="lobby-link-aparte">
+                <a class="grammys-button" href="{{base}}/index.php?controller=lobby&amp;method=show">Volver al lobby</a>
+            </p>
+        {{/logueado}}
+    </section>
+</main>

@@ -1,0 +1,222 @@
+/* ═════════ LOBBY ═════════ */
+.lobby {
+    display: grid;
+    width: min(960px, calc(100% - 32px));
+    gap: 24px;
+    margin: 40px auto 72px;
+}
+
+/* Entrada escalonada de las tarjetas */
+.lobby > * { animation: lobby-entrada .55s ease both; }
+.lobby > *:nth-child(2) { animation-delay: .08s; }
+.lobby > *:nth-child(3) { animation-delay: .16s; }
+.lobby > *:nth-child(4) { animation-delay: .24s; }
+.lobby > *:nth-child(5) { animation-delay: .32s; }
+
+@keyframes lobby-entrada {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.lobby-card {
+    position: relative;
+    padding: 28px;
+    border: 1px solid rgba(230, 193, 120, .32);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(34, 26, 19, .93), rgba(14, 11, 9, .91));
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .28);
+}
+
+.lobby-card h1,
+.lobby-card h2 {
+    margin: 0 0 18px;
+    color: var(--grammy-pale-gold);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.lobby-card h1 { font-size: clamp(28px, 4vw, 40px); }
+
+.lobby-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+}
+
+.lobby-card h2::before {
+    content: "";
+    width: 4px;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #f3d994, #c19249);
+}
+
+/* ═════════ CABECERA ═════════ */
+.lobby-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 34px 32px;
+    border-color: rgba(230, 193, 120, .6);
+    background:
+            radial-gradient(circle at 85% 20%, rgba(230, 193, 120, .18), transparent 45%),
+            linear-gradient(145deg, rgba(40, 30, 21, .96), rgba(14, 11, 9, .94));
+    box-shadow: 0 0 0 1px rgba(230, 193, 120, .08), 0 0 48px rgba(230, 193, 120, .14);
+}
+
+.lobby-cabecera h1 {
+    margin: 0;
+    background: linear-gradient(110deg, #fff3cf, #e6c178 60%, #c19249);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.lobby-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.lobby-stat {
+    min-width: 150px;
+    padding: 16px 22px;
+    border: 1px solid rgba(230, 193, 120, .4);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, .28);
+    text-align: center;
+}
+
+.lobby-stat strong {
+    display: block;
+    font: 700 42px/1.1 Georgia, "Times New Roman", serif;
+    background: linear-gradient(180deg, #fff3cf, #d9a94f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 12px rgba(230, 193, 120, .35));
+}
+
+.lobby-stat span {
+    display: block;
+    margin-top: 4px;
+    color: var(--grammy-muted);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.lobby-aviso,
+.lobby-vacio {
+    margin: 0;
+    color: var(--grammy-muted);
+}
+
+/* ═════════ BOTONES ═════════ */
+.lobby-acciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.lobby-acciones .grammys-button {
+    min-height: 58px;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.lobby-acciones .grammys-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px rgba(207, 157, 72, .38);
+}
+
+/* "Nueva partida" es el botón principal: más grande y con pulso */
+.lobby-acciones .grammys-button:first-child {
+    min-height: 66px;
+    font-size: 1.1rem;
+    animation: lobby-pulso 2.6s ease-in-out infinite;
+}
+
+@keyframes lobby-pulso {
+    0%, 100% { box-shadow: 0 8px 28px rgba(207, 157, 72, .22); }
+    50%      { box-shadow: 0 8px 40px rgba(243, 217, 148, .55); }
+}
+
+/* ═════════ TABLAS ═════════ */
+.lobby-tabla-contenedor { overflow-x: auto; }
+
+.lobby-tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.lobby-tabla th,
+.lobby-tabla td {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(230, 193, 120, .16);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.lobby-tabla th {
+    color: var(--grammy-gold);
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.lobby-tabla tbody tr { transition: background .15s ease; }
+.lobby-tabla tbody tr:hover { background: rgba(230, 193, 120, .07); }
+
+.lobby-tabla td strong {
+    color: var(--grammy-pale-gold);
+    font-size: 1.05rem;
+}
+
+.lobby-tabla a {
+    color: var(--grammy-pale-gold);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.lobby-tabla a:hover { text-decoration: underline; }
+
+/* ═════════ RANKING: PODIO ═════════ */
+.lobby-tabla-ranking td:first-child {
+    width: 64px;
+    font: 700 20px Georgia, "Times New Roman", serif;
+    text-align: center;
+}
+
+.lobby-tabla-ranking tbody tr:nth-child(1) td:first-child { color: #f3d36b; text-shadow: 0 0 14px rgba(243, 211, 107, .65); }
+.lobby-tabla-ranking tbody tr:nth-child(2) td:first-child { color: #d9dde3; text-shadow: 0 0 12px rgba(217, 221, 227, .45); }
+.lobby-tabla-ranking tbody tr:nth-child(3) td:first-child { color: #d9965a; text-shadow: 0 0 12px rgba(217, 150, 90, .45); }
+
+.lobby-tabla-ranking tbody tr:nth-child(1) { box-shadow: inset 4px 0 0 #f3d36b; background: rgba(243, 211, 107, .08); }
+.lobby-tabla-ranking tbody tr:nth-child(2) { box-shadow: inset 4px 0 0 #d9dde3; background: rgba(217, 221, 227, .05); }
+.lobby-tabla-ranking tbody tr:nth-child(3) { box-shadow: inset 4px 0 0 #d9965a; background: rgba(217, 150, 90, .06); }
+
+/* Tu fila resaltada */
+.lobby tr.lobby-propio {
+    background: linear-gradient(90deg, rgba(230, 193, 120, .28), rgba(230, 193, 120, .08));
+    outline: 1px solid rgba(230, 193, 120, .55);
+    outline-offset: -1px;
+}
+
+.lobby-link-aparte { margin: 18px 0 0; }
+
+/* ═════════ MOBILE ═════════ */
+@media (max-width: 600px) {
+    .lobby-cabecera { flex-direction: column; align-items: flex-start; padding: 26px 22px; }
+    .lobby-stats { width: 100%; }
+    .lobby-stat { flex: 1; min-width: 0; padding: 14px 10px; }
+    .lobby-stat strong { font-size: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lobby > *,
+    .lobby-acciones .grammys-button:first-child { animation: none; }
+}

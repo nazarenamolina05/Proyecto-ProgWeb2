@@ -7,12 +7,28 @@ USE entradas_messi;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(32) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(150) NULL,
+    verificado TINYINT(1) NOT NULL DEFAULT 0,
+    codigo_verificacion VARCHAR(255) NULL,
+    expiracion_codigo DATETIME NULL,
+    rol ENUM('jugador', 'editor', 'administrador') NOT NULL DEFAULT 'jugador',
+    habilitado TINYINT(1) NOT NULL DEFAULT 1,
+    fecha_registro DATETIME(6) NULL DEFAULT CURRENT_TIMESTAMP(6),
+    nombre_completo VARCHAR(100) NULL,
+    anio_nacimiento INT NULL,
+    sexo ENUM('Masculino','Femenino','Prefiero no cargarlo') NULL,
+    pais VARCHAR(50) NULL,
+    ciudad VARCHAR(50) NULL,
+    latitud DECIMAL(9,6) NULL,
+    longitud DECIMAL(9,6) NULL,
+    foto VARCHAR(255) NULL
 );
 
-INSERT INTO usuarios (usuario, password) VALUES
-('facu', MD5('1234')),
-('hincha', MD5('boca123'));
+-- Cuentas de prueba locales, sin correo asociado.
+INSERT INTO usuarios (usuario, password, verificado) VALUES
+('facu', MD5('1234'), 1),
+('hincha', MD5('boca123'), 1);
 
 CREATE TABLE evento (
     id INT AUTO_INCREMENT PRIMARY KEY,

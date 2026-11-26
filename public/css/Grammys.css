@@ -86,10 +86,6 @@ body.pagina-grammys {
     font-weight: 700;
 }
 
-.pagina-grammys .header-evento {
-    display: none;
-}
-
 .grammys-home {
     width: min(1120px, calc(100% - 48px));
     margin: 0 auto;
@@ -307,7 +303,9 @@ body.pagina-grammys {
     font-size: 14px;
 }
 
-.grammys-login input {
+.grammys-login input,
+.grammys-login select,
+.grammys-login textarea {
     width: 100%;
     min-height: 42px;
     padding: 8px 12px;

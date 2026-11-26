@@ -51,15 +51,23 @@ public function login()
         return;
     }
 
+    if (isset($_SESSION['usuario_id']) && (int) $_SESSION['usuario_id'] !== (int) $usuario['id']) {
+        $_SESSION = [];
+    }
+
+    session_regenerate_id(true);
+    unset($_SESSION['editor_token']);
     $_SESSION['usuario_id'] = $usuario['id'];
     $_SESSION['usuario'] = $usuario['usuario'];
+    $_SESSION['rol'] = $usuario['rol'];
 
-    Redirect::toIndex();
+    Redirect::to('/index.php?controller=lobby&method=show');
 }
 
 
     public function logout()
     {
+        $_SESSION = [];
         session_destroy();
         Redirect::toIndex();
     }

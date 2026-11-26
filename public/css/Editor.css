@@ -1,0 +1,334 @@
+.pagina-grammys.pagina-editor {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+.pagina-editor > .editor-panel {
+    flex: 1 0 auto;
+}
+
+.editor-panel {
+    width: min(1120px, 92%);
+    margin: 36px auto;
+}
+
+.editor-panel a {
+    color: var(--grammy-pale-gold);
+}
+
+.editor-panel a.grammys-button {
+    color: #1a130b;
+}
+
+.editor-bienvenida p {
+    margin: 0 0 8px;
+    color: var(--grammy-muted);
+}
+
+.editor-bienvenida h1 {
+    margin: 0;
+    font: 700 clamp(2rem, 5vw, 3.5rem) / 1.15 Georgia, serif;
+    overflow-wrap: anywhere;
+}
+
+.editor-inicio {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: center;
+    gap: clamp(24px, 4vw, 56px);
+    margin: 28px 0;
+}
+
+.editor-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.editor-tarjeta {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: clamp(150px, 18vw, 184px);
+    padding: clamp(20px, 3vw, 30px);
+    border: 1px solid #9b7b43;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #2b1e11, #17120d);
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.editor-tarjeta-centrada {
+    grid-column: 2 / span 2;
+}
+
+.editor-premio {
+    justify-self: center;
+    width: min(100%, 410px);
+    height: auto;
+}
+
+.editor-tarjeta-detalle {
+    display: block;
+    margin-top: 8px;
+    color: var(--grammy-muted);
+    font-size: .95rem;
+    font-weight: 400;
+}
+
+.editor-tarjeta:hover {
+    border-color: var(--grammy-gold);
+    background: #292015;
+}
+
+.editor-categorias {
+    margin-top: 16px;
+}
+
+.editor-categorias .editor-tarjeta {
+    min-height: 112px;
+    font-size: clamp(1.125rem, 2.5vw, 1.4rem);
+    overflow-wrap: anywhere;
+}
+
+.editor-seccion {
+    margin: 24px 0;
+    padding: clamp(16px, 3vw, 28px);
+    border: 1px solid #715a31;
+    border-radius: 16px;
+    background: #17120d;
+}
+
+.editor-acciones {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.editor-paginacion {
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.editor-paginacion a {
+    text-decoration: none;
+}
+
+.editor-encabezado,
+.editor-fila {
+    justify-content: space-between;
+}
+
+.editor-fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    padding: 12px 0;
+    border-top: 1px solid #534528;
+}
+
+.editor-fila h2,
+.editor-fila h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.editor-fila p {
+    margin: 6px 0;
+    color: var(--grammy-muted);
+}
+
+.editor-fila > div {
+    flex: 1 1 320px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.editor-motivo {
+    white-space: pre-wrap;
+}
+
+.editor-secundario {
+    border: 1px solid #b5995d;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    color: var(--grammy-pale-gold);
+    font: inherit;
+    cursor: pointer;
+}
+
+.editor-formulario {
+    display: grid;
+    gap: 8px;
+    max-width: 660px;
+}
+
+.editor-formulario :is(input, select, textarea) {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #887147;
+    border-radius: 8px;
+    background: #100d0a;
+    color: inherit;
+    font: inherit;
+}
+
+.editor-formulario .grammys-button {
+    justify-self: start;
+    margin-top: 8px;
+}
+
+.editor-aviso {
+    position: sticky;
+    top: 8px;
+    z-index: 1;
+    padding: 10px 14px;
+    border: 1px solid #b5995d;
+    border-radius: 8px;
+    background: #241b11;
+}
+
+.editor-panel :focus-visible {
+    outline: 2px solid var(--grammy-gold);
+    outline-offset: 3px;
+}
+
+.admin-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.admin-filtros select,
+.admin-filtros input {
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1px solid #887147;
+    border-radius: 8px;
+    background: #100d0a;
+    color: inherit;
+    font: inherit;
+}
+
+.admin-reporte {
+    overflow-x: auto;
+}
+
+.admin-reporte table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-reporte caption {
+    padding-bottom: 12px;
+    color: var(--grammy-pale-gold);
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.admin-reporte th,
+.admin-reporte td {
+    border-bottom: 1px solid #534528;
+    padding: 9px 8px;
+    text-align: left;
+}
+
+.admin-reporte thead th {
+    color: var(--grammy-muted);
+}
+
+.admin-reporte .admin-grafico {
+    min-width: 100px;
+    width: 38%;
+}
+
+.admin-barra {
+    height: 10px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #382c1c;
+}
+
+.admin-barra span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--grammy-gold);
+}
+
+.admin-nota {
+    color: var(--grammy-muted);
+}
+
+@media (max-width: 860px) {
+    .editor-inicio {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .editor-premio {
+        width: min(65%, 300px);
+    }
+}
+
+@media (max-width: 520px) {
+    .editor-tarjetas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .editor-tarjeta {
+        grid-column: 1;
+    }
+}
+
+@media print {
+    .pagina-grammys.pagina-estadisticas {
+        display: block;
+        min-height: 0;
+        background: white;
+        color: black;
+        color-scheme: light;
+    }
+
+    .pagina-estadisticas > .grammys-nav,
+    .pagina-estadisticas > footer,
+    .admin-estadisticas .admin-controles,
+    .admin-estadisticas .admin-grafico {
+        display: none;
+    }
+
+    .admin-estadisticas {
+        width: 100%;
+        margin: 0;
+    }
+
+    .admin-estadisticas .admin-reporte {
+        overflow: visible;
+        border: 0;
+        padding: 0;
+        background: white;
+    }
+
+    .admin-estadisticas caption,
+    .admin-estadisticas .admin-nota,
+    .admin-estadisticas thead th {
+        color: black;
+    }
+
+    .admin-estadisticas caption {
+        break-after: avoid;
+    }
+
+    .admin-estadisticas tr {
+        break-inside: avoid;
+    }
+}

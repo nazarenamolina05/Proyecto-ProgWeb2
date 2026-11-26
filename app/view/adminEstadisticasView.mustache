@@ -1,0 +1,67 @@
+<main class="editor-panel admin-estadisticas">
+    <div class="admin-controles">
+        <a href="{{base}}/index.php?controller=editor&amp;method=show">Volver al panel</a>
+    </div>
+    <h1>Estadísticas de la trivia</h1>
+    <p>Del <strong>{{desde}}</strong> al <strong>{{hasta}}</strong></p>
+
+    <div class="admin-controles admin-filtros">
+        <form method="get" action="{{base}}/index.php" class="editor-acciones">
+            <input type="hidden" name="controller" value="editor">
+            <input type="hidden" name="method" value="show">
+            <input type="hidden" name="seccion" value="estadisticas">
+            <label for="reporte-periodo">Ver por</label>
+            <select id="reporte-periodo" name="periodo">
+                {{#periodos}}<option value="{{valor}}" {{#seleccionada}}selected{{/seleccionada}}>{{nombre}}</option>{{/periodos}}
+            </select>
+            <label for="reporte-fecha">Fecha de referencia</label>
+            <input id="reporte-fecha" name="fecha" type="date" value="{{fecha}}" min="1900-01-01" max="{{hoy}}" required>
+            <button type="submit" class="grammys-button">Aplicar filtro</button>
+        </form>
+        <button type="button" class="editor-secundario" onclick="window.print()">Imprimir tablas</button>
+    </div>
+
+    {{#distribuciones}}
+        <section class="editor-seccion admin-reporte">
+            <table>
+                <caption>{{titulo}}</caption>
+                <thead>
+                    <tr><th scope="col">Indicador</th><th class="admin-grafico" scope="col">Gráfico</th><th scope="col">Cantidad</th></tr>
+                </thead>
+                <tbody>
+                    {{#filas}}
+                        <tr>
+                            <th scope="row">{{grupo}}</th>
+                            <td class="admin-grafico"><div class="admin-barra" aria-hidden="true"><span style="width: {{barra}}%"></span></div></td>
+                            <td>{{total}}</td>
+                        </tr>
+                    {{/filas}}
+                    {{^filas}}<tr><td colspan="3">No hay datos para este período.</td></tr>{{/filas}}
+                </tbody>
+            </table>
+        </section>
+    {{/distribuciones}}
+
+    <section class="editor-seccion admin-reporte">
+        <table>
+            <caption>Respuestas correctas por usuario</caption>
+            <thead>
+                <tr><th scope="col">Usuario</th><th scope="col">Correctas</th><th scope="col">Respondidas</th><th class="admin-grafico" scope="col">Gráfico</th><th scope="col">Porcentaje</th></tr>
+            </thead>
+            <tbody>
+                {{#rendimiento}}
+                    <tr>
+                        <th scope="row">{{usuario}}</th>
+                        <td>{{correctas}}</td>
+                        <td>{{respondidas}}</td>
+                        <td class="admin-grafico"><div class="admin-barra" aria-hidden="true"><span style="width: {{barra}}%"></span></div></td>
+                        <td>{{porcentaje}}</td>
+                    </tr>
+                {{/rendimiento}}
+                {{^rendimiento}}<tr><td colspan="5">No hay jugadores para este período.</td></tr>{{/rendimiento}}
+            </tbody>
+        </table>
+    </section>
+
+    <p class="admin-nota">Los totales y los grupos de usuarios se muestran al cierre del período. Se incluyen las partidas guardadas y las respuestas enviadas. La edad se estima con el año de nacimiento. Los jugadores y las preguntas anteriores sin fecha conocida se cuentan desde el inicio del registro y no como altas nuevas.</p>
+</main>

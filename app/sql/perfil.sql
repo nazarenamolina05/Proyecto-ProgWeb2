@@ -1,15 +1,15 @@
 USE entradas_messi;
 
--- 1) Agregamos a usuarios los datos que pide el enunciado para el perfil
+-- 1) Completa el perfil en bases creadas con el esquema original.
 ALTER TABLE usuarios
-    ADD COLUMN nombre_completo VARCHAR(100) NULL,
-    ADD COLUMN anio_nacimiento INT NULL,
-    ADD COLUMN sexo ENUM('Masculino','Femenino','Prefiero no cargarlo') NULL,
-    ADD COLUMN pais VARCHAR(50) NULL,
-    ADD COLUMN ciudad VARCHAR(50) NULL,
-    ADD COLUMN latitud DECIMAL(9,6) NULL,
-    ADD COLUMN longitud DECIMAL(9,6) NULL,
-    ADD COLUMN foto VARCHAR(255) NULL;
+    ADD COLUMN IF NOT EXISTS nombre_completo VARCHAR(100) NULL,
+    ADD COLUMN IF NOT EXISTS anio_nacimiento INT NULL,
+    ADD COLUMN IF NOT EXISTS sexo ENUM('Masculino','Femenino','Prefiero no cargarlo') NULL,
+    ADD COLUMN IF NOT EXISTS pais VARCHAR(50) NULL,
+    ADD COLUMN IF NOT EXISTS ciudad VARCHAR(50) NULL,
+    ADD COLUMN IF NOT EXISTS latitud DECIMAL(9,6) NULL,
+    ADD COLUMN IF NOT EXISTS longitud DECIMAL(9,6) NULL,
+    ADD COLUMN IF NOT EXISTS foto VARCHAR(255) NULL;
 
 -- 2) Tabla de partidas: de acá sale el puntaje total y las partidas realizadas
 CREATE TABLE partidas (

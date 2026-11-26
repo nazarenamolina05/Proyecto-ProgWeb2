@@ -20,8 +20,7 @@
     line-height: 1.6;
 }
 
-.partida-puntaje,
-.partida-tiempo {
+.partida-puntaje {
     display: inline-block;
     padding: 10px 16px;
     margin: 12px 8px 12px 0;
@@ -30,9 +29,63 @@
     background: #292519;
 }
 
-.partida-tiempo strong {
-    color: #f4c542;
-    font-size: 1.25em;
+.partida-temporizador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.partida-tiempo {
+    --tiempo-restante: 100%;
+    flex: 1;
+    min-width: 0;
+    padding: 24px 30px;
+    border: 1px solid #b79a53;
+    border-radius: 10px;
+    background: #292519;
+}
+
+.partida-tiempo-pista {
+    height: 10px;
+    border-radius: 999px;
+    background: #53472d;
+}
+
+.partida-tiempo-barra {
+    position: relative;
+    width: var(--tiempo-restante);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(to right, #b79a53, #f4c542);
+}
+
+.partida-tiempo-grammy {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    transform: translate(50%, -50%);
+    filter: drop-shadow(0 2px 3px #171717);
+}
+
+.partida-sonido.grammys-button {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+}
+
+.partida-sonido svg {
+    width: 24px;
+    height: 24px;
+}
+
+.partida-sonido[aria-pressed="false"] .partida-sonido-ondas,
+.partida-sonido[aria-pressed="true"] .partida-sonido-tachado {
+    display: none;
 }
 
 .partida-opciones {
@@ -77,6 +130,10 @@
     flex-shrink: 0;
 }
 
+.partida-terminar-en-curso {
+    margin-top: 16px;
+}
+
 .partida-volver {
     display: inline-block;
     margin-top: 24px;
@@ -88,10 +145,117 @@
 }
 
 .partida-tarjeta a:focus-visible,
-.partida-tarjeta button:focus-visible {
+.partida-tarjeta button:focus-visible,
+.partida-contribuciones summary:focus-visible {
     outline: 3px solid #f4c542;
     outline-offset: 4px;
 }
+
+.partida-acciones {
+    display: grid;
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.partida-accion.grammys-button {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 64px;
+    height: 100%;
+    padding: 10px 8px;
+    gap: 6px;
+    border-radius: 12px;
+    box-shadow: none;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(.875rem, 2.55vw, 1.375rem);
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.partida-accion-terminar.grammys-button {
+    border: 1px solid #f6cd78;
+    background: #191919;
+    color: #faead1;
+}
+
+.partida-accion-seguir.grammys-button {
+    background: linear-gradient(135deg, #ffda8c, #f3be60);
+    color: #100d0a;
+}
+
+.partida-contribuciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(24px, 6vw, 52px);
+    margin-top: 12px;
+}
+
+.partida-contribuciones details {
+    text-align: right;
+}
+
+.partida-contribucion {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 8px;
+    min-height: 44px;
+    border-radius: 4px;
+    color: #faead1;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1rem, 2.8vw, 1.25rem);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.partida-contribucion-reportar {
+    color: #ff9b7a;
+    list-style: none;
+}
+
+.partida-contribucion-reportar::-webkit-details-marker {
+    display: none;
+}
+
+.partida-contribucion:hover {
+    text-decoration: underline;
+}
+
+.partida-accion svg,
+.partida-contribucion svg {
+    flex: none;
+    width: 1.15em;
+    height: 1.15em;
+}
+
+.partida-reporte {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.partida-reporte .grammys-button {
+    padding-inline: 8px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.partida-reporte textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #b79a53;
+    border-radius: 7px;
+    background: #171717;
+    color: inherit;
+    resize: vertical;
+}
+
 .partida-imagen {
     display: block;
     width: 100%;
@@ -101,6 +265,18 @@
     border-radius: 12px;
     border: 1px solid #b79a53;
 }
+
+.derrota-fondo {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow-y: auto;
+    background: rgb(0 0 0 / 75%);
+}
+
 .popup-derrota {
     box-sizing: border-box;
     width: min(400px, 90vw);
@@ -111,10 +287,6 @@
     color: #f5f5f5;
     text-align: center;
     box-shadow: 0 18px 60px rgb(0 0 0 / 45%);
-}
-
-.popup-derrota::backdrop {
-    background: rgb(0 0 0 / 75%);
 }
 
 .popup-derrota h2 {
@@ -134,41 +306,95 @@
     font-size: 2.5rem;
 }
 
-.popup-derrota form {
-    margin-top: 20px;
-}
-
-#escuchar-derrota {
-    border: 0;
-    background: transparent;
-    color: #ebcc81;
-    text-decoration: underline;
-    cursor: pointer;
-}
-.derrota-fondo {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: grid;
-    place-items: center;
-    padding: 16px;
-    overflow-y: auto;
-    background: rgb(0 0 0 / 75%);
-}
-
-.popup-derrota audio {
-    display: block;
-    width: 100%;
-    margin: 18px auto;
-}
-
 .popup-derrota .grammys-button {
-    display: inline-block;
     text-decoration: none;
+}
+
+@keyframes aparecer-derrota {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 @media (prefers-reduced-motion: no-preference) {
     .derrota-fondo .popup-derrota {
         animation: aparecer-derrota 250ms ease-out;
     }
+}
+
+/* Pantalla de progreso y selección de categoría */
+.partida-contenedor-progreso { max-width: 800px; }
+.partida-tarjeta-progreso {
+    padding: clamp(16px, 3vw, 28px);
+    border: 0;
+    border-radius: 12px;
+    background: #181818;
+}
+.partida-tarjeta-progreso .progreso-titulo {
+    color: #eac164;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 12px;
+}
+.progreso-intro { font-size: 14px; color: #dedede; margin: 0 0 16px; }
+.progreso-categorias {
+    display: grid;
+    gap: 15px;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+.progreso-opcion { display: block; position: relative; cursor: pointer; min-width: 0; }
+/* Radio accesible por teclado, oculto visualmente para mantener el diseño de tarjetas. */
+.progreso-radio, .progreso-solo-lector {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+.progreso-card {
+    --nivel-color: #d99a61;
+    display: grid;
+    gap: 7px;
+    padding: 13px 13px 11px;
+    border: 1px solid #484848;
+    border-radius: 12px;
+    background: #181818;
+    min-width: 0;
+    color: #f5f5f5;
+    transition: border-color .18s ease, background-color .18s ease;
+}
+.progreso-avanzado { --nivel-color: #eac164; }
+.progreso-intermedio { --nivel-color: #c0c0c0; }
+.progreso-principiante { --nivel-color: #d99a61; }
+.progreso-nombre { display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 700; }
+.progreso-nota { color: var(--nivel-color); font-size: 19px; line-height: 1; }
+.progreso-nivel { color: var(--nivel-color); font-weight: 600; font-size: 13px; }
+.progreso-pista { display: block; height: 6px; border-radius: 999px; background: #383838; overflow: hidden; }
+.progreso-relleno { display: block; height: 100%; border-radius: inherit; background: var(--nivel-color); }
+.progreso-detalle { font-size: 13px; color: #d4d4d4; }
+.progreso-opcion:hover .progreso-card { border-color: #b79a53; }
+.progreso-radio:checked + .progreso-card { border-color: #eac164; background: #292519; box-shadow: 0 0 0 1px #eac164; }
+.progreso-radio:focus-visible + .progreso-card { outline: 2px solid #eac164; outline-offset: 3px; }
+.progreso-ayuda { font-size: 13px; color: #ccc; margin: 17px 0 10px; }
+@media (max-width: 520px) {
+    .partida-contenedor-progreso { margin: 20px auto; padding: 0 10px; }
+    .partida-tarjeta-progreso { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .progreso-card { transition: none; }
 }
