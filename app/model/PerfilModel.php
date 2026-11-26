@@ -29,6 +29,7 @@ public function getUsuario($id)
             u.longitud,
             u.foto,
             COALESCE(SUM(p.puntaje), 0) AS puntaje_total,
+            COALESCE(MAX(p.puntaje), 0) AS mejor_puntaje,
             COUNT(p.id) AS partidas_jugadas,
             COALESCE(SUM(p.correctas), 0) AS respuestas_correctas,
             COALESCE(SUM(p.total_preguntas), 0) AS respuestas_totales

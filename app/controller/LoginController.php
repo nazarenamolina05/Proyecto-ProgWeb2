@@ -61,7 +61,7 @@ public function login()
     $_SESSION['usuario'] = $usuario['usuario'];
     $_SESSION['rol'] = $usuario['rol'];
 
-    Redirect::toIndex();
+    Redirect::to('/index.php?controller=lobby&method=show');
 }
 
 

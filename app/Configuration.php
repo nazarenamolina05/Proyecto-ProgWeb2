@@ -9,6 +9,7 @@ use app\controller\PerfilController;
 use app\controller\PartidaController;
 use app\controller\ContribucionController;
 use app\controller\EditorController;
+use app\controller\LobbyController;
 
 use app\model\LoginModel;
 use app\model\RegistroModel;
@@ -18,6 +19,7 @@ use app\model\ContribucionModel;
 use app\model\EditorModel;
 use app\model\AdministradorModel;
 use app\model\UsuarioInternoModel;
+use app\model\LobbyModel;
 
 use app\service\MapaService;
 use app\service\QrService;
@@ -113,6 +115,14 @@ public function getContribucionController()
         );
     }
 
+    public function getLobbyController(): LobbyController
+    {
+        return new LobbyController(
+            $this->getLobbyModel(),
+            $this->gerRender()
+        );
+    }
+
     // ───────────── Models ─────────────
 
     public function getUsuarioInternoModel(): UsuarioInternoModel
@@ -155,6 +165,13 @@ private function getContribucionModel()
         $this->getDatabase()
     );
 }
+
+    private function getLobbyModel()
+    {
+        return new LobbyModel(
+            $this->getDatabase()
+        );
+    }
 
 
 
