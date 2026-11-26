@@ -170,6 +170,8 @@ class ContribucionController
             return;
         }
 
+        $_SESSION['partida_vista_autorizada'] = true;
+
         $preguntaId = filter_var(
             $_POST['pregunta_id'] ?? null,
             FILTER_VALIDATE_INT

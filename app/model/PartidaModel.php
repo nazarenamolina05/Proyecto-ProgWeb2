@@ -103,6 +103,18 @@ class PartidaModel
         return (int) $this->database->lastInsertId();
     }
 
+    public function obtenerPreguntasVistas(string $jugador, int $categoriaId): array
+    {
+        $vistas = $this->database->queryAllPrepared(
+            'SELECT DISTINCT up.pregunta_id
+             FROM usuario_pregunta up JOIN preguntas p ON p.id = up.pregunta_id
+             WHERE up.jugador = ? AND p.categoria_id = ? AND p.activa = 1',
+            [$jugador, $categoriaId]
+        );
+
+        return array_map('intval', array_column($vistas, 'pregunta_id'));
+    }
+
     public function registrarRespuesta(int $historialId, bool $esCorrecta): void
     {
         $this->database->executePrepared(
@@ -129,17 +141,38 @@ class PartidaModel
         );
     }
 
+    public function entregarPregunta(int $categoriaId, string $dificultad, string $jugador, array $preguntasVistas): ?array
+    {
+        return $this->database->enTransaccion(function () use ($categoriaId, $dificultad, $jugador, $preguntasVistas) {
+            $pregunta = $this->obtenerPreguntaAleatoria($categoriaId, $dificultad, $jugador, $preguntasVistas);
+            if ($pregunta === null) {
+                return null;
+            }
+
+            return [
+                'pregunta' => $pregunta,
+                'historial_id' => $this->registrarPreguntaVista($jugador, $pregunta['id']),
+            ];
+        });
+    }
+
     public function obtenerPreguntaAleatoria(
         int $categoriaId,
         string $dificultad,
-        string $jugador
+        string $jugador,
+        array $preguntasVistas = []
     ): ?array {
         $progreso = $this->obtenerProgresoUsuario($jugador, $categoriaId);
         $enEvaluacion = $progreso['en_evaluacion'] ? 1 : 0;
         $dificultad = $this->obtenerDificultadSegunNivel($progreso['nivel_usuario']);
 
-        // La dificultad se calcula a partir del historial real, no de etiquetas manuales.
-        // No repetir mientras existan preguntas nuevas en la categoría.
+        $excluirVistas = '';
+        if ($preguntasVistas !== []) {
+            $parametros = implode(', ', array_fill(0, count($preguntasVistas), '?'));
+            $excluirVistas = "AND q.id NOT IN ($parametros)";
+        }
+
+        // El historial determina la dificultad. Solo las preguntas de la partida actual se excluyen.
         $sql = "
             SELECT q.* FROM (
                 SELECT p.*,
@@ -155,12 +188,8 @@ class PartidaModel
                     FROM usuario_pregunta GROUP BY pregunta_id
                 ) e ON e.pregunta_id = p.id
             ) q
-            LEFT JOIN (
-                SELECT pregunta_id, MAX(id) AS ultima_vista
-                FROM usuario_pregunta WHERE jugador = ? GROUP BY pregunta_id
-            ) v ON v.pregunta_id = q.id
-            WHERE q.categoria_id = ? AND q.activa = 1
-            ORDER BY (v.ultima_vista IS NOT NULL) ASC,
+            WHERE q.categoria_id = ? AND q.activa = 1 $excluirVistas
+            ORDER BY
                 CASE
                     WHEN ? = 1 THEN 0
                     WHEN q.dificultad_real = ? THEN 0
@@ -170,12 +199,12 @@ class PartidaModel
                         - FIELD(?, 'FACIL', 'INTERMEDIO', 'DIFICIL')
                     )
                 END ASC,
-                v.ultima_vista ASC, RAND()
+                RAND()
             LIMIT 1";
 
         $fila = $this->database->queryOnePrepared(
             $sql,
-            [self::MIN_RESPUESTAS_PREGUNTA, $jugador, $categoriaId, $enEvaluacion, $dificultad, $dificultad]
+            [self::MIN_RESPUESTAS_PREGUNTA, $categoriaId, ...$preguntasVistas, $enEvaluacion, $dificultad, $dificultad]
         );
         if ($fila === null) {
             return null;
