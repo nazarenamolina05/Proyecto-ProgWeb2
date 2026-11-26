@@ -1,146 +1,74 @@
-
-<main class="partida-contenedor">
-    <section class="partida-tarjeta" aria-labelledby="partida-titulo">
-        <p class="grammys-eyebrow">The Grammys Trivia</p>
-
-        <h1 id="partida-titulo">
-            {{#elegir_categoria}}
-                Elegí una categoría
-            {{/elegir_categoria}}
-
-            {{^elegir_categoria}}
-                Tu desafío musical
-            {{/elegir_categoria}}
-        </h1>
+<main class="partida-contenedor{{#elegir_categoria}} partida-contenedor-progreso{{/elegir_categoria}}">
+    <section class="partida-tarjeta{{#elegir_categoria}} partida-tarjeta-progreso{{/elegir_categoria}}" aria-labelledby="partida-titulo">
+        {{#elegir_categoria}}
+            <h1 id="partida-titulo" class="progreso-titulo">Tu progreso musical</h1>
+            <p class="progreso-intro">Tu nivel es independiente en cada categoría.</p>
+        {{/elegir_categoria}}
+        {{^elegir_categoria}}
+            <p class="grammys-eyebrow">The Grammys Trivia</p>
+            <h1 id="partida-titulo">Tu desafío musical</h1>
+        {{/elegir_categoria}}
 
         {{#categoria_nombre}}
-            <p>
-                Categoría:
-                <strong>{{categoria_nombre}}</strong>
-            </p>
-
-            <p>
-                Dificultad:
-                <strong>{{dificultad}}</strong>
-            </p>
-
-            <p>
-                Respuestas correctas:
-                <strong>{{correctas}} / {{total_preguntas}}</strong>
-            </p>
+            <p>Categoría: <strong>{{categoria_nombre}}</strong></p>
+            <p>Tu nivel: <strong>{{nivel_usuario}}</strong></p>
+            {{^sin_preguntas}}
+                <p>Dificultad de la pregunta: <strong>{{dificultad}}</strong></p>
+            {{/sin_preguntas}}
+            <div class="progreso-card progreso-{{clase_nivel}}">
+                <span class="progreso-nivel">Progreso en esta categoría</span>
+                <span class="progreso-pista" role="progressbar" aria-label="Progreso en esta categoría" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{porcentaje}}">
+                    <span class="progreso-relleno" style="width: {{porcentaje}}%;"></span>
+                </span>
+            </div>
+            <p>Respuestas correctas: <strong>{{correctas}} / {{total_preguntas}}</strong></p>
         {{/categoria_nombre}}
-
         {{#mostrar_puntaje}}
-            <p class="partida-puntaje">
-                Puntaje:
-                <strong>{{puntaje}}</strong>
-            </p>
+            <p class="partida-puntaje">Puntaje: <strong>{{puntaje}}</strong></p>
         {{/mostrar_puntaje}}
-
         {{#error}}
-            <p class="grammys-error" role="alert">
-                {{error}}
-            </p>
+            <p class="grammys-error" role="alert">{{error}}</p>
         {{/error}}
-
         {{#mensaje}}
-            <p role="status">
-                {{mensaje}}
-            </p>
+            <p role="status">{{mensaje}}</p>
         {{/mensaje}}
 
-        <!-- ELEGIR CATEGORÍA Y DIFICULTAD -->
-
         {{#elegir_categoria}}
-            <p>
-                Elegí tu tema y poné a prueba
-                cuánto sabés de música.
-            </p>
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria"
-            >
-                <input
-                    type="hidden"
-                    name="token"
-                    value="{{token}}"
-                >
-
-                <fieldset class="partida-opciones">
-                    <legend>Categorías disponibles</legend>
-
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria">
+                <input type="hidden" name="token" value="{{token}}">
+                <fieldset class="progreso-categorias">
+                    <legend class="progreso-solo-lector">Elegí una categoría para jugar</legend>
                     {{#categorias}}
-                        <label class="partida-opcion">
-                            <input
-                                type="radio"
-                                name="categoria_id"
-                                value="{{id}}"
-                                required
-                            >
-                            <span>{{nombre}}</span>
+                        <label class="progreso-opcion">
+                            <input class="progreso-radio" type="radio" name="categoria_id" value="{{id}}" required>
+                            <span class="progreso-card progreso-{{clase_nivel}}">
+                                <span class="progreso-nombre">
+                                    <span class="progreso-nota" aria-hidden="true">♫</span>
+                                    {{nombre}}
+                                </span>
+                                <span class="progreso-nivel">{{nivel_usuario}}</span>
+                                <span class="progreso-pista" role="progressbar" aria-label="Porcentaje de aciertos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{porcentaje}}">
+                                    <span class="progreso-relleno" style="width: {{porcentaje}}%;"></span>
+                                </span>
+                                {{#texto_progreso}}
+                                    <span class="progreso-detalle">{{texto_progreso}}</span>
+                                {{/texto_progreso}}
+                            </span>
                         </label>
                     {{/categorias}}
                 </fieldset>
-
-                <fieldset class="partida-opciones">
-                    <legend>Elegí la dificultad</legend>
-
-                    <label class="partida-opcion">
-                        <input
-                            type="radio"
-                            name="dificultad"
-                            value="FACIL"
-                            required
-                        >
-                        <span>Fácil</span>
-                    </label>
-
-                    <label class="partida-opcion">
-                        <input
-                            type="radio"
-                            name="dificultad"
-                            value="INTERMEDIO"
-                            checked
-                        >
-                        <span>Intermedio</span>
-                    </label>
-
-                    <label class="partida-opcion">
-                        <input
-                            type="radio"
-                            name="dificultad"
-                            value="DIFICIL"
-                        >
-                        <span>Difícil</span>
-                    </label>
-                </fieldset>
-
                 {{#hay_categorias}}
-                    <button
-                        class="grammys-button"
-                        type="submit"
-                    >
-                        Empezar a jugar
-                    </button>
+                    <p class="progreso-ayuda">Seleccioná una categoría para jugar.</p>
+                    <button class="grammys-button" type="submit">Empezar a jugar</button>
                 {{/hay_categorias}}
-
-                {{^categorias}}
-                    <p>
-                        Todavía no hay categorías disponibles.
-                    </p>
-                {{/categorias}}
+                {{^hay_categorias}}
+                    <p>Todavía no hay categorías disponibles.</p>
+                {{/hay_categorias}}
             </form>
         {{/elegir_categoria}}
 
-        <!-- SIN PREGUNTAS -->
-
         {{#sin_preguntas}}
-            <p>
-                Todavía no hay preguntas disponibles
-                en esta categoría.
-                Elegí otra categoría para jugar.
-            </p>
+            <p>No hay preguntas disponibles para tu nivel en esta categoría. Elegí otra categoría para jugar.</p>
         {{/sin_preguntas}}
         {{#derrota}}
             <div class="derrota-fondo">

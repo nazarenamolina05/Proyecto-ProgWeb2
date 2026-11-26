@@ -42,6 +42,29 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- La dificultad no se asigna manualmente. NULL = sin clasificar.
+SET @sql = IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'preguntas'
+       AND COLUMN_NAME = 'dificultad') = 0,
+    'ALTER TABLE preguntas ADD COLUMN dificultad ENUM(''FACIL'',''INTERMEDIO'',''DIFICIL'') NULL DEFAULT NULL',
+    'ALTER TABLE preguntas MODIFY COLUMN dificultad ENUM(''FACIL'',''INTERMEDIO'',''DIFICIL'') NULL DEFAULT NULL'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Historial compatible con la implementación adaptativa existente.
+CREATE TABLE IF NOT EXISTS usuario_pregunta (
+                                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                                jugador VARCHAR(100) NOT NULL,
+    pregunta_id INT NOT NULL,
+    correcta TINYINT(1) DEFAULT NULL,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_jugador_pregunta (jugador, pregunta_id),
+    INDEX idx_pregunta (pregunta_id)
+    ) ENGINE=InnoDB;
+
 START TRANSACTION;
 
 INSERT INTO categorias (nombre) VALUES
@@ -229,8 +252,293 @@ WHERE NOT EXISTS (
 DROP TEMPORARY TABLE nuevas_preguntas_musicales;
 COMMIT;
 
-SELECT c.nombre, COUNT(p.id) AS cantidad_preguntas
-FROM categorias c
-LEFT JOIN preguntas p ON p.categoria_id = c.id
-GROUP BY c.id, c.nombre
-ORDER BY c.nombre;
+-- 50 preguntas adicionales: todas comienzan sin clasificar.
+START TRANSACTION;
+
+-- Artistas y bandas
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿De qué banda es vocalista Axl Rose?', 'Guns N’ Roses', 'Metallica', 'AC/DC', '1', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿De qué banda es vocalista Axl Rose?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante popularizó el personaje Hannah Montana?', 'Selena Gomez', 'Miley Cyrus', 'Demi Lovato', '2', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué cantante popularizó el personaje Hannah Montana?', '¿Qué cantante interpretó al personaje Hannah Montana?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿En qué grupo cantó Victoria Beckham?', 'Destiny’s Child', 'TLC', 'Spice Girls', '3', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿En qué grupo cantó Victoria Beckham?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Dónde nació Ricky Martin?', 'Puerto Rico', 'México', 'Colombia', '1', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Dónde nació Ricky Martin?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Quién es el líder y vocalista de Maroon 5?', 'Joe Jonas', 'Adam Levine', 'Brandon Flowers', '2', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Quién es el líder y vocalista de Maroon 5?', '¿Quién es el vocalista de Maroon 5?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante argentina protagonizó la serie Violetta?', 'Emilia Mernes', 'Nicki Nicole', 'Tini Stoessel', '3', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante argentina protagonizó la serie Violetta?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda está asociada con la lengua roja que aparece en su logo?', 'The Rolling Stones', 'The Beatles', 'The Who', '1', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué banda está asociada con la lengua roja que aparece en su logo?', '¿Qué banda tiene un famoso logo con una lengua roja?'));
+
+-- Artistas y bandas
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué músico es conocido como The Edge?', 'El bajista de Muse', 'El guitarrista de U2', 'El baterista de Oasis', '2', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué músico es conocido como The Edge?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué artista fue vocalista de The Police?', 'Peter Gabriel', 'Bryan Adams', 'Sting', '3', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué artista fue vocalista de The Police?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿En qué banda fue cantante Hayley Williams?', 'Paramore', 'Evanescence', 'No Doubt', '1', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿En qué banda fue cantante Hayley Williams?', '¿En qué banda canta Hayley Williams?'));
+
+-- Artistas y bandas
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué músico fue el tecladista fundador de The Doors?', 'Rick Wright', 'Ray Manzarek', 'John Paul Jones', '2', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué músico fue el tecladista fundador de The Doors?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante lideró la banda Joy Division?', 'Robert Smith', 'Morrissey', 'Ian Curtis', '3', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante lideró la banda Joy Division?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué baterista de Nirvana formó Foo Fighters?', 'Dave Grohl', 'Chad Smith', 'Taylor Hawkins', '1', NULL
+FROM categorias c WHERE c.nombre = 'Artistas y bandas'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué baterista de Nirvana formó Foo Fighters?', '¿Qué baterista de Nirvana fundó Foo Fighters?'));
+
+-- Canciones y álbumes
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, 'Si en el karaoke suena Toxic, ¿a qué cantante estás imitando?', 'Christina Aguilera', 'Britney Spears', 'Kylie Minogue', '2', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = 'Si en el karaoke suena Toxic, ¿a qué cantante estás imitando?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Quién interpreta la canción Firework?', 'Lady Gaga', 'Demi Lovato', 'Katy Perry', '3', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Quién interpreta la canción Firework?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda grabó Livin’ on a Prayer?', 'Bon Jovi', 'Aerosmith', 'Def Leppard', '1', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué banda grabó Livin’ on a Prayer?', '¿Qué banda grabó Livin'' on a Prayer?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Quién canta Umbrella junto a Jay-Z?', 'Beyoncé', 'Rihanna', 'Alicia Keys', '2', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Quién canta Umbrella junto a Jay-Z?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante lanzó el sencillo As It Was en 2022?', 'Shawn Mendes', 'Charlie Puth', 'Harry Styles', '3', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué cantante lanzó el sencillo As It Was en 2022?', '¿Qué cantante lanzó As It Was en 2022?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda argentina interpreta Lamento boliviano?', 'Los Enanitos Verdes', 'Soda Stereo', 'Los Pericos', '1', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué banda argentina interpreta Lamento boliviano?', '¿Qué banda de rock argentino interpreta Lamento boliviano?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Quién interpreta la canción Drivers License?', 'Sabrina Carpenter', 'Olivia Rodrigo', 'Gracie Abrams', '2', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Quién interpreta la canción Drivers License?');
+
+-- Canciones y álbumes
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda lanzó el álbum Hybrid Theory en 2000?', 'Korn', 'Limp Bizkit', 'Linkin Park', '3', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué banda lanzó el álbum Hybrid Theory en 2000?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿En qué álbum de Adele aparece Someone Like You?', '21', '19', '25', '1', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿En qué álbum de Adele aparece Someone Like You?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué artista publicó el álbum Lemonade en 2016?', 'Solange', 'Beyoncé', 'Rihanna', '2', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué artista publicó el álbum Lemonade en 2016?');
+
+-- Canciones y álbumes
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda publicó el álbum Disintegration en 1989?', 'Depeche Mode', 'New Order', 'The Cure', '3', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué banda publicó el álbum Disintegration en 1989?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿En qué álbum de David Bowie aparece Life on Mars?', 'Hunky Dory', 'Low', 'Heroes', '1', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿En qué álbum de David Bowie aparece Life on Mars?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué artista lanzó el álbum Horses en 1975?', 'Debbie Harry', 'Patti Smith', 'Stevie Nicks', '2', NULL
+FROM categorias c WHERE c.nombre = 'Canciones y álbumes'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué artista lanzó el álbum Horses en 1975?');
+
+-- Premios y récords
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Quién ganó el Grammy a Álbum del Año en 2025 por Cowboy Carter?', 'Taylor Swift', 'Dua Lipa', 'Beyoncé', '3', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Quién ganó el Grammy a Álbum del Año en 2025 por Cowboy Carter?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2022?', 'Olivia Rodrigo', 'Sabrina Carpenter', 'Tate McRae', '1', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2022?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2025?', 'Ariana Grande', 'Chappell Roan', 'Billie Eilish', '2', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2025?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué artista ganó el Grammy a Álbum del Año en 2026 por DeBÍ TiRAR MáS FOToS?', 'J Balvin', 'Rauw Alejandro', 'Bad Bunny', '3', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué artista ganó el Grammy a Álbum del Año en 2026 por DeBÍ TiRAR MáS FOToS?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2019?', 'Dua Lipa', 'Camila Cabello', 'Bebe Rexha', '1', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2019?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2021?', 'Doja Cat', 'Megan Thee Stallion', 'Saweetie', '2', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué cantante ganó el Grammy a Mejor Artista Nuevo en 2021?');
+
+-- Premios y récords
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué banda sonora ganó el Grammy a Álbum del Año en 1994?', 'El Rey León', 'Titanic', 'El guardaespaldas', '3', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué banda sonora ganó el Grammy a Álbum del Año en 1994?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué disco ganó el Grammy a Mejor Álbum Vocal Pop en 2021?', 'Future Nostalgia', 'Chromatica', 'Fine Line', '1', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué disco ganó el Grammy a Mejor Álbum Vocal Pop en 2021?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué canción de Kendrick Lamar ganó el Grammy a Grabación del Año en 2025?', 'HUMBLE.', 'Not Like Us', 'DNA.', '2', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué canción de Kendrick Lamar ganó el Grammy a Grabación del Año en 2025?');
+
+-- Premios y récords
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué álbum de Quincy Jones y varios artistas ganó el Grammy a Álbum del Año en 1991?', 'The Dude', 'Q’s Jook Joint', 'Back on the Block', '3', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué álbum de Quincy Jones y varios artistas ganó el Grammy a Álbum del Año en 1991?', '¿Qué álbum de Quincy Jones ganó el Grammy a Álbum del Año en 1991?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué álbum de Paul Simon ganó el Grammy a Álbum del Año en 1987?', 'Graceland', 'Still Crazy After All These Years', 'The Rhythm of the Saints', '1', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué álbum de Paul Simon ganó el Grammy a Álbum del Año en 1987?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué canción ganó el Grammy a Canción del Año en 1994 y forma parte de Aladdín?', 'Beauty and the Beast', 'A Whole New World', 'Can You Feel the Love Tonight', '2', NULL
+FROM categorias c WHERE c.nombre = 'Premios y récords'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué canción ganó el Grammy a Canción del Año en 1994 y forma parte de Aladdín?', '¿Qué canción ganó el Grammy a Canción del Año en 1994 y pertenece a Aladdín?'));
+
+-- Curiosidades musicales
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué instrumento tiene forma triangular y se toca pulsando sus cuerdas con los dedos?', 'Flauta', 'Clarinete', 'Arpa', '3', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué instrumento tiene forma triangular y se toca pulsando sus cuerdas con los dedos?', '¿Qué instrumento tiene forma triangular y se toca pulsando sus cuerdas?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Cómo se llama un grupo de tres intérpretes musicales?', 'Trío', 'Cuarteto', 'Quinteto', '1', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Cómo se llama un grupo de tres intérpretes musicales?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué instrumento musical está formado por láminas de madera que se golpean con baquetas?', 'Acordeón', 'Xilófono', 'Saxofón', '2', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué instrumento musical está formado por láminas de madera que se golpean con baquetas?', '¿Qué instrumento está formado por láminas de madera que se golpean con baquetas?'));
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Cómo se llama la parte de una canción que suele repetirse con la misma letra?', 'Introducción', 'Puente', 'Estribillo', '3', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Cómo se llama la parte de una canción que suele repetirse con la misma letra?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué género musical se asocia con Bob Marley?', 'Reggae', 'Flamenco', 'Tango', '1', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué género musical se asocia con Bob Marley?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué dispositivo transforma las vibraciones de la voz en una señal eléctrica?', 'Metrónomo', 'Micrófono', 'Tocadiscos', '2', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué dispositivo transforma las vibraciones de la voz en una señal eléctrica?');
+
+-- Curiosidades musicales
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué significa tocar una pieza en staccato?', 'Tocar todas las notas muy fuerte', 'Tocar sin seguir el pulso', 'Tocar las notas de forma breve y separada', '3', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué significa tocar una pieza en staccato?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué instrumento utiliza normalmente una lengüeta doble?', 'Oboe', 'Trompeta', 'Flauta traversa', '1', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué instrumento utiliza normalmente una lengüeta doble?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué significa la indicación musical crescendo?', 'Disminuir la velocidad', 'Aumentar gradualmente la intensidad', 'Cambiar de tonalidad', '2', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué significa la indicación musical crescendo?');
+
+-- Curiosidades musicales
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Cuántos semitonos separan dos notas situadas a una octava de distancia?', '7', '8', '12', '3', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Cuántos semitonos separan dos notas situadas a una octava de distancia?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué compositor escribió el ballet La consagración de la primavera?', 'Ígor Stravinski', 'Claude Debussy', 'Maurice Ravel', '1', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado = '¿Qué compositor escribió el ballet La consagración de la primavera?');
+
+INSERT INTO preguntas (categoria_id, enunciado, opcion_1, opcion_2, opcion_3, correcta, dificultad)
+SELECT c.id, '¿Qué nombre recibe la forma musical basada en un tema que entra sucesivamente en distintas voces y se desarrolla contrapuntísticamente?', 'Sonata', 'Fuga', 'Vals', '2', NULL
+FROM categorias c WHERE c.nombre = 'Curiosidades musicales'
+                    AND NOT EXISTS (SELECT 1 FROM preguntas p WHERE p.categoria_id = c.id AND p.enunciado IN ('¿Qué nombre recibe la forma musical basada en un tema que entra sucesivamente en distintas voces y se desarrolla contrapuntísticamente?', '¿Qué forma musical se basa en un tema que entra sucesivamente en distintas voces?'));
+
+COMMIT;
+
+
+-- Recalcular TODAS las dificultades usando solo respuestas reales.
+-- Corrige los valores iniciales asignados manualmente en versiones anteriores.
+-- No borra preguntas, IDs ni historial. Menos de 5 respuestas = NULL.
+UPDATE preguntas p
+    LEFT JOIN (
+    SELECT pregunta_id, COUNT(correcta) AS total, SUM(correcta) AS aciertos
+    FROM usuario_pregunta
+    GROUP BY pregunta_id
+    ) e ON e.pregunta_id = p.id
+    SET p.dificultad = CASE
+        WHEN COALESCE(e.total, 0) < 5 THEN NULL
+        WHEN e.aciertos * 100 > e.total * 70 THEN 'FACIL'
+        WHEN e.aciertos * 100 < e.total * 30 THEN 'DIFICIL'
+        ELSE 'INTERMEDIO'
+END;
+
+SELECT c.nombre AS categoria,
+       COALESCE(p.dificultad, 'SIN CLASIFICAR') AS dificultad,
+       COUNT(*) AS cantidad
+FROM preguntas p JOIN categorias c ON c.id = p.categoria_id
+GROUP BY c.id, c.nombre, p.dificultad
+ORDER BY c.nombre, p.dificultad;
