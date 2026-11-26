@@ -24,6 +24,9 @@ if ($esPanelInterno) {
         <?php if (($vistaActual ?? "") === "perfil"): ?>
             <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Perfil.css">
         <?php endif; ?>
+        <?php if (in_array(($vistaActual ?? ""), ["lobby", "ranking"], true)): ?>
+            <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Lobby.css">
+        <?php endif; ?>
         <?php if (($vistaActual ?? "") === "login"): ?>
             <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Login.css">
         <?php endif; ?>
@@ -47,17 +50,16 @@ if ($esPanelInterno) {
         <?php if ($esPanelInterno): ?>
             <a href="<?= $baseUrl ?>/index.php?controller=editor&amp;method=show">Panel</a>
             <a class="grammys-nav-cta" href="<?= $baseUrl ?>/index.php?controller=login&amp;method=logout">Salir</a>
+        <?php elseif (isset($_SESSION['usuario_id'])): ?>
+            <a href="<?= $baseUrl ?>/index.php?controller=lobby&amp;method=show">Inicio</a>
+            <a href="<?= $baseUrl ?>/index.php?controller=lobby&amp;method=ranking">Ranking</a>
+            <a href="<?= $baseUrl ?>/index.php?controller=perfil&amp;method=show&amp;id=<?= (int) $_SESSION['usuario_id'] ?>">Perfil</a>
+            <a class="grammys-nav-cta" href="<?= $baseUrl ?>/index.php?controller=login&amp;method=logout">Salir</a>
         <?php else: ?>
             <a href="<?= $baseUrl ?>/">Inicio</a>
             <a href="<?= $esInicio ? '' : $baseUrl . '/' ?>#categorias">Categorías</a>
-            <?php if (isset($_SESSION['usuario_id'])): ?>
-                <a href="<?= $baseUrl ?>/index.php?controller=partida&amp;method=show">Empezar a jugar</a>
-                <a href="<?= $baseUrl ?>/index.php?controller=perfil&amp;method=show&amp;id=<?= (int) $_SESSION['usuario_id'] ?>">Perfil</a>
-                <a class="grammys-nav-cta" href="<?= $baseUrl ?>/index.php?controller=login&amp;method=logout">Salir</a>
-            <?php else: ?>
-                <a href="<?= $esInicio ? '' : $baseUrl . '/' ?>#acceso">Iniciar sesión</a>
-                <a class="grammys-nav-cta" href="<?= $baseUrl ?>/index.php?controller=registro&amp;method=show">Registrarse</a>
-            <?php endif; ?>
+            <a href="<?= $esInicio ? '' : $baseUrl . '/' ?>#acceso">Iniciar sesión</a>
+            <a class="grammys-nav-cta" href="<?= $baseUrl ?>/index.php?controller=registro&amp;method=show">Registrarse</a>
         <?php endif; ?>
     </div>
 </nav>

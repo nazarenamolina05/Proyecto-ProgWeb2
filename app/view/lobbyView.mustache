@@ -1,0 +1,117 @@
+<main class="lobby">
+
+    {{! Cabecera: usuario logueado y puntaje actual en el ranking }}
+    <section class="lobby-card lobby-cabecera">
+        <div class="lobby-saludo">
+            <p class="grammys-eyebrow">Lobby</p>
+            <h1>Hola, {{usuario}}</h1>
+        </div>
+
+        <div class="lobby-stats">
+            <div class="lobby-stat">
+                {{#tiene_puntaje}}
+                <strong>{{mejor_puntaje}}</strong>
+                {{/tiene_puntaje}}
+                {{^tiene_puntaje}}
+                <strong>—</strong>
+                {{/tiene_puntaje}}
+                <span>Tu puntaje en el ranking</span>
+            </div>
+            <div class="lobby-stat">
+                {{#tiene_puntaje}}
+                <strong>#{{posicion}}</strong>
+                {{/tiene_puntaje}}
+                {{^tiene_puntaje}}
+                <strong>—</strong>
+                {{/tiene_puntaje}}
+                <span>Tu posición</span>
+            </div>
+        </div>
+    </section>
+    {{^tiene_puntaje}}
+    <p class="lobby-aviso">Todavía no jugaste ninguna partida: jugá una para entrar al ranking.</p>
+    {{/tiene_puntaje}}
+
+    {{! Navegación principal }}
+    <nav class="lobby-acciones" aria-label="Acciones del lobby">
+        <a class="grammys-button" href="{{base}}/index.php?controller=partida&amp;method=categorias">
+            <span aria-hidden="true">♫</span> Nueva partida
+        </a>
+        <a class="grammys-button" href="{{base}}/index.php?controller=lobby&amp;method=ranking">
+            <span aria-hidden="true">★</span> Ranking global
+        </a>
+        <a class="grammys-button" href="{{base}}/index.php?controller=contribucion&amp;method=sugerir">
+            <span aria-hidden="true">✎</span> Sugerir una pregunta
+        </a>
+    </nav>
+
+    {{! Historial de partidas jugadas }}
+    <section class="lobby-card">
+        <h2>Tus últimas partidas</h2>
+        {{#tiene_historial}}
+        <div class="lobby-tabla-contenedor">
+            <table class="lobby-tabla">
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Categoría</th>
+                    <th>Dificultad</th>
+                    <th>Aciertos</th>
+                    <th>Puntaje</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#historial}}
+                <tr>
+                    <td>{{fecha_formateada}}</td>
+                    <td>{{categoria}}</td>
+                    <td>{{dificultad}}</td>
+                    <td>{{correctas}}/{{total_preguntas}}</td>
+                    <td><strong>{{puntaje}}</strong></td>
+                </tr>
+                {{/historial}}
+                </tbody>
+            </table>
+        </div>
+        <p class="lobby-link-aparte">
+            <a class="grammys-text-link" href="{{base}}/{{url_perfil_propio}}">Ver todas en mi perfil</a>
+        </p>
+        {{/tiene_historial}}
+        {{^tiene_historial}}
+        <p class="lobby-vacio">Todavía no jugaste ninguna partida.</p>
+        {{/tiene_historial}}
+    </section>
+
+    {{! Vista previa del ranking global }}
+    <section class="lobby-card">
+        <h2>Mejores jugadores</h2>
+        {{#hay_top}}
+        <div class="lobby-tabla-contenedor">
+            <table class="lobby-tabla lobby-tabla-ranking">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Jugador</th>
+                    <th>Mejor puntaje</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#top}}
+                <tr class="{{#es_propio}}lobby-propio{{/es_propio}}">
+                    <td>{{posicion}}</td>
+                    <td><a href="{{base}}/{{url_perfil}}">{{usuario}}</a></td>
+                    <td><strong>{{mejor_puntaje}}</strong></td>
+                </tr>
+                {{/top}}
+                </tbody>
+            </table>
+        </div>
+        {{/hay_top}}
+        {{^hay_top}}
+        <p class="lobby-vacio">Todavía no hay jugadores en el ranking.</p>
+        {{/hay_top}}
+        <p class="lobby-link-aparte">
+            <a class="grammys-text-link" href="{{base}}/index.php?controller=lobby&amp;method=ranking">Ver ranking completo</a>
+        </p>
+    </section>
+</main>
