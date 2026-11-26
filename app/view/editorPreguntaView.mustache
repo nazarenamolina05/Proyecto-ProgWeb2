@@ -1,5 +1,5 @@
 <main class="editor-panel">
-    <a href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion={{origen}}">Volver a {{origen}}</a>
+    <a href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion={{origen}}{{#categoria_filtro}}&amp;categoria={{categoria_filtro}}&amp;pagina={{pagina_actual}}{{/categoria_filtro}}">Volver a {{origen}}</a>
     <section class="editor-seccion" aria-labelledby="titulo-editor">
         <h1 id="titulo-editor">{{titulo}}</h1>
         {{#error}}<p class="grammys-error" role="alert">{{error}}</p>{{/error}}
@@ -7,6 +7,10 @@
             <input type="hidden" name="token" value="{{token}}">
             <input type="hidden" name="id" value="{{id}}">
             <input type="hidden" name="origen" value="{{origen}}">
+            {{#categoria_filtro}}
+                <input type="hidden" name="categoria_filtro" value="{{categoria_filtro}}">
+                <input type="hidden" name="pagina" value="{{pagina_actual}}">
+            {{/categoria_filtro}}
 
             <label for="editor-enunciado">Enunciado</label>
             <textarea id="editor-enunciado" name="enunciado" rows="3" maxlength="255" required>{{enunciado}}</textarea>

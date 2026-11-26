@@ -31,13 +31,15 @@ if ($esPanelInterno) {
             <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Login.css">
         <?php endif; ?>
         <?php if (($vistaActual ?? "") === "comenzarPartida"): ?>
+            <?php $versionPartida = filemtime(__DIR__ . '/../../public/css/Partida.css'); ?>
             <link
                     rel="stylesheet"
-                    href="<?= $baseUrl ?>/public/css/Partida.css"
+                    href="<?= $baseUrl ?>/public/css/Partida.css?v=<?= $versionPartida ?>"
             >
         <?php endif; ?>
         <?php if ($esPanelInterno): ?>
-            <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Editor.css">
+            <?php $versionEditor = filemtime(__DIR__ . '/../../public/css/Editor.css'); ?>
+            <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Editor.css?v=<?= $versionEditor ?>">
         <?php endif; ?>
     </head>
 <body class="<?= $clasesBody ?>">

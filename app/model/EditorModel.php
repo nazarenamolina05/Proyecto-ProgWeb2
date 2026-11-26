@@ -8,12 +8,42 @@ class EditorModel
     {
     }
 
-    public function listarPreguntas(): array
+    public function listarCategoriasPreguntas(): array
     {
         return $this->database->queryAll(
-            'SELECT p.id, p.enunciado, p.dificultad, p.activa, c.nombre AS categoria
+            "SELECT c.id, c.nombre, COUNT(p.id) AS total
+             FROM categorias c LEFT JOIN preguntas p ON p.categoria_id = c.id
+             GROUP BY c.id, c.nombre
+             UNION ALL
+             SELECT 'sin-categoria', 'Sin categoría', COUNT(*)
              FROM preguntas p LEFT JOIN categorias c ON c.id = p.categoria_id
-             ORDER BY p.activa DESC, p.id DESC'
+             WHERE c.id IS NULL
+             HAVING COUNT(*) > 0
+             ORDER BY nombre"
+        );
+    }
+
+    public function contarPreguntas(?int $categoriaId): int
+    {
+        $fila = $this->database->queryOnePrepared(
+            'SELECT COUNT(*) AS total
+             FROM preguntas p LEFT JOIN categorias c ON c.id = p.categoria_id
+             WHERE c.id <=> ?',
+            [$categoriaId]
+        );
+
+        return (int) $fila['total'];
+    }
+
+    public function listarPreguntas(?int $categoriaId, int $limite, int $desplazamiento): array
+    {
+        return $this->database->queryAllPrepared(
+            "SELECT p.id, p.enunciado, p.dificultad, p.activa
+             FROM preguntas p LEFT JOIN categorias c ON c.id = p.categoria_id
+             WHERE c.id <=> ?
+             ORDER BY p.activa DESC, p.id DESC
+             LIMIT $limite OFFSET $desplazamiento",
+            [$categoriaId]
         );
     }
 

@@ -85,6 +85,16 @@
     background: #292015;
 }
 
+.editor-categorias {
+    margin-top: 16px;
+}
+
+.editor-categorias .editor-tarjeta {
+    min-height: 112px;
+    font-size: clamp(1.125rem, 2.5vw, 1.4rem);
+    overflow-wrap: anywhere;
+}
+
 .editor-seccion {
     margin: 24px 0;
     padding: clamp(16px, 3vw, 28px);
@@ -98,6 +108,15 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.editor-paginacion {
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.editor-paginacion a {
+    text-decoration: none;
 }
 
 .editor-encabezado,

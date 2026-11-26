@@ -66,25 +66,61 @@
     {{#ver_preguntas}}
     <section id="preguntas" class="editor-seccion" aria-labelledby="titulo-preguntas">
         <div class="editor-acciones editor-encabezado">
-            <h1 id="titulo-preguntas">Preguntas</h1>
-            <a class="grammys-button" href="{{base}}/index.php?controller=editor&amp;method=formulario">Nueva pregunta</a>
+            <h1 id="titulo-preguntas">{{categoria_actual}}{{^categoria_actual}}Preguntas por categoría{{/categoria_actual}}</h1>
+            <div class="editor-acciones">
+                {{#categoria_actual}}
+                    <a href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=preguntas">Ver categorías</a>
+                {{/categoria_actual}}
+                <a class="grammys-button" href="{{base}}/index.php?controller=editor&amp;method=formulario{{#categoria_filtro}}&amp;categoria={{categoria_filtro}}&amp;pagina={{pagina_actual}}{{/categoria_filtro}}">Nueva pregunta</a>
+            </div>
         </div>
-        {{#preguntas}}
-            <article class="editor-fila">
-                <div>
-                    <h2>{{enunciado}}</h2>
-                    <p>{{categoria}} · {{dificultad}} · {{#activa}}Activa{{/activa}}{{^activa}}De baja{{/activa}}</p>
-                </div>
-                <form class="editor-acciones" method="post" action="{{base}}/index.php?controller=editor&amp;method=estadoPregunta">
-                    <a href="{{base}}/index.php?controller=editor&amp;method=formulario&amp;id={{id}}">Editar</a>
-                    <input type="hidden" name="token" value="{{token}}">
-                    <input type="hidden" name="id" value="{{id}}">
-                    {{#activa}}<button type="submit" name="accion" value="baja" class="editor-secundario">Dar de baja</button>{{/activa}}
-                    {{^activa}}<button type="submit" name="accion" value="activar" class="editor-secundario">Reactivar</button>{{/activa}}
-                </form>
-            </article>
-        {{/preguntas}}
-        {{^preguntas}}<p>Todavía no hay preguntas.</p>{{/preguntas}}
+        {{^categoria_actual}}
+            {{#hay_categorias_preguntas}}
+                <nav class="editor-tarjetas editor-categorias" aria-label="Categorías de preguntas">
+                    {{#categorias_preguntas}}
+                        <a class="editor-tarjeta" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=preguntas&amp;categoria={{id}}">
+                            <div>
+                                <strong>{{nombre}}</strong>
+                                <span class="editor-tarjeta-detalle">{{total}} en total</span>
+                            </div>
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    {{/categorias_preguntas}}
+                </nav>
+            {{/hay_categorias_preguntas}}
+            {{^hay_categorias_preguntas}}<p>Todavía no hay categorías.</p>{{/hay_categorias_preguntas}}
+        {{/categoria_actual}}
+        {{#categoria_actual}}
+            {{#preguntas}}
+                <article class="editor-fila">
+                    <div>
+                        <h2>{{enunciado}}</h2>
+                        <p>{{dificultad}}{{^dificultad}}Sin clasificar{{/dificultad}} · {{#activa}}Activa{{/activa}}{{^activa}}De baja{{/activa}}</p>
+                    </div>
+                    <form class="editor-acciones" method="post" action="{{base}}/index.php?controller=editor&amp;method=estadoPregunta">
+                        <a href="{{base}}/index.php?controller=editor&amp;method=formulario&amp;id={{id}}&amp;categoria={{categoria_filtro}}&amp;pagina={{pagina_actual}}">Editar</a>
+                        <input type="hidden" name="token" value="{{token}}">
+                        <input type="hidden" name="id" value="{{id}}">
+                        <input type="hidden" name="categoria_filtro" value="{{categoria_filtro}}">
+                        <input type="hidden" name="pagina" value="{{pagina_actual}}">
+                        {{#activa}}<button type="submit" name="accion" value="baja" class="editor-secundario">Dar de baja</button>{{/activa}}
+                        {{^activa}}<button type="submit" name="accion" value="activar" class="editor-secundario">Reactivar</button>{{/activa}}
+                    </form>
+                </article>
+            {{/preguntas}}
+            {{^preguntas}}<p>Todavía no hay preguntas en esta categoría.</p>{{/preguntas}}
+            {{#paginar}}
+                <nav class="editor-acciones editor-paginacion" aria-label="Páginas de preguntas">
+                    {{#pagina_anterior}}
+                        <a class="editor-secundario" rel="prev" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=preguntas&amp;categoria={{categoria_filtro}}&amp;pagina={{pagina_anterior}}">Anterior</a>
+                    {{/pagina_anterior}}
+                    <span>Página {{pagina_actual}} de {{paginas}}</span>
+                    {{#pagina_siguiente}}
+                        <a class="editor-secundario" rel="next" href="{{base}}/index.php?controller=editor&amp;method=show&amp;seccion=preguntas&amp;categoria={{categoria_filtro}}&amp;pagina={{pagina_siguiente}}">Siguiente</a>
+                    {{/pagina_siguiente}}
+                </nav>
+            {{/paginar}}
+        {{/categoria_actual}}
     </section>
     {{/ver_preguntas}}
 

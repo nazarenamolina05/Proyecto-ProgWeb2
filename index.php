@@ -28,4 +28,8 @@ if (isset($_SESSION['usuario_id']) && !$cerrandoSesion) {
     }
 }
 
+if ($controller === 'partida' && !isset($_SESSION['usuario_id'])) {
+    Redirect::to('/index.php?controller=login&method=show');
+}
+
 $configuration->getRouter()->dispatch($controller, $method);

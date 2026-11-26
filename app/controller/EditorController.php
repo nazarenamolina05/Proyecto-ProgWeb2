@@ -15,6 +15,7 @@ use Redirect;
 class EditorController
 {
     private const PANEL = '/index.php?controller=editor&method=show';
+    private const PREGUNTAS_POR_PAGINA = 10;
 
     public function __construct(
         private EditorModel $model,
@@ -44,7 +45,7 @@ class EditorController
 
         $administrador = $_SESSION['rol'] === 'administrador';
         $contenido = match ($seccion) {
-            'preguntas' => ['ver_preguntas' => true, 'preguntas' => $this->model->listarPreguntas()],
+            'preguntas' => $this->contenidoPreguntas(),
             'sugerencias' => ['ver_sugerencias' => true, 'sugerencias' => $this->model->listarSugerencias()],
             'reportes' => ['ver_reportes' => true, 'reportes' => $this->model->listarReportes()],
             'cuentas' => ['ver_cuentas' => true, 'editores' => $this->usuarios->listarEditores()],
@@ -63,6 +64,51 @@ class EditorController
         unset($_SESSION['editor_mensaje'], $_SESSION['editor_error']);
     }
 
+    private function contenidoPreguntas(): array
+    {
+        $filtro = $this->filtroCategoria($_GET['categoria'] ?? null);
+        if ($filtro !== null) {
+            $categoria = $filtro === 'sin-categoria'
+                ? ['nombre' => 'Sin categoría']
+                : $this->partida->obtenerCategoria($filtro);
+
+            if ($categoria !== null) {
+                $categoriaId = is_int($filtro) ? $filtro : null;
+                $total = $this->model->contarPreguntas($categoriaId);
+                $paginas = max(1, (int) ceil($total / self::PREGUNTAS_POR_PAGINA));
+                $pagina = min($this->id($_GET['pagina'] ?? null) ?? 1, $paginas);
+
+                return [
+                    'ver_preguntas' => true,
+                    'categoria_actual' => $categoria['nombre'],
+                    'categoria_filtro' => $filtro,
+                    'preguntas' => $this->model->listarPreguntas(
+                        $categoriaId,
+                        self::PREGUNTAS_POR_PAGINA,
+                        ($pagina - 1) * self::PREGUNTAS_POR_PAGINA
+                    ),
+                    'pagina_actual' => $pagina,
+                    'paginas' => $paginas,
+                    'paginar' => $paginas > 1,
+                    'pagina_anterior' => $pagina > 1 ? $pagina - 1 : null,
+                    'pagina_siguiente' => $pagina < $paginas ? $pagina + 1 : null,
+                ];
+            }
+        }
+
+        $categorias = $this->model->listarCategoriasPreguntas();
+        $contenido = [
+            'ver_preguntas' => true,
+            'categorias_preguntas' => $categorias,
+            'hay_categorias_preguntas' => $categorias !== [],
+        ];
+        if (isset($_GET['categoria'])) {
+            $contenido['error'] = 'No se encontró la categoría.';
+        }
+
+        return $contenido;
+    }
+
     public function formulario(): void
     {
         if (!$this->autorizar()) {
@@ -70,14 +116,18 @@ class EditorController
         }
 
         $id = $this->id($_GET['id'] ?? null);
-        $pregunta = $id === null ? [] : $this->model->obtenerPregunta($id);
         $origen = $_SESSION['rol'] === 'editor' && ($_GET['origen'] ?? null) === 'reportes' ? 'reportes' : 'preguntas';
+        $filtro = $this->filtroCategoria($_GET['categoria'] ?? null);
+        $pagina = $this->id($_GET['pagina'] ?? null) ?? 1;
+        $pregunta = $id === null
+            ? ['categoria_id' => is_int($filtro) ? $filtro : null]
+            : $this->model->obtenerPregunta($id);
         if (isset($_GET['id']) && ($id === null || $pregunta === null)) {
-            $this->volver('No se encontró la pregunta.', true, $origen);
+            $this->volver('No se encontró la pregunta.', true, $origen, $filtro, $pagina);
             return;
         }
 
-        $this->mostrarFormulario($id, $pregunta, $origen);
+        $this->mostrarFormulario($id, $pregunta, $origen, $filtro, $pagina);
     }
 
     public function guardar(): void
@@ -89,8 +139,10 @@ class EditorController
         $idRecibido = $_POST['id'] ?? '';
         $id = $this->id($idRecibido);
         $origen = $_SESSION['rol'] === 'editor' && ($_POST['origen'] ?? null) === 'reportes' ? 'reportes' : 'preguntas';
+        $filtro = $this->filtroCategoria($_POST['categoria_filtro'] ?? null);
+        $pagina = $this->id($_POST['pagina'] ?? null) ?? 1;
         if ($idRecibido !== '' && ($id === null || $this->model->obtenerPregunta($id) === null)) {
-            $this->volver('No se encontró la pregunta.', true, $origen);
+            $this->volver('No se encontró la pregunta.', true, $origen, $filtro, $pagina);
             return;
         }
 
@@ -102,7 +154,7 @@ class EditorController
 
         $error = $this->validarPregunta($pregunta);
         if ($error !== null) {
-            $this->mostrarFormulario($id, $pregunta, $origen, $error);
+            $this->mostrarFormulario($id, $pregunta, $origen, $filtro, $pagina, $error);
             return;
         }
 
@@ -111,11 +163,13 @@ class EditorController
             $this->model->guardarPregunta($id, array_values($pregunta));
         } catch (PDOException $ex) {
             Log::error('Error al guardar pregunta. SQLSTATE: ' . $ex->getCode());
-            $this->mostrarFormulario($id, $pregunta, $origen, 'No se pudo guardar la pregunta. Volvé a intentarlo.');
+            $this->mostrarFormulario($id, $pregunta, $origen, $filtro, $pagina, 'No se pudo guardar la pregunta. Volvé a intentarlo.');
             return;
         }
 
-        $this->volver($id === null ? 'Pregunta publicada.' : 'Pregunta actualizada.', false, $origen);
+        $destino = $filtro === null ? null : (int) $pregunta['categoria_id'];
+        $paginaDestino = $id !== null && $destino === $filtro ? $pagina : 1;
+        $this->volver($id === null ? 'Pregunta publicada.' : 'Pregunta actualizada.', false, $origen, $destino, $paginaDestino);
     }
 
     public function estadoPregunta(): void
@@ -126,14 +180,16 @@ class EditorController
 
         $id = $this->id($_POST['id'] ?? null);
         $accion = $_POST['accion'] ?? null;
+        $filtro = $this->filtroCategoria($_POST['categoria_filtro'] ?? null);
+        $pagina = $this->id($_POST['pagina'] ?? null) ?? 1;
         if ($id === null || !in_array($accion, ['baja', 'activar'], true) || $this->model->obtenerPregunta($id) === null) {
-            $this->volver('La pregunta o la acción no es válida.', true);
+            $this->volver('La pregunta o la acción no es válida.', true, 'preguntas', $filtro, $pagina);
             return;
         }
 
         $activa = $accion === 'activar';
         $this->model->cambiarEstadoPregunta($id, $activa);
-        $this->volver($activa ? 'Pregunta reactivada.' : 'Pregunta dada de baja.');
+        $this->volver($activa ? 'Pregunta reactivada.' : 'Pregunta dada de baja.', false, 'preguntas', $filtro, $pagina);
     }
 
     public function resolverReporte(): void
@@ -276,7 +332,14 @@ class EditorController
         ]);
     }
 
-    private function mostrarFormulario(?int $id, array $pregunta, string $origen, ?string $error = null): void
+    private function mostrarFormulario(
+        ?int $id,
+        array $pregunta,
+        string $origen,
+        int|string|null $filtro,
+        int $pagina,
+        ?string $error = null
+    ): void
     {
         $categorias = $this->partida->obtenerCategorias();
         foreach ($categorias as &$categoria) {
@@ -297,6 +360,8 @@ class EditorController
             'titulo' => $id === null ? 'Nueva pregunta' : 'Editar pregunta',
             'id' => $id,
             'origen' => $origen,
+            'categoria_filtro' => $origen === 'preguntas' ? $filtro : null,
+            'pagina_actual' => $pagina,
             'categorias' => $categorias,
             'dificultades' => $dificultades,
             'correcta_1' => (string) ($pregunta['correcta'] ?? '') === '1',
@@ -382,9 +447,24 @@ class EditorController
         return $id === false ? null : $id;
     }
 
-    private function volver(string $mensaje, bool $error = false, string $seccion = 'preguntas'): void
+    private function filtroCategoria(mixed $valor): int|string|null
+    {
+        return $valor === 'sin-categoria' ? $valor : $this->id($valor);
+    }
+
+    private function volver(
+        string $mensaje,
+        bool $error = false,
+        string $seccion = 'preguntas',
+        int|string|null $filtro = null,
+        int $pagina = 1
+    ): void
     {
         $_SESSION[$error ? 'editor_error' : 'editor_mensaje'] = $mensaje;
-        Redirect::to(self::PANEL . '&seccion=' . $seccion);
+        $ruta = self::PANEL . '&seccion=' . $seccion;
+        if ($seccion === 'preguntas' && $filtro !== null) {
+            $ruta .= '&categoria=' . $filtro . '&pagina=' . $pagina;
+        }
+        Redirect::to($ruta);
     }
 }
