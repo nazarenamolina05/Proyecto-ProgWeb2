@@ -1,247 +1,145 @@
-<main class="partida-contenedor">
-    <section class="partida-tarjeta" aria-labelledby="partida-titulo">
-        <p class="grammys-eyebrow">The Grammys Trivia</p>
-
-        <h1 id="partida-titulo">
-            {{#elegir_categoria}}
-                Elegí una categoría
-            {{/elegir_categoria}}
-
-            {{^elegir_categoria}}
-                Tu desafío musical
-            {{/elegir_categoria}}
-        </h1>
+<main class="partida-contenedor{{#elegir_categoria}} partida-contenedor-progreso{{/elegir_categoria}}">
+    <section class="partida-tarjeta{{#elegir_categoria}} partida-tarjeta-progreso{{/elegir_categoria}}" aria-labelledby="partida-titulo">
+        {{#elegir_categoria}}
+            <h1 id="partida-titulo" class="progreso-titulo">Tu progreso musical</h1>
+            <p class="progreso-intro">Tu nivel es independiente en cada categoría.</p>
+        {{/elegir_categoria}}
+        {{^elegir_categoria}}
+            <p class="grammys-eyebrow">The Grammys Trivia</p>
+            <h1 id="partida-titulo">Tu desafío musical</h1>
+        {{/elegir_categoria}}
 
         {{#categoria_nombre}}
-    <p>
-        Categoría:
-        <strong>{{categoria_nombre}}</strong>
-    </p>
-
-    <p>
-        Dificultad:
-        <strong>{{dificultad}}</strong>
-    </p>
-
-    <p>
-        Respuestas correctas:
-        <strong>{{correctas}} / {{total_preguntas}}</strong>
-    </p>
-{{/categoria_nombre}}
-
+            <p>Categoría: <strong>{{categoria_nombre}}</strong></p>
+            <p>Tu nivel: <strong>{{nivel_usuario}}</strong></p>
+            {{^sin_preguntas}}
+                <p>Dificultad de la pregunta: <strong>{{dificultad}}</strong></p>
+            {{/sin_preguntas}}
+            <div class="progreso-card progreso-{{clase_nivel}}">
+                <span class="progreso-nivel">Progreso en esta categoría</span>
+                <span class="progreso-pista" role="progressbar" aria-label="Progreso en esta categoría" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{porcentaje}}">
+                    <span class="progreso-relleno" style="width: {{porcentaje}}%;"></span>
+                </span>
+            </div>
+            <p>Respuestas correctas: <strong>{{correctas}} / {{total_preguntas}}</strong></p>
+        {{/categoria_nombre}}
         {{#mostrar_puntaje}}
-            <p class="partida-puntaje">
-                Puntaje:
-                <strong>{{puntaje}}</strong>
-            </p>
+            <p class="partida-puntaje">Puntaje: <strong>{{puntaje}}</strong></p>
         {{/mostrar_puntaje}}
-
         {{#error}}
-            <p class="grammys-error" role="alert">
-                {{error}}
-            </p>
+            <p class="grammys-error" role="alert">{{error}}</p>
         {{/error}}
-
         {{#mensaje}}
-    <p role="status">
-        {{mensaje}}
-    </p>
-{{/mensaje}}
+            <p role="status">{{mensaje}}</p>
+        {{/mensaje}}
 
         {{#elegir_categoria}}
-            <p>Elegí tu tema y poné a prueba cuánto sabés de música.</p>
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria"
-            >
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=elegirCategoria">
                 <input type="hidden" name="token" value="{{token}}">
-
-                <fieldset class="partida-opciones">
-                    <legend>Categorías disponibles</legend>
-
+                <fieldset class="progreso-categorias">
+                    <legend class="progreso-solo-lector">Elegí una categoría para jugar</legend>
                     {{#categorias}}
-                        <label class="partida-opcion">
-                            <input
-                                type="radio"
-                                name="categoria_id"
-                                value="{{id}}"
-                                required
-                            >
-
-                            <span>{{nombre}}</span>
+                        <label class="progreso-opcion">
+                            <input class="progreso-radio" type="radio" name="categoria_id" value="{{id}}" required>
+                            <span class="progreso-card progreso-{{clase_nivel}}">
+                                <span class="progreso-nombre">
+                                    <span class="progreso-nota" aria-hidden="true">♫</span>
+                                    {{nombre}}
+                                </span>
+                                <span class="progreso-nivel">{{nivel_usuario}}</span>
+                                <span class="progreso-pista" role="progressbar" aria-label="Porcentaje de aciertos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{porcentaje}}">
+                                    <span class="progreso-relleno" style="width: {{porcentaje}}%;"></span>
+                                </span>
+                                {{#texto_progreso}}
+                                    <span class="progreso-detalle">{{texto_progreso}}</span>
+                                {{/texto_progreso}}
+                            </span>
                         </label>
                     {{/categorias}}
                 </fieldset>
-    <legend>Elegí la dificultad</legend>
-
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="FACIL" required>
-        <span>Fácil</span>
-    </label>
-
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="INTERMEDIO" checked>
-        <span>Intermedio</span>
-    </label>
-
-    <label class="partida-opcion">
-        <input type="radio" name="dificultad" value="DIFICIL">
-        <span>Difícil</span>
-    </label>
-</fieldset>
-
-
                 {{#hay_categorias}}
-                    <button class="grammys-button" type="submit">
-                        Empezar a jugar
-                    </button>
+                    <p class="progreso-ayuda">Seleccioná una categoría para jugar.</p>
+                    <button class="grammys-button" type="submit">Empezar a jugar</button>
                 {{/hay_categorias}}
-
-                {{^categorias}}
+                {{^hay_categorias}}
                     <p>Todavía no hay categorías disponibles.</p>
-                {{/categorias}}
+                {{/hay_categorias}}
             </form>
         {{/elegir_categoria}}
 
         {{#sin_preguntas}}
-            <p>
-                Todavía no hay preguntas disponibles en esta categoría.
-                Elegí otra categoría para jugar.
-            </p>
+            <p>No hay preguntas disponibles para tu nivel en esta categoría. Elegí otra categoría para jugar.</p>
         {{/sin_preguntas}}
         {{#derrota}}
             <div class="derrota-fondo">
-                <section
-                        class="popup-derrota"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="titulo-derrota"
-                >
+                <section class="popup-derrota" role="dialog" aria-modal="true" aria-labelledby="titulo-derrota">
                     <h2 id="titulo-derrota">Perdiste la partida</h2>
-
                     <p>Volviste a abrir el desafío y se descontó 1 punto.</p>
-
-                    <p class="popup-derrota-puntaje">
-                        Puntaje final
-                        <strong>{{puntaje_final}}</strong>
-                    </p>
-
-                    {{#guardada}}
-                        <p>Tu resultado quedó guardado en tu perfil.</p>
-                    {{/guardada}}
-
-                    {{^guardada}}
-                        <p>Jugaste como invitado. Este resultado no se guardó.</p>
-                    {{/guardada}}
-
-                    <audio autoplay src="{{base}}/public/audio/respuesta-incorrecta.mp3"></audio>
-
-                    <a
-                            class="grammys-button"
-                            href="{{base}}/index.php?controller=partida&amp;method=categorias"
-                    >
-                        Volver a jugar
-                    </a>
+                    <p class="popup-derrota-puntaje">Puntaje final <strong>{{puntaje_final}}</strong></p>
+                    {{#guardada}}<p>Tu resultado quedó guardado en tu perfil.</p>{{/guardada}}
+                    {{^guardada}}<p>Jugaste como invitado. Este resultado no se guardó.</p>{{/guardada}}
+                    <audio autoplay hidden>
+                        <source src="{{base}}/public/audio/respuesta-incorrecta.mp3" type="audio/mpeg">
+                    </audio>
+                    <a class="grammys-button" href="{{base}}/index.php?controller=partida&amp;method=categorias">Volver a jugar</a>
                 </section>
             </div>
         {{/derrota}}
-
         {{#imagen}}
-            <img
-                class="partida-imagen"
-                src="{{imagen}}"
-                alt="Portada del álbum que debés identificar"
-                referrerpolicy="no-referrer"
-            >
+            <img class="partida-imagen" src="{{imagen}}" alt="Portada del álbum que debés identificar" referrerpolicy="no-referrer">
         {{/imagen}}
 
         {{#en_curso}}
             <p class="partida-tiempo" role="timer" aria-label="Tiempo restante">
-                Tiempo restante:
-                <strong id="partida-segundos">{{segundos_restantes}}</strong>
-                segundos
+                Tiempo restante: <strong id="partida-segundos">{{segundos_restantes}}</strong> segundos
             </p>
-
             <p>Elegí una opción y confirmá tu respuesta.</p>
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=responder"
-            >
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=responder">
                 <input type="hidden" name="token" value="{{token}}">
-
                 <fieldset class="partida-opciones">
                     <legend>{{pregunta}}</legend>
-
                     {{#opciones}}
                         <label class="partida-opcion">
-                            <input
-                                type="radio"
-                                name="respuesta"
-                                value="{{id}}"
-                                required
-                            >
-
+                            <input type="radio" name="respuesta" value="{{id}}" required>
                             <span>{{texto}}</span>
                         </label>
                     {{/opciones}}
                 </fieldset>
-
-                <button class="grammys-button" type="submit">
-                    Confirmar respuesta
-                </button>
+                <button class="grammys-button" type="submit">Confirmar respuesta</button>
             </form>
-            <form
-    method="post"
-    action="{{base}}/index.php?controller=partida&amp;method=terminar"
->
-    <input type="hidden" name="token" value="{{token}}">
-
-    <button class="grammys-button" type="submit">
-        Terminar partida
-    </button>
-</form>
-
-            <form
-                id="partida-formulario-tiempo"
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=responder"
-                hidden
-            >
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=terminar">
+                <input type="hidden" name="token" value="{{token}}">
+                <button class="grammys-button" type="submit">Terminar partida</button>
+            </form>
+            <form id="partida-formulario-tiempo" data-milisegundos="{{milisegundos_restantes}}" method="post" action="{{base}}/index.php?controller=partida&amp;method=responder" hidden>
                 <input type="hidden" name="token" value="{{token}}">
                 <input type="hidden" name="tiempo_agotado" value="1">
             </form>
-
             <script>
                 (function () {
-                    var contador = document.getElementById('partida-segundos');
-                    var formulario = document.getElementById('partida-formulario-tiempo');
-                    var intervalo;
-                    var venceEn = window.performance.now() + {{milisegundos_restantes}};
+                    const contador = document.getElementById('partida-segundos');
+                    const formulario = document.getElementById('partida-formulario-tiempo');
 
-                    function enviarAlAgotarse() {
-                        window.clearInterval(intervalo);
-                        formulario.submit();
+                    if (!contador || !(formulario instanceof HTMLFormElement)) {
+                        return;
                     }
+
+                    const milisegundos = Number(formulario.dataset.milisegundos);
+                    if (!Number.isFinite(milisegundos)) {
+                        return;
+                    }
+
+                    const venceEn = window.performance.now() + Math.max(0, milisegundos);
+                    let intervalo;
 
                     function actualizarContador() {
-                        var milisegundosRestantes =
-                            venceEn - window.performance.now();
+                        const restantes = Math.max(0, venceEn - window.performance.now());
+                        contador.textContent = String(Math.ceil(restantes / 1000));
 
-                        contador.textContent = Math.max(
-                            0,
-                            Math.ceil(milisegundosRestantes / 1000)
-                        );
-
-                        if (milisegundosRestantes <= 0) {
-                            enviarAlAgotarse();
+                        if (restantes === 0) {
+                            window.clearInterval(intervalo);
+                            formulario.submit();
                         }
-                    }
-
-                    if ({{milisegundos_restantes}} <= 0) {
-                        enviarAlAgotarse();
-                        return;
                     }
 
                     intervalo = window.setInterval(actualizarContador, 100);
@@ -249,72 +147,31 @@
                 }());
             </script>
         {{/en_curso}}
-
         {{#finalizada}}
             {{#agotado}}
                 <h2>¡Se agotó el tiempo!</h2>
                 <p>No respondiste a tiempo y se descontó un punto.</p>
             {{/agotado}}
-
             {{^agotado}}
-                <h2>
-                    {{#correcta}}
-                        ¡Respuesta correcta!
-                    {{/correcta}}
-
-                    {{^correcta}}
-                        Esta vez no acertaste
-                    {{/correcta}}
-                </h2>
-
+                <h2>{{#correcta}}¡Respuesta correcta!{{/correcta}}{{^correcta}}Esta vez no acertaste{{/correcta}}</h2>
                 <p>{{pregunta}}</p>
-
-                <p>
-                    Elegiste:
-                    <strong>{{respuesta_elegida}}</strong>.
-                </p>
+                <p>Elegiste: <strong>{{respuesta_elegida}}</strong>.</p>
             {{/agotado}}
-
             {{^correcta}}
-                <p>
-                    La respuesta correcta es:
-                    <strong>{{respuesta_correcta}}</strong>.
-                </p>
+                <p>La respuesta correcta es: <strong>{{respuesta_correcta}}</strong>.</p>
             {{/correcta}}
-            <form
-    method="post"
-    action="{{base}}/index.php?controller=partida&amp;method=terminar"
->
-    <input type="hidden" name="token" value="{{token}}">
-
-    <button class="grammys-button" type="submit">
-        Terminar partida
-    </button>
-</form>
-
-            <form
-                method="post"
-                action="{{base}}/index.php?controller=partida&amp;method=comenzar"
-            >
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=terminar">
                 <input type="hidden" name="token" value="{{token}}">
-
-                <button class="grammys-button" type="submit">
-                    Otra pregunta de esta categoría
-                </button>
+                <button class="grammys-button" type="submit">Terminar partida</button>
+            </form>
+            <form method="post" action="{{base}}/index.php?controller=partida&amp;method=comenzar">
+                <input type="hidden" name="token" value="{{token}}">
+                <button class="grammys-button" type="submit">Otra pregunta de esta categoría</button>
             </form>
         {{/finalizada}}
-
         {{^elegir_categoria}}
-            <a
-                class="partida-volver"
-                href="{{base}}/index.php?controller=partida&amp;method=categorias"
-            >
-                Cambiar categoría
-            </a>
+            <a class="partida-volver" href="{{base}}/index.php?controller=partida&amp;method=categorias">Cambiar categoría</a>
         {{/elegir_categoria}}
-
-        <a class="partida-volver" href="{{base}}/">
-            Volver al inicio
-        </a>
+        <a class="partida-volver" href="{{base}}/">Volver al inicio</a>
     </section>
 </main>
