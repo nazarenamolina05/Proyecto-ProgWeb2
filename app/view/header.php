@@ -3,6 +3,7 @@ $esEstadisticas = ($vistaActual ?? "") === "adminEstadisticas";
 $esPanelInterno = $esEstadisticas || in_array(($vistaActual ?? ""), ["editorPanel", "editorPregunta"], true);
 $esInicio = ($vistaActual ?? '') === 'home';
 $baseUrl = htmlspecialchars($base, ENT_QUOTES, 'UTF-8');
+$versionGrammys = filemtime(__DIR__ . '/../../public/css/Grammys.css');
 $clasesBody = 'pagina-grammys';
 if ($esPanelInterno) {
     $clasesBody .= $esEstadisticas ? ' pagina-editor pagina-estadisticas' : ' pagina-editor';
@@ -14,9 +15,10 @@ if ($esPanelInterno) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>The Grammys Trivia</title>
+        <link rel="icon" type="image/png" href="<?= $baseUrl ?>/public/images/grammy-award.png">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
-        <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Grammys.css">
+        <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Grammys.css?v=<?= $versionGrammys ?>">
 
         <?php if (in_array(($vistaActual ?? ""), ["registro", "verificacion", "perfilEditar"], true)): ?>
             <link rel="stylesheet" href="<?= $baseUrl ?>/public/css/Registro.css">

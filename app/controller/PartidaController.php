@@ -2,6 +2,8 @@
 
 namespace app\controller;
 
+use Log;
+use PDOException;
 use Redirect;
 
 class PartidaController
@@ -41,14 +43,21 @@ class PartidaController
 
     public function categorias()
     {
+        if ($this->registrarVencimiento()) {
+            $this->irAPartida();
+            return;
+        }
+
         $jugador = $this->obtenerJugador();
         $categorias = [];
         foreach ($this->model->obtenerCategorias() as $categoria) {
             $categorias[] = array_merge($categoria, $this->model->obtenerProgresoUsuario($jugador, (int) $categoria['id']));
         }
+        $derrota = $_SESSION['partida_derrota'] ?? null;
         $this->render->renderiza('comenzarPartida', [
             'elegir_categoria' => true,
-            'derrota' => $_SESSION['partida_derrota'] ?? null,
+            'derrota' => $derrota === null ? null : $derrota + ['motivo' => 'La partida terminó porque volviste a abrir el desafío.'],
+            'audio_partida' => $derrota === null ? null : 'respuesta-incorrecta.mp3',
             'categorias' => $categorias,
             'hay_categorias' => count($categorias) > 0,
             'token' => $this->getToken(),
@@ -70,8 +79,12 @@ class PartidaController
             Redirect::to('/index.php?controller=partida&method=categorias');
             return;
         }
-        // Si se abandona una pregunta vencida, se registra su vencimiento antes de cambiar.
-        $this->registrarVencimiento();
+        if ($this->registrarVencimiento()
+            || ($this->estaTerminada() && !$this->guardarPartidaTerminada())) {
+            $this->irAPartida();
+            return;
+        }
+        unset($_SESSION['partida']);
         $_SESSION['partida_categoria'] = $categoria;
         $_SESSION['partida_jugador'] = $this->obtenerJugador();
         $_SESSION['partida_resumen'] = ['correctas' => 0, 'total_preguntas' => 0];
@@ -89,12 +102,12 @@ class PartidaController
         }
         $vistaAutorizada = $_SESSION['partida_vista_autorizada'] ?? false;
         unset($_SESSION['partida_vista_autorizada']);
-        if (isset($_SESSION['partida']) && !$vistaAutorizada) {
+        $this->registrarVencimiento();
+        if (isset($_SESSION['partida']) && !$this->estaTerminada() && !$vistaAutorizada) {
             $this->finalizarPartida(true);
             return;
         }
 
-        $this->registrarVencimiento();
         $progreso = $this->actualizarNivelUsuario();
         $resumen = $_SESSION['partida_resumen'] ?? ['correctas' => 0, 'total_preguntas' => 0];
         $data = [
@@ -111,9 +124,17 @@ class PartidaController
             'total_preguntas' => $resumen['total_preguntas'],
             'mostrar_puntaje' => true,
             'puntaje' => (int) ($_SESSION['partida_puntaje'] ?? 0),
-            'error' => $_SESSION['partida_error'] ?? null
+            'error' => $_SESSION['partida_error'] ?? null,
+            'mensaje' => $_SESSION['partida_mensaje'] ?? null,
         ];
-        unset($_SESSION['partida_error']);
+        unset($_SESSION['partida_error'], $_SESSION['partida_mensaje']);
+
+        if ($this->estaTerminada()) {
+            $data['partida_terminada'] = true;
+            if (!$this->guardarPartidaTerminada()) {
+                $data['error'] ??= 'No se pudo guardar el resultado. Recargá esta pantalla para volver a intentarlo.';
+            }
+        }
 
         if (!isset($_SESSION['partida'])) {
             $data['sin_preguntas'] = true;
@@ -136,18 +157,30 @@ class PartidaController
                 }
             } else {
                 $data['finalizada'] = true;
+                $data['sin_mas_preguntas'] = $partida['sin_mas_preguntas'] ?? false;
                 $data['pregunta_id'] = (int) $pregunta['id'];
                 $data['contribucion_token'] = $_SESSION['contribucion_token'] ??= bin2hex(random_bytes(32));
                 if (!empty($partida['agotado'])) {
                     $data['agotado'] = true;
                 } else {
                     $data['correcta'] = $this->model->esCorrecta($pregunta, $partida['respuesta_id']);
-                    $data['audio_partida'] = $data['correcta']
-                        ? 'respuesta-correcta.mp3'
-                        : 'respuesta-incorrecta.mp3';
+                    if ($data['correcta']) {
+                        $data['audio_partida'] = 'respuesta-correcta.mp3';
+                    }
                     $data['respuesta_elegida'] = $pregunta['opciones'][$partida['respuesta_id']];
                 }
                 $data['respuesta_correcta'] = $pregunta['opciones'][$pregunta['correcta']];
+                if (!empty($data['partida_terminada']) && empty($data['correcta']) && empty($partida['derrota_mostrada'])) {
+                    $data['derrota'] = [
+                        'motivo' => !empty($data['agotado']) ? 'Se agotó el tiempo.' : 'La respuesta fue incorrecta.',
+                        'puntaje_final' => $data['puntaje'],
+                        'respuesta_correcta' => $data['respuesta_correcta'],
+                        'guardada' => !empty($_SESSION['partida']['resultado_guardado']),
+                        'revisar_resultado' => true,
+                    ];
+                    $data['audio_partida'] = 'respuesta-incorrecta.mp3';
+                    $_SESSION['partida']['derrota_mostrada'] = true;
+                }
             }
         }
         $this->render->renderiza('comenzarPartida', $data);
@@ -161,7 +194,7 @@ class PartidaController
         $this->registrarVencimiento();
         $partida = $_SESSION['partida'] ?? null;
         if (is_array($partida) && $this->estaPendiente($partida)
-            && (string) ($_POST['tiempo_agotado'] ?? '') !== '1') {
+            && ($_POST['tiempo_agotado'] ?? '') !== '1') {
             $respuesta = filter_var($_POST['respuesta'] ?? null, FILTER_VALIDATE_INT);
             if ($respuesta === false || !$this->model->esOpcionValida($partida['pregunta'], $respuesta)) {
                 $_SESSION['partida_error'] = 'Seleccioná una de las tres respuestas.';
@@ -180,6 +213,9 @@ class PartidaController
                     $_SESSION['partida_puntaje'] = max(0, (int) ($_SESSION['partida_puntaje'] ?? 0) + ($esCorrecta ? 1 : -1));
                     $this->actualizarNivelUsuario();
                     $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+                    if (!$esCorrecta) {
+                        $this->cerrarPartida();
+                    }
                 }
             }
         }
@@ -196,7 +232,7 @@ class PartidaController
             return;
         }
         $this->registrarVencimiento();
-        if (!isset($_SESSION['partida']) || !$this->estaPendiente($_SESSION['partida'])) {
+        if (!$this->estaTerminada() && (!isset($_SESSION['partida']) || !$this->estaPendiente($_SESSION['partida']))) {
             $this->crearPartida();
         }
         $this->irAPartida();
@@ -223,19 +259,19 @@ class PartidaController
             Redirect::to($rutaCategorias);
             return;
         }
-        $vencioEnEstaSolicitud = $this->registrarVencimiento();
+        $this->registrarVencimiento();
+        if ($this->estaTerminada()) {
+            $this->irAPartida();
+            return;
+        }
         $this->actualizarNivelUsuario();
         $resumen = $_SESSION['partida_resumen'];
-        $correctas = (int) $resumen['correctas'];
         $totalPreguntas = (int) $resumen['total_preguntas'];
-        $descuento = $porRecarga && !$vencioEnEstaSolicitud ? 1 : 0;
+        $descuento = $porRecarga ? 1 : 0;
         $puntaje = max(0, (int) ($_SESSION['partida_puntaje'] ?? 0) - $descuento);
         $guardarResultado = $usuarioId !== null && ($porRecarga || $totalPreguntas > 0);
         if ($guardarResultado) {
-            $guardada = $this->model->guardarPartida(
-                (int) $usuarioId, $puntaje, $correctas, $totalPreguntas,
-                $_SESSION['partida_dificultad'], (int) $_SESSION['partida_categoria']['id']
-            );
+            $guardada = $this->guardarPuntaje((int) $usuarioId, $puntaje);
             if (!$guardada) {
                 $_SESSION['partida_error'] = 'No se pudo guardar la partida. Volvé a intentarlo.';
                 $this->irAPartida();
@@ -256,6 +292,42 @@ class PartidaController
         Redirect::to($rutaCategorias);
     }
 
+    private function estaTerminada(): bool
+    {
+        return !empty($_SESSION['partida']['terminada']);
+    }
+
+    private function cerrarPartida(): void
+    {
+        $_SESSION['partida']['terminada'] = true;
+        $this->guardarPartidaTerminada();
+    }
+
+    private function guardarPartidaTerminada(): bool
+    {
+        if (!empty($_SESSION['partida']['resultado_guardado']) || !isset($_SESSION['usuario_id'])) {
+            return true;
+        }
+
+        $guardada = $this->guardarPuntaje((int) $_SESSION['usuario_id'], (int) $_SESSION['partida_puntaje']);
+        $_SESSION['partida']['resultado_guardado'] = $guardada;
+        return $guardada;
+    }
+
+    private function guardarPuntaje(int $usuarioId, int $puntaje): bool
+    {
+        $resumen = $_SESSION['partida_resumen'];
+        try {
+            return $this->model->guardarPartida(
+                $usuarioId, $puntaje, (int) $resumen['correctas'], (int) $resumen['total_preguntas'],
+                $_SESSION['partida_dificultad'], (int) $_SESSION['partida_categoria']['id']
+            );
+        } catch (PDOException $ex) {
+            Log::error('Error al guardar la partida. SQLSTATE: ' . $ex->getCode());
+            return false;
+        }
+    }
+
     private function irAPartida(): void
     {
         $_SESSION['partida_vista_autorizada'] = true;
@@ -266,16 +338,32 @@ class PartidaController
     {
         $jugador = $_SESSION['partida_jugador'] ?? $this->obtenerJugador();
         $categoriaId = (int) $_SESSION['partida_categoria']['id'];
+        $preguntaAnterior = $_SESSION['partida']['pregunta']['id'] ?? null;
+        $preguntasVistas = $_SESSION['partida']['preguntas_vistas'] ?? [];
+        if ($preguntaAnterior !== null && $preguntasVistas === []) {
+            // Una partida iniciada antes del cambio no tiene su propia lista de preguntas.
+            $preguntasVistas = $this->model->obtenerPreguntasVistas($jugador, $categoriaId);
+            if (!in_array((int) $preguntaAnterior, $preguntasVistas, true)) {
+                $preguntasVistas[] = (int) $preguntaAnterior;
+            }
+        }
         $this->actualizarNivelUsuario();
-        $pregunta = $this->model->obtenerPreguntaAleatoria($categoriaId, $_SESSION['partida_dificultad'], $jugador);
-        if ($pregunta === null) {
-            unset($_SESSION['partida']);
+        $turno = $this->model->entregarPregunta(
+            $categoriaId,
+            $_SESSION['partida_dificultad'],
+            $jugador,
+            $preguntasVistas
+        );
+        if ($turno === null) {
+            if (isset($_SESSION['partida'])) {
+                $_SESSION['partida']['sin_mas_preguntas'] = true;
+                $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+                $this->cerrarPartida();
+            }
             return;
         }
-        $historialId = $this->model->registrarPreguntaVista($jugador, $pregunta['id']);
-        $_SESSION['partida'] = [
-            'pregunta' => $pregunta,
-            'historial_id' => $historialId,
+        $_SESSION['partida'] = $turno + [
+            'preguntas_vistas' => [...$preguntasVistas, $turno['pregunta']['id']],
             'respuesta_id' => null,
             'agotado' => false,
             'vence_en' => microtime(true) + self::DURACION_PREGUNTA_SEGUNDOS
@@ -304,6 +392,7 @@ class PartidaController
         $_SESSION['partida_puntaje'] = max(0, (int) ($_SESSION['partida_puntaje'] ?? 0) - 1);
         $this->actualizarNivelUsuario();
         $_SESSION['partida_token'] = bin2hex(random_bytes(32));
+        $this->cerrarPartida();
         return true;
     }
 

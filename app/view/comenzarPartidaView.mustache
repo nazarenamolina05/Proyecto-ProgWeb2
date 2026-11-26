@@ -24,7 +24,7 @@
             <p>Respuestas correctas: <strong>{{correctas}} / {{total_preguntas}}</strong></p>
         {{/categoria_nombre}}
         {{#mostrar_puntaje}}
-            <p class="partida-puntaje">Puntaje: <strong>{{puntaje}}</strong></p>
+            <p class="partida-puntaje">{{#partida_terminada}}Puntaje final{{/partida_terminada}}{{^partida_terminada}}Puntaje{{/partida_terminada}}: <strong>{{puntaje}}</strong></p>
         {{/mostrar_puntaje}}
         {{#error}}
             <p class="grammys-error" role="alert">{{error}}</p>
@@ -68,43 +68,34 @@
         {{/elegir_categoria}}
 
         {{#sin_preguntas}}
-            <p>No hay preguntas disponibles para tu nivel en esta categoría. Elegí otra categoría para jugar.</p>
+            <p>No hay preguntas disponibles en esta categoría. Elegí otra para jugar.</p>
         {{/sin_preguntas}}
         {{#derrota}}
-            <div class="derrota-fondo">
-                <section
-                        class="popup-derrota"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="titulo-derrota"
-                >
-                    <h2 id="titulo-derrota">Perdiste la partida</h2>
-
-                    <p>La partida terminó porque volviste a abrir el desafío.</p>
-
-                    <p class="popup-derrota-puntaje">
-                        Puntaje final
-                        <strong>{{puntaje_final}}</strong>
-                    </p>
-
-                    {{#guardada}}
-                        <p>Tu resultado quedó guardado en tu perfil.</p>
-                    {{/guardada}}
-
-                    {{^guardada}}
-                        <p>Jugaste como invitado. Este resultado no se guardó.</p>
-                    {{/guardada}}
-
-                    <audio autoplay src="{{base}}/public/audio/respuesta-incorrecta.mp3"></audio>
-
-                    <a
-                            class="grammys-button"
-                            href="{{base}}/index.php?controller=partida&amp;method=categorias"
-                    >
-                        Volver a jugar
-                    </a>
-                </section>
-            </div>
+            <dialog id="partida-derrota" class="popup-derrota" open aria-labelledby="titulo-derrota" aria-describedby="motivo-derrota">
+                <h2 id="titulo-derrota">Perdiste la partida</h2>
+                <p id="motivo-derrota">{{motivo}}</p>
+                <p class="popup-derrota-puntaje">
+                    Puntaje final
+                    <strong>{{puntaje_final}}</strong>
+                </p>
+                {{#respuesta_correcta}}
+                    <p>La respuesta correcta era <strong>{{respuesta_correcta}}</strong>.</p>
+                {{/respuesta_correcta}}
+                {{#guardada}}
+                    <p>Tu resultado quedó guardado en tu perfil.</p>
+                {{/guardada}}
+                {{^guardada}}
+                    <p>El resultado todavía no se guardó.</p>
+                {{/guardada}}
+                <div class="popup-derrota-acciones">
+                    {{#revisar_resultado}}
+                        <form method="dialog">
+                            <button class="grammys-button partida-accion-terminar" type="submit">Ver resultado</button>
+                        </form>
+                    {{/revisar_resultado}}
+                    <a class="grammys-button" href="{{base}}/index.php?controller=partida&amp;method=categorias">Volver a jugar</a>
+                </div>
+            </dialog>
         {{/derrota}}
 
         <!-- IMAGEN DE LA PREGUNTA -->
@@ -317,7 +308,7 @@
             <!-- SI SE TERMINÓ EL TIEMPO -->
 
             {{#agotado}}
-                <h2>¡Se agotó el tiempo!</h2>
+                <h2 id="resultado-partida" tabindex="-1">¡Se agotó el tiempo!</h2>
 
                 <p>No respondiste a tiempo.</p>
             {{/agotado}}
@@ -325,7 +316,7 @@
             <!-- SI RESPONDIÓ -->
 
             {{^agotado}}
-                <h2>
+                <h2 id="resultado-partida" tabindex="-1">
                     {{#correcta}}
                         ¡Respuesta correcta!
                     {{/correcta}}
@@ -354,30 +345,42 @@
                 </p>
             {{/correcta}}
 
-            <div class="partida-acciones">
-                <form
-                    method="post"
-                    action="{{base}}/index.php?controller=partida&amp;method=terminar"
-                >
-                    <input type="hidden" name="token" value="{{token}}">
-                    <button class="grammys-button partida-accion partida-accion-terminar" type="submit">
-                        Terminar partida
-                    </button>
-                </form>
+            {{#partida_terminada}}
+                {{#sin_mas_preguntas}}
+                    <p>Ya jugaste todas las preguntas disponibles de esta categoría en esta partida.</p>
+                {{/sin_mas_preguntas}}
+                {{^sin_mas_preguntas}}
+                    <p>La partida terminó.</p>
+                {{/sin_mas_preguntas}}
+                <a class="grammys-button" href="{{base}}/index.php?controller=partida&amp;method=categorias">Jugar de nuevo</a>
+            {{/partida_terminada}}
 
-                <form
-                    method="post"
-                    action="{{base}}/index.php?controller=partida&amp;method=comenzar"
-                >
-                    <input type="hidden" name="token" value="{{token}}">
-                    <button class="grammys-button partida-accion partida-accion-seguir" type="submit">
-                        <span>Otra pregunta de esta categoría</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 12h17m-7-7 7 7-7 7" />
-                        </svg>
-                    </button>
-                </form>
-            </div>
+            {{^partida_terminada}}
+                <div class="partida-acciones">
+                    <form
+                        method="post"
+                        action="{{base}}/index.php?controller=partida&amp;method=terminar"
+                    >
+                        <input type="hidden" name="token" value="{{token}}">
+                        <button class="grammys-button partida-accion partida-accion-terminar" type="submit">
+                            Terminar partida
+                        </button>
+                    </form>
+
+                    <form
+                        method="post"
+                        action="{{base}}/index.php?controller=partida&amp;method=comenzar"
+                    >
+                        <input type="hidden" name="token" value="{{token}}">
+                        <button class="grammys-button partida-accion partida-accion-seguir" type="submit">
+                            <span>Otra pregunta de esta categoría</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 12h17m-7-7 7 7-7 7" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            {{/partida_terminada}}
 
             <div class="partida-contribuciones">
                 <details>
@@ -436,6 +439,21 @@
             </div>
 
         {{/finalizada}}
+
+        {{#derrota}}
+            <script>
+                (function () {
+                    const dialogo = document.getElementById('partida-derrota');
+                    if (typeof dialogo.showModal === 'function') {
+                        dialogo.removeAttribute('open');
+                        dialogo.showModal();
+                        dialogo.addEventListener('close', () => {
+                            document.getElementById('resultado-partida')?.focus();
+                        });
+                    }
+                }());
+            </script>
+        {{/derrota}}
 
         {{#audio_partida}}
             <script>

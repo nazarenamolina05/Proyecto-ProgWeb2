@@ -320,6 +320,37 @@ body.pagina-grammys {
     margin-top: 5px;
 }
 
+.grammys-sugerencias {
+    box-sizing: border-box;
+    width: min(100%, 680px);
+    justify-content: center;
+    margin: clamp(24px, 5vw, 48px) auto;
+    text-align: center;
+}
+
+.grammys-sugerencias .grammys-access-copy {
+    width: 100%;
+    min-width: 0;
+}
+
+.grammys-sugerencias .grammys-login {
+    width: 100%;
+    margin: 24px auto;
+    text-align: left;
+}
+
+.grammys-sugerencias .grammys-login label {
+    align-self: start;
+}
+
+.grammys-sugerencias .grammys-login :is(input, select, textarea) {
+    box-sizing: border-box;
+}
+
+.grammys-sugerencias .grammys-login .grammys-button {
+    align-self: center;
+}
+
 .grammys-error {
     padding: 10px 12px;
     border: 1px solid #a64f46;
